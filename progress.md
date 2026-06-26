@@ -1445,7 +1445,8 @@
 - `tests/marketplace-wallet.e2e.js` 新增空 reason 用例，断言不会打开 report details 弹窗，也不会调用 report API。
 - README 和设计文档已同步 report reason 必填且前端会本地拦截空值。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "submits a report with reviewer details|keeps empty report reasons local" --workers=1`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
-- 本阶段待提交推送并等待 GitHub Actions。
+- 已提交 `378830813 Validate report reasons locally` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28271797886` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
