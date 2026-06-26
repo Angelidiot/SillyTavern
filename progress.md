@@ -1284,6 +1284,17 @@
 - 已通过 `npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28265880089` 已确认 Marketplace Wallet Checks 全链路通过。
 
+## 2026-06-26 阶段 103：上传保存成功但提交失败恢复
+- `public/scripts/extensions/marketplace-wallet/index.js` 现在把 create/patch 保存和 submit-for-review 分成两层错误处理。
+- 保存成功但 submit 失败时，前端会提示 `Draft saved, but submit failed` 或 `Changes saved, but submit failed`，并附带后端错误摘要。
+- 保存响应缺少 asset id 时仍按保存异常处理，避免对未知资产 id 误报 draft 已保存。
+- 提交失败后仍会 `clearUploadForm()` 并 `loadMarketplace({ silent: true })`，让已保存 draft 出现在市场列表和 Creator Center 中。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和 E2E 常量已从 `0.2.17` 升到 `0.2.18`。
+- `tests/marketplace-wallet.e2e.js` 新增 submit 失败恢复用例，覆盖首次 Save & Submit 只创建一个 draft、Creator Center draft 计数刷新、用户从资产卡片重试 Submit 成功。
+- `tests/marketplace-wallet-ui.test.js` 已锁定 submit 失败 warning、保存成功提示前缀和 silent marketplace reload contract。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a saved draft when submit after upload fails" --workers=1`。
+- 已通过 `npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

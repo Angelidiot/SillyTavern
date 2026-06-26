@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 102
+阶段 103
 
 ## 各阶段
 
@@ -935,6 +935,16 @@
 - [x] rejected/draft 修订流回填并可修改 language/content_rating
 - [x] 同步 marketplace-wallet manifest 和 PWA 预缓存版本
 - [x] 更新 README、设计文档、API reference、UI contract 和浏览器 E2E
+- [x] 运行完整基础验证并提交推送
+- **状态：** complete
+
+### 阶段 103：上传保存成功但提交失败恢复
+- [x] 拆分 marketplace-wallet 上传保存与 submit-for-review 错误处理
+- [x] 保存成功但提交失败时提示 draft/changes 已保存，并附带提交错误
+- [x] 提交失败后刷新 marketplace 和 Creator Center，让已保存 draft 可见
+- [x] 用户可从资产卡片重试 Submit，避免重复创建草稿
+- [x] 同步 marketplace-wallet manifest 和 PWA 预缓存版本
+- [x] 补充 UI contract 和浏览器 E2E
 - [x] 运行完整基础验证并提交推送
 - **状态：** complete
 

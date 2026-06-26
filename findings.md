@@ -175,6 +175,9 @@
 - `content_rating` 前端使用 datalist 输入而不是硬枚举 select，避免后端允许的自定义分级在修订时被清空。
 - marketplace-wallet manifest 和 PWA shell 预缓存版本需要随上传模板变更同步 bump，避免移动端/PWA 保留旧表单。
 - Marketplace API reference 的 create body 文案现在点名 `tags/language/content_rating` 边界，便于网页/手机版外部客户端按同一契约提交资产。
+- marketplace-wallet 上传 Save & Submit 需要把保存和提交拆开处理；保存成功但 submit 失败时，草稿已经存在，UI 不应提示保存失败或诱导用户重复创建。
+- 提交失败恢复后刷新 marketplace/Creator Center，可让创作者看到 draft 并从资产卡片重试 Submit。
+- submit 失败提示应始终包含“Draft saved/Changes saved”，后端错误只能作为附加上下文，避免用户误以为内容丢失。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

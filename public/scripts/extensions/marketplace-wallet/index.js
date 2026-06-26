@@ -1213,11 +1213,23 @@ async function createAsset(submitForReview) {
                 normalized_payload: payload,
             }),
         });
+        const savedAsset = result.asset || {};
+        const savedAssetId = savedAsset.id ? String(savedAsset.id) : '';
         if (submitForReview) {
-            await fetchJson(`/api/market/assets/${encodeURIComponent(result.asset.id)}/submit`, {
-                method: 'POST',
-            });
-            toastr.success(editingAssetId ? 'Changes saved and submitted for review' : 'Asset saved and submitted for review');
+            if (!savedAssetId) {
+                throw new Error('Saved asset did not include an id');
+            }
+
+            try {
+                await fetchJson(`/api/market/assets/${encodeURIComponent(savedAssetId)}/submit`, {
+                    method: 'POST',
+                });
+                toastr.success(editingAssetId ? 'Changes saved and submitted for review' : 'Asset saved and submitted for review');
+            } catch (error) {
+                console.error('Failed to submit saved market asset', error);
+                const savedMessage = editingAssetId ? 'Changes saved, but submit failed' : 'Draft saved, but submit failed';
+                toastr.warning(error.message ? `${savedMessage}: ${error.message}` : savedMessage);
+            }
         } else {
             toastr.success(editingAssetId ? 'Changes saved' : 'Draft saved');
         }

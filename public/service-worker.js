@@ -13,9 +13,9 @@ const SHELL_ASSETS = [
     '/scripts/pwa.js',
     '/scripts/extensions/marketplace-wallet/manifest.json',
     '/scripts/extensions/marketplace-wallet/window.html',
-    '/scripts/extensions/marketplace-wallet/index.js?v=0.2.17',
+    '/scripts/extensions/marketplace-wallet/index.js?v=0.2.18',
     '/scripts/extensions/marketplace-wallet/filters.js',
-    '/scripts/extensions/marketplace-wallet/style.css?v=0.2.17',
+    '/scripts/extensions/marketplace-wallet/style.css?v=0.2.18',
 ];
 
 self.addEventListener('install', event => {

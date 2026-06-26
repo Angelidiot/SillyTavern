@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v2';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.17';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.18';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -119,11 +119,12 @@ function makeCurrentUser(overrides = {}) {
     };
 }
 
-async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubmittedAsset()], reports = [], library = [], failAssetListOnce = false, failInstallOnceFor = '' } = {}) {
+async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubmittedAsset()], reports = [], library = [], failAssetListOnce = false, failInstallOnceFor = '', failSubmitOnceFor = '' } = {}) {
     let wallet = makeWallet();
     let ledger = [];
     let shouldFailAssetList = failAssetListOnce;
     let failedInstall = false;
+    let failedSubmit = false;
     const apiCalls = {
         approve: [],
         creates: [],
@@ -328,6 +329,16 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
     await page.route('**/api/market/assets/*/submit', route => {
         const assetId = route.request().url().split('/').at(-2);
         apiCalls.submits.push(assetId);
+        if (failSubmitOnceFor === assetId && !failedSubmit) {
+            failedSubmit = true;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Review service offline' }),
+            });
+            return;
+        }
+
         let submittedAsset = null;
         assets = assets.map(asset => {
             if (asset.id !== assetId) {
@@ -1213,6 +1224,46 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_upload_language')).toHaveValue('en');
         await expect(page.locator('#marketplace_wallet_upload_content_rating')).toHaveValue('general');
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
+    });
+
+    test('keeps a saved draft when submit after upload fails', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [],
+            failSubmitOnceFor: 'created-1',
+        });
+
+        await loadSillyTavern(page);
+
+        await page.locator('#marketplace_wallet_upload_type').selectOption('world_book');
+        await page.locator('#marketplace_wallet_upload_title').fill('Submit Retry World');
+        await page.locator('#marketplace_wallet_upload_summary').fill('Saved even if review submit is temporarily down.');
+        await page.locator('#marketplace_wallet_upload_payload').fill(JSON.stringify({
+            name: 'Submit Retry World',
+            entries: {
+                retry: {
+                    key: ['retry'],
+                    content: 'This lore entry should remain in a saved draft.',
+                },
+            },
+        }, null, 2));
+        await page.locator('[data-marketplace-wallet-upload="review"]').click();
+
+        await expect.poll(() => apiCalls.creates).toHaveLength(1);
+        await expect.poll(() => apiCalls.submits).toEqual(['created-1']);
+        const draftRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Submit Retry World' });
+        await expect(draftRow).toContainText('draft');
+        await expect(draftRow.locator('[data-marketplace-wallet-action="submit"]')).toHaveCount(1);
+        await expect(page.locator('#marketplace_wallet_creator_drafts')).toHaveText('1');
+        await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('0');
+        await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('');
+        await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
+
+        await draftRow.locator('[data-marketplace-wallet-action="submit"]').click();
+        await expect.poll(() => apiCalls.submits).toEqual(['created-1', 'created-1']);
+        await expect(draftRow).toContainText('submitted');
+        await expect(page.locator('#marketplace_wallet_creator_drafts')).toHaveText('0');
+        await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('1');
+        expect(apiCalls.creates).toHaveLength(1);
     });
 
     test('blocks oversized upload payloads before creating an asset', async ({ page }) => {

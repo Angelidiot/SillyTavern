@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.17');
+        expect(manifest.version).toBe('0.2.18');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -212,6 +212,14 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("$root.find('#marketplace_wallet_upload_payload').on('change blur'");
         expect(script).toContain('Pasted payloads are still validated on submit');
         expect(script).toContain("method: editingAssetId ? 'PATCH' : 'POST'");
+        expect(script).toContain("const savedAssetId = savedAsset.id ? String(savedAsset.id) : ''");
+        expect(script).toContain("throw new Error('Saved asset did not include an id')");
+        expect(script).toContain("console.error('Failed to submit saved market asset'");
+        expect(script).toContain("const savedMessage = editingAssetId ? 'Changes saved, but submit failed' : 'Draft saved, but submit failed'");
+        expect(script).toContain("`${savedMessage}: ${error.message}`");
+        expect(script).toContain("Draft saved, but submit failed");
+        expect(script).toContain("Changes saved, but submit failed");
+        expect(script).toContain("await loadMarketplace({ silent: true })");
         expect(script).toContain("state.editingAssetId = asset?.id ?? null");
         expect(script).toContain("$('#marketplace_wallet_upload_payload').val(JSON.stringify(asset.normalized_payload ?? {}, null, 2))");
         expect(script).toContain("$root.find('#marketplace_wallet_upload_cancel').on('click', clearUploadForm)");
