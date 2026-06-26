@@ -1095,6 +1095,7 @@
 - README 和 findings 已补充 API reference lifecycle/purchase/install 边界说明。
 - 首次 `npm run test:marketplace` 在同一安装用例出现一次瞬时 `fetch failed / other side closed`；目标用例单跑和重跑全量市场门禁均通过，记录为本地短连接波动。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'requires review before purchase and installs approved character cards'`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js -t 'generates markdown from current MVP routes'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28259287966` 已确认 Marketplace Wallet Checks 全链路通过；仅有 GitHub Actions Node 20 runner deprecation annotation，不影响本次门禁结果。
 
 ## 五问重启检查
 | 问题 | 答案 |
