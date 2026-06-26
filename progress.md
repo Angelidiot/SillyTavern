@@ -1105,6 +1105,13 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js -t 'generates markdown from current MVP routes'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28259506738` 已确认 Marketplace Wallet Checks 全链路通过；仅有 GitHub Actions Node 20 runner deprecation annotation，不影响本次门禁结果。
 
+## 2026-06-26 阶段 83：Marketplace CI action runtime 升级
+- 查证 `actions/checkout` 的 `v5` tag 为 `93cb6efe18208431cddfb8368fd83d5badbf9bfd`。
+- 查证 `actions/setup-node` 的 `v5` tag 为 `a0853c24544627f65ddf259abe73b1d18a591444`。
+- `.github/workflows/marketplace-wallet-checks.yml` 已仅升级 Marketplace Wallet Checks workflow 的 checkout/setup-node action pins，测试 Node 仍为 24。
+- findings 已记录本阶段用于消除远端 Node 20 action runtime deprecation annotation。
+- 已通过 `npm run test:marketplace:syntax`、`npm run test:marketplace`、workflow pin smoke 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
