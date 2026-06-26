@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const SHELL_CACHE_NAME = 'sillytavern-shell-v2';
+const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
 const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.18';
 const PWA_SHELL_PATHS = [
     '/',
@@ -646,6 +646,51 @@ test.describe('hosted tavern PWA browser shell', () => {
 
     test.afterEach(async ({ page }) => {
         await resetPwaState(page).catch(() => {});
+    });
+
+    test('shows a browser install action when the PWA prompt is available', async ({ page }) => {
+        await page.goto('/login.html', { waitUntil: 'load' });
+
+        await page.evaluate(() => {
+            window.__pwaInstallPrompted = false;
+            const event = new Event('beforeinstallprompt', { cancelable: true });
+            Object.defineProperties(event, {
+                prompt: {
+                    value: async () => {
+                        window.__pwaInstallPrompted = true;
+                    },
+                },
+                userChoice: {
+                    value: Promise.resolve({ outcome: 'accepted' }),
+                },
+            });
+            window.dispatchEvent(event);
+        });
+
+        const installButton = page.locator('#pwa_install_button');
+        await expect(installButton).toBeVisible();
+        await expect(installButton).toHaveAttribute('aria-label', 'Install SillyTavern');
+        await installButton.click();
+
+        await expect.poll(() => page.evaluate(() => Boolean(window.__pwaInstallPrompted))).toBe(true);
+        await expect(page.locator('#pwa_install_prompt')).toHaveCount(0);
+
+        await page.evaluate(() => {
+            const event = new Event('beforeinstallprompt', { cancelable: true });
+            Object.defineProperties(event, {
+                prompt: {
+                    value: async () => {},
+                },
+                userChoice: {
+                    value: Promise.resolve({ outcome: 'dismissed' }),
+                },
+            });
+            window.dispatchEvent(event);
+        });
+        await expect(installButton).toBeVisible();
+
+        await page.evaluate(() => window.dispatchEvent(new Event('appinstalled')));
+        await expect(page.locator('#pwa_install_prompt')).toHaveCount(0);
     });
 
     test('registers the service worker shell cache and leaves API responses uncached', async ({ page }) => {

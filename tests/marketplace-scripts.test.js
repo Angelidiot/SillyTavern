@@ -116,5 +116,7 @@ describe('marketplace runnable scripts', () => {
         expect(readme).toContain('HTTPS tunnel/hosted URL');
         expect(readme).toContain('secure context');
         expect(readme).toContain('localhost is only treated as secure on the same device');
+        expect(readme).toContain('beforeinstallprompt');
+        expect(readme).toContain("in-app `Install` action");
     });
 });

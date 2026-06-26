@@ -1318,6 +1318,17 @@
 - 已通过 `npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28266894912` 已确认 Marketplace Wallet Checks 全链路通过。
 
+## 2026-06-26 阶段 106：PWA 应用内安装入口
+- Faraday 子 agent 确认当前 `public/scripts/pwa.js` 只有 service worker 注册，没有应用内 install/add-to-home 入口。
+- Ptolemy 子 agent 识别出后续移动端小缺口：Details 弹窗需要 360px viewport 可用性验证；本阶段先处理 PWA 安装入口。
+- `public/scripts/pwa.js` 新增 `beforeinstallprompt`、`appinstalled` 和 standalone display-mode 处理。
+- 支持安装时页面会显示 `#pwa_install_prompt`，Install 按钮调用浏览器原生 PWA prompt，dismiss/appinstalled/standalone 时移除。
+- `public/style.css` 新增安全区内固定安装入口样式，复用 `menu_button`，关闭动作为图标按钮。
+- `public/service-worker.js` shell cache 名称从 `sillytavern-shell-v2` 升到 `sillytavern-shell-v3`，保证 PWA 安装壳能拿到新版 `scripts/pwa.js`。
+- `tests/pwa.test.js` 新增应用内安装入口契约；`tests/marketplace-wallet.e2e.js` 新增浏览器级 `beforeinstallprompt` 模拟用例。
+- README 和设计文档已同步应用内 Install 入口说明；`tests/marketplace-scripts.test.js` 锁定 README 文案。
+- 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

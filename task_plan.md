@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 105
+阶段 106
 
 ## 各阶段
 
@@ -964,6 +964,17 @@
 - [x] 运行完整基础验证并提交推送
 - **状态：** complete
 
+### 阶段 106：PWA 应用内安装入口
+- [x] 确认当前 PWA 只有 service worker 注册，没有用户可见安装入口
+- [x] 在 `scripts/pwa.js` 监听 `beforeinstallprompt` 并显示 Install 动作
+- [x] Install 点击调用浏览器原生 PWA prompt，并在安装、dismiss 或 standalone 模式下隐藏
+- [x] 增加安全区内固定样式，复用现有 `menu_button` 和 Font Awesome 图标
+- [x] 同步 service worker shell cache 版本，避免已安装壳继续使用旧 PWA 脚本
+- [x] 补充 PWA Jest、README 契约和浏览器 E2E
+- [x] 更新 README、设计文档、findings 和 progress
+- [x] 运行完整基础验证并提交推送
+- **状态：** complete
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -994,6 +1005,7 @@
 | 手机真机访问不能用电脑的 127.0.0.1 | 127.0.0.1 在手机上指向手机自身；本地手机测试需要 listen + LAN IP 或 HTTPS tunnel/hosted URL，PWA 还依赖安全上下文 |
 | PWA 预缓存清单必须可验证 | `cache.addAll()` 遇到任一缺失资源会让 install 失败，基础测试要覆盖文件存在性 |
 | PWA service worker 需要浏览器级验证 | 静态 Jest 只能读文件，真实 Chrome E2E 才能证明注册、激活、CacheStorage 和 API cache exclusion 同时成立 |
+| PWA 安装需要应用内入口 | manifest/service worker 只能满足可安装条件；支持 `beforeinstallprompt` 的浏览器应显示 Install 动作来触发原生安装 |
 | 发布前需要一条慢速全闭环命令 | 日常 `test:marketplace` 保持快速；`test:marketplace:all` 串起 contract、runtime smoke 和 browser E2E，便于交付验收 |
 | 上传表单应复用后端 tags 约束 | 后端已支持最多 20 个、每个 40 字符的 `tags` 数组；前端提前校验并展示，能让创作者素材更容易被搜索发现 |
 | tags 后端边界必须有契约测试 | 前端校验不能替代服务端约束；POST 资产时应锁定 tags 数组、数量、类型、长度和去重行为 |

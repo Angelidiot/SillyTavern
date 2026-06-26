@@ -3842,6 +3842,43 @@ grammarly-extension {
     background-color: var(--white30a);
 }
 
+.pwa-install-prompt {
+    position: fixed;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: calc(100dvw - 24px);
+    padding: 6px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 8px;
+    background-color: var(--SmartThemeBlurTintColor);
+    box-shadow: 0 0 10px var(--black70a);
+    backdrop-filter: blur(var(--SmartThemeBlurStrength));
+    -webkit-backdrop-filter: blur(var(--SmartThemeBlurStrength));
+}
+
+.pwa-install-prompt .menu_button {
+    margin: 0;
+}
+
+.pwa-install-button {
+    width: auto;
+    min-height: 34px;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.pwa-install-dismiss {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+    aspect-ratio: 1;
+}
+
 #dialogue_del_mes .menu_button {
     margin-left: 25px;
     margin-right: 25px;

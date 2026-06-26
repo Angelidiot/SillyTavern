@@ -15,7 +15,7 @@
 - 钱包账本：运营赠币、购买扣款、创作者收益入账。
 - 创作者中心：查看作品、领取/销量、安装数、收入和审核状态聚合。
 - 管理员工具：审核、拒绝、下架、赠币、举报队列和举报 resolve。
-- 手机入口：响应式 Web/PWA 安装壳，service worker 更新会跳过 waiting 并在旧缓存清理后 claim 当前 clients，导航 shell 走 network-first 并带缓存离线回退，静态资源缓存不缓存业务 API，并有浏览器级 service worker E2E 覆盖。
+- 手机入口：响应式 Web/PWA 安装壳，浏览器支持时显示应用内 Install 入口；service worker 更新会跳过 waiting 并在旧缓存清理后 claim 当前 clients，导航 shell 走 network-first 并带缓存离线回退，静态资源缓存不缓存业务 API，并有浏览器级 PWA E2E 覆盖。
 
 正式 SaaS 第一版可以继续扩展：
 
@@ -610,7 +610,7 @@ content_rating:
 - 做响应式 Web 和 PWA。
 - 市场购买、充值都走 Web。
 - 手机浏览器可完整使用。
-- 浏览器级 E2E 验证 service worker 已激活、静态 shell 已缓存、`/api/*` 不进入缓存。
+- 浏览器级 E2E 验证 Install 入口、service worker 已激活、静态 shell 已缓存、`/api/*` 不进入缓存。
 
 第二阶段：
 

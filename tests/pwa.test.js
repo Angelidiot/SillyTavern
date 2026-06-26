@@ -52,7 +52,7 @@ describe('hosted tavern PWA shell', () => {
 
         expect(serviceWorker).toContain("request.method !== 'GET'");
         expect(serviceWorker).toContain("url.pathname.startsWith('/api/')");
-        expect(serviceWorker).toContain('sillytavern-shell-v2');
+        expect(serviceWorker).toContain('sillytavern-shell-v3');
     });
 
     test('activates updated service workers without waiting for every tab to close', () => {
@@ -60,6 +60,26 @@ describe('hosted tavern PWA shell', () => {
 
         expect(serviceWorker).toContain('self.skipWaiting()');
         expect(serviceWorker).toContain('self.clients.claim()');
+    });
+
+    test('shows an install action only when the browser exposes an install prompt', () => {
+        const pwaScript = readPublicFile('scripts/pwa.js');
+        const style = readPublicFile('style.css');
+
+        expect(pwaScript).toContain("window.addEventListener('beforeinstallprompt'");
+        expect(pwaScript).toContain('event.preventDefault()');
+        expect(pwaScript).toContain('deferredInstallPrompt = event');
+        expect(pwaScript).toContain('promptEvent.prompt()');
+        expect(pwaScript).toContain('promptEvent.userChoice');
+        expect(pwaScript).toContain("window.addEventListener('appinstalled'");
+        expect(pwaScript).toContain("window.matchMedia?.('(display-mode: standalone)')");
+        expect(pwaScript).toContain('navigator.standalone');
+        expect(pwaScript).toContain("id = 'pwa_install_prompt'");
+        expect(pwaScript).toContain("id = 'pwa_install_button'");
+        expect(pwaScript).toContain('removeInstallPrompt()');
+        expect(style).toContain('.pwa-install-prompt');
+        expect(style).toContain('env(safe-area-inset-bottom)');
+        expect(style).toContain('.pwa-install-dismiss');
     });
 
     test('uses network-first navigation so installed shells can update', () => {

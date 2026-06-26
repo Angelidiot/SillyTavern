@@ -182,6 +182,10 @@
 - PWA 静态 JS/CSS/manifest 资源仍可 cache-first，业务 `/api/*` 和非 GET 请求继续不进入 CacheStorage。
 - PWA 更新发布后若不调用 `skipWaiting()` 和 `clients.claim()`，已安装手机壳可能继续由旧 service worker 控制到用户关闭所有标签页；主动接管能缩短更新生效窗口。
 - `clients.claim()` 应在旧 cache 清理之后执行，减少新 service worker 接管后命中旧 shell cache 的短窗口。
+- 当前 PWA 基础设施只有 manifest、service worker 和注册脚本；没有应用内安装入口时，用户只能依赖浏览器菜单或偶发浏览器提示。
+- `beforeinstallprompt` 是最小可验证的应用内 PWA 安装入口；支持的浏览器可以显示 Install 动作并调用原生 prompt，已安装/standalone 模式和 `appinstalled` 后必须隐藏入口。
+- PWA 安装入口样式应固定在安全区内并复用现有按钮体系；关闭按钮应是图标按钮，避免手机登录/聊天界面出现额外说明文案。
+- marketplace-wallet Details 弹窗还缺手机 viewport 下的可滚动/无横向溢出验证；这是 PWA 安装入口后的下一个移动端 UX 小闭环。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*
