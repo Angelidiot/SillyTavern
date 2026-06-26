@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.14');
+        expect(manifest.version).toBe('0.2.15');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -94,7 +94,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("sort: $('#marketplace_wallet_sort').val()");
         expect(script).toContain('function hasActiveMarketplaceFilters()');
         expect(script).toContain('function clearMarketplaceFilters()');
-        expect(script).toContain("setClearFiltersVisibility(hasFilters && assets.length === 0)");
+        expect(script).toContain('setClearFiltersVisibility(hasFilters)');
         expect(script).toContain('$button.toggle(show)');
         expect(script).toContain("$root.find('#marketplace_wallet_clear_filters').on('click', clearMarketplaceFilters)");
         expect(script).toContain('marketplaceError');

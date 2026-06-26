@@ -1189,6 +1189,14 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows a retryable marketplace error" --workers=1` 和 `git diff --check`。
 - GitHub run `28262733580` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 93：活跃筛选清空入口
+- `public/scripts/extensions/marketplace-wallet/index.js` 现在只要存在活跃 marketplace 筛选就显示 Clear filters，不再要求筛选结果为空。
+- loading 和 marketplace error 状态仍显式隐藏 Clear filters，避免错误态混入无关筛选操作。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和 E2E 常量已从 `0.2.14` 升到 `0.2.15`，确保 JS 行为变更被浏览器刷新加载。
+- `tests/marketplace-wallet.e2e.js` 的 clear-filter 用例新增有结果筛选路径：选择 free 仍看到资产时 Clear filters 可见，点击后恢复默认筛选。
+- `tests/marketplace-wallet-ui.test.js` 已同步锁定 `setClearFiltersVisibility(hasFilters)`。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "clears active marketplace filters" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

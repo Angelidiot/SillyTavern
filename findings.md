@@ -101,6 +101,7 @@
 - marketplace-wallet 市场筛选条新增价格、访问状态和排序控件，继续使用本地列表做客户端过滤。
 - marketplace-wallet 搜索现在会匹配资产 language 和 content_rating，和 Details 里已展示的元数据保持一致。
 - marketplace-wallet 空结果且存在激活筛选时会显示 Clear filters，避免移动端用户被空搜索困住。
+- marketplace-wallet 任意活跃筛选都会显示 Clear filters，即使当前仍有结果；移动端用户不用先筛到空列表才能发现清空入口。
 - 新增 `scripts/check-marketplace-syntax.mjs` 作为 marketplace/wallet/PWA/health 基础语法门禁，并接入根目录 `npm run test:marketplace`。
 - marketplace syntax gate 会检查 marketplace-wallet 的 `manifest.json`、`window.html` 和 `style.css` 存在且非空，manifest 还会执行 JSON parse。
 - wallet admin grant 接口接受 `handle`、`userHandle` 或 `targetHandle` 作为目标用户字段；后端契约测试应覆盖三者都写入同一目标用户的余额分桶和 ledger。

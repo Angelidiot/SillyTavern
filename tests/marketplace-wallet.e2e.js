@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v2';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.14';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.15';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -896,6 +896,15 @@ test.describe('marketplace wallet extension', () => {
 
         const assets = page.locator('#marketplace_wallet_assets');
         const clearFilters = page.locator('#marketplace_wallet_clear_filters');
+        await expect(assets).toContainText('Filter World');
+        await expect(clearFilters).toBeHidden();
+
+        await page.locator('#marketplace_wallet_price_filter').selectOption('free');
+        await expect(assets).toContainText('Filter World');
+        await expect(clearFilters).toBeVisible();
+
+        await clearFilters.click();
+        await expect(page.locator('#marketplace_wallet_price_filter')).toHaveValue('');
         await expect(assets).toContainText('Filter World');
         await expect(clearFilters).toBeHidden();
 

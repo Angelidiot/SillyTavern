@@ -689,7 +689,7 @@ function renderAssets() {
 
     const assets = getFilteredAssets();
     const hasFilters = hasActiveMarketplaceFilters();
-    setClearFiltersVisibility(hasFilters && assets.length === 0);
+    setClearFiltersVisibility(hasFilters);
     if (assets.length === 0) {
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('No marketplace assets found.'));
         return;

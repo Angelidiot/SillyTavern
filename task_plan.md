@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 92
+阶段 93
 
 ## 各阶段
 
@@ -849,6 +849,15 @@
 - [x] 扩展 manifest/cache 版本随 JS/CSS 改动升级
 - [x] 补充浏览器 E2E 和 UI contract 测试
 - [x] 更新 findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 93：活跃筛选清空入口
+- [x] Clear filters 在任意活跃筛选时显示，不再只等到空结果
+- [x] 保持 loading/error 状态隐藏 Clear filters
+- [x] 扩展浏览器 E2E 覆盖有结果筛选的清空入口
+- [x] 同步 marketplace-wallet manifest/service worker cache 版本
+- [x] 更新 UI contract、findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 
