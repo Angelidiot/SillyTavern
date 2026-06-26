@@ -1203,6 +1203,7 @@
 - `tests/market-wallet.test.js` 的公开 listed 列表断言已覆盖 `language: en` 和 `content_rating: general`。
 - 同一测试继续断言列表摘要不返回 `normalized_payload`，保持购买前 payload 隐私边界。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "requires review before purchase"`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28263173477` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
