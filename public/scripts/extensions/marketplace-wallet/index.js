@@ -889,8 +889,18 @@ async function purchaseAsset(assetId) {
             method: 'POST',
         });
         toastr.success(result.already_owned ? 'Already in your library' : 'Added to your library');
-        await requestInstall(assetId);
-        await loadMarketplace({ silent: true });
+        try {
+            await requestInstall(assetId);
+        } catch (error) {
+            console.error('Automatic install after purchase failed', error);
+            toastr.warning(error.message || 'Install failed; the asset remains in your library.');
+        } finally {
+            await Promise.all([
+                loadMarketplace({ silent: true }),
+                loadWalletLedger(),
+                loadLibrary(),
+            ]);
+        }
     });
 }
 

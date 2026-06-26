@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 98
+阶段 99
 
 ## 各阶段
 
@@ -900,6 +900,14 @@
 - [x] 手机宽度下 marketplace 筛选控件改为两列 grid
 - [x] 搜索框和 Clear filters 保持跨整行，select 控件两列排列
 - [x] 增加 360px 宽度浏览器 E2E，断言无横向溢出
+- [x] 更新 UI contract、findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 99：购买成功后自动安装失败恢复
+- [x] 购买/领取成功后自动安装失败时不再让整个动作失败
+- [x] 自动安装失败后仍刷新 marketplace、Wallet Ledger 和 My Library
+- [x] 浏览器 E2E 覆盖资产进入 Library、显示未安装并可重试安装
 - [x] 更新 UI contract、findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete

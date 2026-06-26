@@ -1242,6 +1242,15 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps marketplace filters compact" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28264542190` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 99：购买成功后自动安装失败恢复
+- `public/scripts/extensions/marketplace-wallet/index.js` 的 `purchaseAsset()` 现在把自动安装包在单独 `try/catch` 中。
+- 购买/领取成功后若自动安装失败，会提示用户资产仍在 Library，而不是把整个购买动作显示为失败。
+- `purchaseAsset()` 的 `finally` 会刷新 marketplace、Wallet Ledger 和 My Library，确保余额、流水和授权库状态跟随后端购买结果。
+- `tests/marketplace-wallet.e2e.js` 的 mock API 支持指定资产首次 install 失败。
+- 新增浏览器 E2E 覆盖固定价购买成功、自动安装失败、Library 显示 Purchased/not installed、用户从 Library 重试安装成功。
+- `tests/marketplace-wallet-ui.test.js` 已锁定安装失败 warning、刷新 Promise 和 marketplace silent reload contract。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a purchased asset in the library" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

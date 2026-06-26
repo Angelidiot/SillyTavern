@@ -119,10 +119,11 @@ function makeCurrentUser(overrides = {}) {
     };
 }
 
-async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubmittedAsset()], reports = [], library = [], failAssetListOnce = false } = {}) {
+async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubmittedAsset()], reports = [], library = [], failAssetListOnce = false, failInstallOnceFor = '' } = {}) {
     let wallet = makeWallet();
     let ledger = [];
     let shouldFailAssetList = failAssetListOnce;
+    let failedInstall = false;
     const apiCalls = {
         approve: [],
         creates: [],
@@ -451,6 +452,15 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
         const assetId = route.request().url().split('/').at(-2);
         const asset = assets.find(item => item.id === assetId) || library.find(item => item.asset.id === assetId)?.asset;
         apiCalls.installs.push(assetId);
+        if (failInstallOnceFor === assetId && !failedInstall) {
+            failedInstall = true;
+            route.fulfill({
+                status: 400,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Install target is temporarily unavailable' }),
+            });
+            return;
+        }
         library = library.map(item => item.asset.id === assetId
             ? {
                 ...item,
@@ -1023,6 +1033,46 @@ test.describe('marketplace wallet extension', () => {
         await expect(library).toContainText('Paid World');
         await expect(library).toContainText('Purchased');
         await expect(library).toContainText('1 installs');
+    });
+
+    test('keeps a purchased asset in the library when automatic install fails', async ({ page }) => {
+        const paidAsset = makeListedAsset({
+            id: 'paid-install-fails-world',
+            title: 'Paid Install Fails World',
+            price_type: 'fixed_price',
+            price_coins: 125,
+            sales_count: 0,
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [paidAsset],
+            failInstallOnceFor: 'paid-install-fails-world',
+        });
+
+        await loadSillyTavern(page);
+
+        const assetRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Paid Install Fails World' });
+        await assetRow.locator('[data-marketplace-wallet-action="purchase"]').click();
+
+        await expect.poll(() => apiCalls.purchases).toEqual(['paid-install-fails-world']);
+        await expect.poll(() => apiCalls.installs).toEqual(['paid-install-fails-world']);
+        await expect(page.locator('#marketplace_wallet_total')).toHaveText('50');
+
+        const walletActivity = page.locator('#marketplace_wallet_ledger_items');
+        await expect(walletActivity).toContainText('Purchase');
+        await expect(walletActivity).toContainText('-100');
+        await expect(walletActivity).toContainText('-25');
+
+        const library = page.locator('#marketplace_wallet_library_items');
+        await expect(library).toContainText('Paid Install Fails World');
+        await expect(library).toContainText('Purchased');
+        await expect(library).toContainText('not installed');
+
+        const libraryRow = library.locator('.marketplace-wallet-library-item', { hasText: 'Paid Install Fails World' });
+        await libraryRow.locator('[data-marketplace-wallet-action="install"]').click();
+
+        await expect.poll(() => apiCalls.installs).toEqual(['paid-install-fails-world', 'paid-install-fails-world']);
+        await expect(library).toContainText('1 installs');
+        await expect(library).toContainText('Last installed 2026-06-26 to worlds/paid-install-fails-world.json');
     });
 
     test('shows the missing spendable balance for unaffordable fixed-price assets', async ({ page }) => {

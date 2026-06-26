@@ -131,6 +131,10 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('void loadLibrary();');
         expect(script).toContain('void loadWalletLedger();');
         expect(script).toContain('await requestInstall(assetId);');
+        expect(script).toContain('Automatic install after purchase failed');
+        expect(script).toContain("toastr.warning(error.message || 'Install failed; the asset remains in your library.')");
+        expect(script).toContain('await Promise.all([');
+        expect(script).toContain('loadMarketplace({ silent: true })');
         expect(script).toContain("$root.find('#marketplace_wallet_library_items').on('click', onAssetAction)");
         expect(script).toContain('stats.total_claims');
         expect(script).toContain('stats.draft_assets');
