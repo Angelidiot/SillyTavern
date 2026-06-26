@@ -1379,6 +1379,8 @@
 - Marketplace Wallet Checks 的 browser E2E step 新增 `timeout-minutes: 10`。
 - README 验证矩阵已记录 E2E wrapper 默认 5 分钟 Playwright child timeout 和覆盖环境变量。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`node --check scripts/run-marketplace-e2e.mjs`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS=180000 node scripts/run-marketplace-e2e.mjs -g "keeps review controls compact" --workers=1` 和 `git diff --check`。
+- 已提交 `f27d8bd19 Bound marketplace E2E wrapper` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28269647693` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

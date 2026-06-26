@@ -1013,8 +1013,8 @@
 - [x] 为 Marketplace CI browser E2E step 增加 timeout
 - [x] 用脚本契约测试锁定 timeout/清理行为和 README 边界
 - [x] 运行基础验证并提交推送
-- [ ] 等待 GitHub 上 Marketplace Wallet Checks 通过
-- **状态：** in_progress
+- [x] GitHub run `28269647693` 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
