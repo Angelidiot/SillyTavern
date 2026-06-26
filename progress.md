@@ -1187,6 +1187,7 @@
 - 第二次 wrapper 验证漏带 `PLAYWRIGHT_BROWSER_CHANNEL=chrome`，命中本机未安装的 Playwright Chromium；已用 Chrome 通道重跑。
 - 第三次目标 E2E 暴露新用例未打开 Extensions/marketplace inline drawer，已抽出 `openMarketplaceWallet()` helper 并允许错误态跳过 loaded wallet 断言。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows a retryable marketplace error" --workers=1` 和 `git diff --check`。
+- GitHub run `28262733580` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
