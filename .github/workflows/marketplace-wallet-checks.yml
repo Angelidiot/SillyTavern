@@ -141,6 +141,7 @@ jobs:
         run: google-chrome --version
 
       - name: Run marketplace browser E2E
+        timeout-minutes: 10
         env:
           PLAYWRIGHT_BROWSER_CHANNEL: chrome
         run: npm run test:marketplace:e2e:server

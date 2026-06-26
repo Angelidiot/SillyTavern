@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const startupTimeoutMs = Number(process.env.MARKETPLACE_E2E_TIMEOUT_MS ?? 90_000);
+const playwrightTimeoutMs = Number(process.env.MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS ?? 300_000);
 const requestTimeoutMs = Number(process.env.MARKETPLACE_E2E_REQUEST_TIMEOUT_MS ?? 5_000);
 
 function appendLog(buffer, chunk) {
@@ -73,6 +74,28 @@ async function stopServer(child) {
     }
 }
 
+async function stopProcess(child) {
+    if (child.exitCode !== null || child.signalCode !== null) {
+        return;
+    }
+
+    const targetPid = child.pid && process.platform !== 'win32' ? -child.pid : child.pid;
+    try {
+        process.kill(targetPid, 'SIGTERM');
+    } catch {
+        child.kill('SIGTERM');
+    }
+
+    if (!(await waitForExit(child, 5_000))) {
+        try {
+            process.kill(targetPid, 'SIGKILL');
+        } catch {
+            child.kill('SIGKILL');
+        }
+        await waitForExit(child, 5_000);
+    }
+}
+
 async function fetchWithTimeout(url) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
@@ -117,6 +140,7 @@ async function waitForHealth(baseUrl, child, getLogs) {
 function runPlaywright(baseUrl, extraArgs) {
     const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
     return new Promise((resolve, reject) => {
+        let settled = false;
         const child = spawn(npmCommand, [
             '--prefix',
             'tests',
@@ -132,10 +156,34 @@ function runPlaywright(baseUrl, extraArgs) {
                 PLAYWRIGHT_BASE_URL: baseUrl,
             },
             stdio: 'inherit',
+            detached: process.platform !== 'win32',
         });
 
-        child.once('error', reject);
-        child.once('exit', code => resolve(code ?? 1));
+        const timeout = setTimeout(async () => {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            await stopProcess(child);
+            reject(new Error(`Timed out waiting for Playwright marketplace E2E after ${playwrightTimeoutMs}ms`));
+        }, playwrightTimeoutMs);
+
+        child.once('error', error => {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            clearTimeout(timeout);
+            reject(error);
+        });
+        child.once('exit', code => {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            clearTimeout(timeout);
+            resolve(code ?? 1);
+        });
     });
 }
 

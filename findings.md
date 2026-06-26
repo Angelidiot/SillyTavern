@@ -194,6 +194,7 @@
 - Docker smoke 应从 `public/service-worker.js` 解析当前 `CACHE_NAME`，不能把 `sillytavern-shell-v3` 写死在脚本里；正常 cache bump 不应让容器 smoke 文档/脚本漂移。
 - Marketplace CI path filter 需要包含 Docker build 依赖的 default config、webpack 入口和 `public/lib.js`，否则镜像可用性相关变更可能绕过 Docker smoke。
 - Docker smoke 不能通过 `--whitelist=false --basicAuthMode=false` 关闭所有 listen-mode 保护；SillyTavern 会因不安全配置主动退出。容器 smoke 应保留默认 whitelist，并映射 Docker host/gateway 让宿主健康检查通过白名单。
+- 本机 Chrome E2E 历史上多次出现测试已通过但 wrapper 父进程延迟退出；`run-marketplace-e2e.mjs` 应给 Playwright 子进程设置超时并清理进程组，避免可运行脚本无限挂起。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

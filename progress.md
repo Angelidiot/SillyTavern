@@ -1372,6 +1372,14 @@
 - `scripts/smoke-hosted-container.mjs` 已移除 `--whitelist=false` 和 `--basicAuthMode=false`，保留默认 whitelist 保护；同时通过 `--add-host host.docker.internal:host-gateway` 和 `gateway.docker.internal:host-gateway` 帮助容器白名单解析宿主/网关地址。
 - GitHub run `28269291526` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 110：E2E wrapper 退出兜底
+- 历史本机 Chrome E2E 多次显示 browser 用例已通过但 `scripts/run-marketplace-e2e.mjs` 父进程延迟返回，需要给可运行脚本加超时和清理兜底。
+- `scripts/run-marketplace-e2e.mjs` 新增 `MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS`，默认 300000ms。
+- Playwright 子进程现在以独立进程组启动；超时后先 SIGTERM 再 SIGKILL，并报 `Timed out waiting for Playwright marketplace E2E`。
+- Marketplace Wallet Checks 的 browser E2E step 新增 `timeout-minutes: 10`。
+- README 验证矩阵已记录 E2E wrapper 默认 5 分钟 Playwright child timeout 和覆盖环境变量。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`node --check scripts/run-marketplace-e2e.mjs`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS=180000 node scripts/run-marketplace-e2e.mjs -g "keeps review controls compact" --workers=1` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

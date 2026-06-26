@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 109
+阶段 110
 
 ## 各阶段
 
@@ -1006,6 +1006,15 @@
 - [x] 保留默认 whitelist 安全启动，并为 Docker host/gateway 增加 host-gateway 映射
 - [x] GitHub run `28269291526` 确认 Docker smoke、runtime smoke 和 browser E2E 全链路通过
 - **状态：** complete
+
+### 阶段 110：E2E wrapper 退出兜底
+- [x] 确认本机历史多次出现 Chrome E2E 通过后父进程延迟退出
+- [x] 为 `scripts/run-marketplace-e2e.mjs` 增加 Playwright 子进程 timeout 和进程组清理
+- [x] 为 Marketplace CI browser E2E step 增加 timeout
+- [x] 用脚本契约测试锁定 timeout/清理行为和 README 边界
+- [x] 运行基础验证并提交推送
+- [ ] 等待 GitHub 上 Marketplace Wallet Checks 通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

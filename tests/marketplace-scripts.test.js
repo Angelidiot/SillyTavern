@@ -149,6 +149,21 @@ describe('marketplace runnable scripts', () => {
         expect(script).toContain('NPM_CONFIG_CACHE=/tmp/sillytavern-npm-cache');
     });
 
+    test('keeps marketplace browser E2E wrapper bounded and cleanup-aware', () => {
+        const script = fs.readFileSync(path.join(rootDirectory, 'scripts/run-marketplace-e2e.mjs'), 'utf8');
+        const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
+
+        expect(script).toContain('MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS');
+        expect(script).toContain('playwrightTimeoutMs');
+        expect(script).toContain('function stopProcess');
+        expect(script).toContain('detached: process.platform !==');
+        expect(script).toContain("process.kill(targetPid, 'SIGTERM')");
+        expect(script).toContain("process.kill(targetPid, 'SIGKILL')");
+        expect(script).toContain('Timed out waiting for Playwright marketplace E2E');
+        expect(workflow).toContain('Run marketplace browser E2E');
+        expect(workflow).toContain('timeout-minutes: 10');
+    });
+
     test('documents physical mobile access and PWA secure context requirements', () => {
         const readme = readReadme();
 
