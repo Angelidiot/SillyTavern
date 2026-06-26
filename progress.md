@@ -1271,6 +1271,7 @@
 - `tests/marketplace-scripts.test.js` 已锁定 README 的 checked-in API reference 路径。
 - 首次目标测试暴露 `fileURLToPath` 未导入；已补导入并在固定时间戳测试里捕获 `console.log`。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28265389723` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
