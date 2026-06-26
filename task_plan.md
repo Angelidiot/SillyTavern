@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 100
+阶段 101
 
 ## 各阶段
 
@@ -917,6 +917,15 @@
 - [x] 超限 payload 不发 create/patch 请求，保留表单内容供用户修改
 - [x] 浏览器 E2E 覆盖超限 payload 不创建资产
 - [x] 更新 UI contract、findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 101：checked-in Marketplace API reference
+- [x] 生成 `docs/marketplace-api-reference.md`
+- [x] 导出脚本支持固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT`
+- [x] Jest 校验 checked-in API reference 与当前路由生成结果一致
+- [x] README 和设计文档使用 docs 输出路径
+- [x] 更新 findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 

@@ -1,6 +1,7 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, test, expect, afterEach } from '@jest/globals';
 
 import { generateMarketplaceApiReference, run } from '../scripts/export-marketplace-api-reference.mjs';
@@ -63,6 +64,13 @@ describe('marketplace API reference export script', () => {
         expect(markdown).toContain('- POST /api/wallet/grants/admin: Admin-only grant endpoint; target can be handle, userHandle, or targetHandle.');
     });
 
+    test('keeps the checked-in API reference in sync with generated routes', async () => {
+        const expected = await generateMarketplaceApiReference({ generatedAt: '2026-06-26T00:00:00.000Z' });
+        const checkedIn = await readFile(path.join(path.dirname(fileURLToPath(import.meta.url)), '../docs/marketplace-api-reference.md'), 'utf8');
+
+        expect(checkedIn).toBe(expected);
+    });
+
     test('writes markdown to an explicit output path', async () => {
         tmpRoot = await mkdtemp(path.join(os.tmpdir(), 'st-market-api-reference-'));
         const outPath = path.join(tmpRoot, 'api-reference.md');
@@ -79,6 +87,28 @@ describe('marketplace API reference export script', () => {
         expect(markdown).toContain('GET    /api/market/assets');
         expect(markdown).toContain('POST   /api/wallet/grants/admin');
         expect(logs.join('\n')).toContain('Marketplace API reference written to');
+    });
+
+    test('can pin the generated timestamp for checked-in docs', async () => {
+        tmpRoot = await mkdtemp(path.join(os.tmpdir(), 'st-market-api-reference-'));
+        const outPath = path.join(tmpRoot, 'api-reference.md');
+        const originalGeneratedAt = process.env.MARKETPLACE_API_REFERENCE_GENERATED_AT;
+        const originalLog = console.log;
+        process.env.MARKETPLACE_API_REFERENCE_GENERATED_AT = '2026-06-26T00:00:00.000Z';
+        console.log = () => {};
+        try {
+            await run(['--out', outPath]);
+        } finally {
+            console.log = originalLog;
+            if (originalGeneratedAt === undefined) {
+                delete process.env.MARKETPLACE_API_REFERENCE_GENERATED_AT;
+            } else {
+                process.env.MARKETPLACE_API_REFERENCE_GENERATED_AT = originalGeneratedAt;
+            }
+        }
+
+        const markdown = await readFile(outPath, 'utf8');
+        expect(markdown).toContain('Generated at: 2026-06-26T00:00:00.000Z');
     });
 
     test('rejects unknown arguments', async () => {

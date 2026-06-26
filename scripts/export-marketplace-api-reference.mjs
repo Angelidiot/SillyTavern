@@ -170,7 +170,9 @@ export async function run(argv = process.argv.slice(2)) {
         return;
     }
 
-    const markdown = await generateMarketplaceApiReference();
+    const markdown = await generateMarketplaceApiReference({
+        generatedAt: process.env.MARKETPLACE_API_REFERENCE_GENERATED_AT || new Date().toISOString(),
+    });
     if (options.out) {
         const outPath = path.resolve(rootDirectory, options.out);
         await mkdir(path.dirname(outPath), { recursive: true });

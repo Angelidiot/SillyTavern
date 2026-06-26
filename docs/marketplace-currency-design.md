@@ -472,7 +472,7 @@ GET    /api/health
 可用 `npm run marketplace:export:api` 从 `src/endpoints/market.js`、`src/endpoints/wallet.js` 和公开 health route 重新生成 Markdown 版 API reference，减少手写端点清单漂移：
 
 ```bash
-npm run marketplace:export:api -- --out ./marketplace-api-reference.md
+npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
 ```
 
 下架只阻止新用户公开浏览和购买，不撤销既有 entitlement；已授权用户仍可查看 payload 并安装自己的副本。
@@ -553,7 +553,7 @@ npm run marketplace:export:snapshot -- --dataRoot ./data --out ./marketplace-sna
 仓库也提供 API reference 导出命令，用于发布前核对当前本地 MVP 暴露的市场、钱包和探活路由；导出内容包含关键权限/隐私标注，对应测试会锁定当前完整 MVP 路由集合，降低文档导出和实现漂移：
 
 ```bash
-npm run marketplace:export:api -- --out ./marketplace-api-reference.md
+npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
 ```
 
 ## 和现有 SillyTavern 的接法

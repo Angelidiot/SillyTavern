@@ -104,6 +104,8 @@ describe('marketplace runnable scripts', () => {
             expect(scripts).toHaveProperty(scriptName);
             expect(readmeScriptSection).toMatch(new RegExp(`npm run ${escapeRegex(scriptName)}(?:\\s|$)`));
         }
+
+        expect(readmeScriptSection).toContain('docs/marketplace-api-reference.md');
     });
 
     test('documents physical mobile access and PWA secure context requirements', () => {

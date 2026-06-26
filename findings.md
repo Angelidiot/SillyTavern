@@ -166,6 +166,7 @@
 - API reference 导出脚本从当前 market/wallet endpoint 源码和公开 health route 生成 Markdown，适合作为发布前检查点，减少 README/设计文档里的端点清单和实现漂移。
 - API reference 单测锁定当前完整 MVP 路由集合，包括 library、reports admin、submit/approve/reject/delist/purchase/install 和 wallet ledger。
 - API reference 现在包含关键权限/隐私标注：payload redaction、admin-only 队列/审核/赠币、Library scope、Wallet read scope 和 report 长度边界。
+- `docs/marketplace-api-reference.md` 作为 checked-in 生成产物，测试会用固定时间戳和当前路由生成结果比对，避免移动端/外部客户端 API 文档缺席或漂移。
 - PWA 浏览器 E2E 需要等待 service worker 从 `activating` 进入 `activated`，再 reload 确认页面受 controller 控制；这样才能稳定验证 shell cache 和 `/api/*` 不缓存。
 - PWA shell cache 已升级到 `sillytavern-shell-v2`，并预缓存 marketplace-wallet 的 manifest、window 模板、版本化入口 JS/CSS 和 filters 模块；PWA Jest 与浏览器 E2E 都会校验这些资源。
 - marketplace-wallet 初次加载市场资产失败时现在会显示 “Marketplace could not be loaded.”、后端错误摘要和 Retry 按钮；浏览器 E2E 覆盖 500 后点击 Retry 恢复列表。

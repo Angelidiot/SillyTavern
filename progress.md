@@ -1262,6 +1262,16 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "blocks oversized upload payloads" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28265091507` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 101：checked-in Marketplace API reference
+- 新增 `docs/marketplace-api-reference.md`，作为当前 marketplace/wallet/health MVP route 的 checked-in Markdown 参考。
+- `scripts/export-marketplace-api-reference.mjs` 现在支持 `MARKETPLACE_API_REFERENCE_GENERATED_AT`，便于生成固定时间戳的可测试文档。
+- `tests/marketplace-api-reference.test.js` 会用 `2026-06-26T00:00:00.000Z` 生成结果与 checked-in 文档逐字比对。
+- 同一测试也覆盖 `run()` 读取固定时间戳环境变量并写入输出文件。
+- README 和设计文档的 API reference 示例路径已统一为 `./docs/marketplace-api-reference.md`。
+- `tests/marketplace-scripts.test.js` 已锁定 README 的 checked-in API reference 路径。
+- 首次目标测试暴露 `fileURLToPath` 未导入；已补导入并在固定时间戳测试里捕获 `console.log`。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
