@@ -834,7 +834,7 @@
 - **状态：** complete
 
 ### 阶段 91：PWA 缓存 marketplace-wallet 静态资源
-- [x] 将 service worker shell cache 升级到 `sillytavern-shell-v2`
+- [x] 当时将 service worker shell cache 升级到 `sillytavern-shell-v2`（后续阶段 106 已升级到 `sillytavern-shell-v3`）
 - [x] 预缓存 marketplace-wallet manifest、模板、入口 JS、filters 模块和版本化 CSS
 - [x] PWA 单测校验扩展资源路径存在，并跟随 manifest JS/CSS 版本
 - [x] 浏览器 PWA E2E 断言 marketplace-wallet 扩展资源进入 CacheStorage
@@ -998,7 +998,11 @@
 - [x] 新增 `test:hosted:docker` 脚本，并纳入 syntax gate、README、脚本契约测试和 Marketplace CI
 - [x] 更新设计文档、findings 和 progress
 - [x] 运行本地可执行验证并提交推送
-- [ ] 等待 GitHub 上 Docker smoke 通过
+- [x] 调查 GitHub run `28268635091` 失败：容器启动后健康检查超时，且 `--rm` 导致失败日志不可取
+- [x] 让 Docker smoke 保留失败容器到 finally 清理，增加 `docker inspect` 状态检测和非 root npm cache 环境
+- [x] 从 service worker 解析当前 cache 名称，避免 Docker smoke 硬编码旧 PWA cache
+- [x] 扩展 Marketplace CI Docker 触发路径并给 Docker smoke step 增加 timeout
+- [ ] 等待 GitHub 上修复后的 Docker smoke 通过
 - **状态：** in_progress
 
 ## 关键问题

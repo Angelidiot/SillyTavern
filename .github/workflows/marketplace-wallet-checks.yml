@@ -10,9 +10,12 @@ on:
       - 'docs/marketplace-currency-design.md'
       - 'Dockerfile'
       - '.dockerignore'
+      - 'default/**'
       - 'docker/**'
       - 'package.json'
       - 'package-lock.json'
+      - 'public/lib.js'
+      - 'webpack.config.js'
       - 'scripts/check-marketplace-syntax.mjs'
       - 'scripts/export-marketplace-api-reference.mjs'
       - 'scripts/export-marketplace-snapshot.mjs'
@@ -22,6 +25,7 @@ on:
       - 'scripts/smoke-marketplace-runtime.mjs'
       - 'src/endpoints/market.js'
       - 'src/endpoints/wallet.js'
+      - 'src/middleware/webpack-serve.js'
       - 'src/server-main.js'
       - 'src/server-startup.js'
       - 'public/manifest.json'
@@ -52,9 +56,12 @@ on:
       - 'docs/marketplace-currency-design.md'
       - 'Dockerfile'
       - '.dockerignore'
+      - 'default/**'
       - 'docker/**'
       - 'package.json'
       - 'package-lock.json'
+      - 'public/lib.js'
+      - 'webpack.config.js'
       - 'scripts/check-marketplace-syntax.mjs'
       - 'scripts/export-marketplace-api-reference.mjs'
       - 'scripts/export-marketplace-snapshot.mjs'
@@ -64,6 +71,7 @@ on:
       - 'scripts/smoke-marketplace-runtime.mjs'
       - 'src/endpoints/market.js'
       - 'src/endpoints/wallet.js'
+      - 'src/middleware/webpack-serve.js'
       - 'src/server-main.js'
       - 'src/server-startup.js'
       - 'public/manifest.json'
@@ -126,6 +134,7 @@ jobs:
         run: npm run test:marketplace:smoke
 
       - name: Run hosted Docker smoke
+        timeout-minutes: 10
         run: npm run test:hosted:docker
 
       - name: Verify runner Chrome

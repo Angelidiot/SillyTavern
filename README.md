@@ -82,12 +82,13 @@ npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
 npm run test:marketplace
 
 # Run the slow pre-release marketplace loop: contract tests, runtime smoke, browser E2E
+# Docker image smoke runs separately with npm run test:hosted:docker.
 PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all
 
 # Run only the marketplace/wallet/PWA/health syntax gate
 npm run test:marketplace:syntax
 
-# Start a temporary server and smoke-test health/PWA public endpoints
+# Start a temporary server and smoke-test marketplace/wallet/PWA flows
 npm run test:marketplace:smoke
 
 # Build and smoke-test the hosted Docker image
@@ -128,7 +129,7 @@ Validation matrix:
 | `npm run test:hosted:docker` | Docker image smoke that builds the hosted container, starts it with temporary config/data volumes, and verifies `/api/health`, `/manifest.json`, `/service-worker.js`, and `/`; requires Docker. |
 | `npm run test:pwa:e2e` | Temporary local server plus Playwright PWA E2E for in-app install prompt handling, network-first navigation, shell and marketplace-wallet cache registration, and `/api/*` cache exclusion; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. |
 | `npm run test:marketplace:e2e:server` | Temporary local server plus Playwright marketplace browser E2E for PWA service worker, admin, report submit/resolve, asset details metadata, creator upload tags/language/rating/type auto-detect/submit, empty-filter reset, unaffordable fixed-price cards, rejected asset revise/resubmit, free and fixed-price buy/install, wallet activity, Library dates/install summaries/details/reinstall, and mobile layout; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. |
-| `npm run test:marketplace:all` | Slow pre-release loop that runs `test:marketplace`, `test:marketplace:smoke`, and `test:marketplace:e2e:server` in sequence. |
+| `npm run test:marketplace:all` | Slow pre-release loop that runs `test:marketplace`, `test:marketplace:smoke`, and `test:marketplace:e2e:server` in sequence. Docker image smoke remains a separate `test:hosted:docker` check and runs as its own CI step. |
 
 ### Development Notes
 

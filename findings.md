@@ -168,9 +168,9 @@
 - API reference 现在包含关键权限/隐私标注：payload redaction、admin-only 队列/审核/赠币、Library scope、Wallet read scope 和 report 长度边界。
 - `docs/marketplace-api-reference.md` 作为 checked-in 生成产物，测试会用固定时间戳和当前路由生成结果比对，避免移动端/外部客户端 API 文档缺席或漂移。
 - PWA 浏览器 E2E 需要等待 service worker 从 `activating` 进入 `activated`，再 reload 确认页面受 controller 控制；这样才能稳定验证 shell cache 和 `/api/*` 不缓存。
-- PWA shell cache 已升级到 `sillytavern-shell-v2`，并预缓存 marketplace-wallet 的 manifest、window 模板、版本化入口 JS/CSS 和 filters 模块；PWA Jest 与浏览器 E2E 都会校验这些资源。
+- PWA shell cache 当前为 `sillytavern-shell-v3`，并预缓存 marketplace-wallet 的 manifest、window 模板、版本化入口 JS/CSS 和 filters 模块；PWA Jest 与浏览器 E2E 都会校验这些资源。
 - marketplace-wallet 初次加载市场资产失败时现在会显示 “Marketplace could not be loaded.”、后端错误摘要和 Retry 按钮；浏览器 E2E 覆盖 500 后点击 Retry 恢复列表。
-- `test:marketplace:all` 作为慢速发布前闭环命令，顺序跑 contract/Jest、runtime smoke 和 browser E2E；日常快速反馈仍用 `test:marketplace`。
+- `test:marketplace:all` 作为慢速发布前闭环命令，顺序跑 contract/Jest、runtime smoke 和 browser E2E；Docker image smoke 保持独立步骤，日常快速反馈仍用 `test:marketplace`。
 - marketplace-wallet 上传表单现在可以提交 `language` 和 `content_rating`；修订 rejected/draft 资产时会回填旧值，保存/提交后会进入 create/patch body。
 - `content_rating` 前端使用 datalist 输入而不是硬枚举 select，避免后端允许的自定义分级在修订时被清空。
 - marketplace-wallet manifest 和 PWA shell 预缓存版本需要随上传模板变更同步 bump，避免移动端/PWA 保留旧表单。
@@ -182,14 +182,17 @@
 - PWA 静态 JS/CSS/manifest 资源仍可 cache-first，业务 `/api/*` 和非 GET 请求继续不进入 CacheStorage。
 - PWA 更新发布后若不调用 `skipWaiting()` 和 `clients.claim()`，已安装手机壳可能继续由旧 service worker 控制到用户关闭所有标签页；主动接管能缩短更新生效窗口。
 - `clients.claim()` 应在旧 cache 清理之后执行，减少新 service worker 接管后命中旧 shell cache 的短窗口。
-- 当前 PWA 基础设施只有 manifest、service worker 和注册脚本；没有应用内安装入口时，用户只能依赖浏览器菜单或偶发浏览器提示。
+- 实现应用内 Install 入口前，PWA 只能依赖浏览器菜单或偶发浏览器提示；现在支持的浏览器会显示应用内安装动作。
 - `beforeinstallprompt` 是最小可验证的应用内 PWA 安装入口；支持的浏览器可以显示 Install 动作并调用原生 prompt，已安装/standalone 模式和 `appinstalled` 后必须隐藏入口。
 - PWA 安装入口样式应固定在安全区内并复用现有按钮体系；关闭按钮应是图标按钮，避免手机登录/聊天界面出现额外说明文案。
-- marketplace-wallet Details 弹窗还缺手机 viewport 下的可滚动/无横向溢出验证；这是 PWA 安装入口后的下一个移动端 UX 小闭环。
+- marketplace-wallet Details 弹窗已补手机 viewport 下的可滚动/无横向溢出验证，避免长字段撑宽 PWA 弹窗。
 - Details 弹窗在 360px 手机宽度下外层 dialog 和 Close 按钮应留在视口内；metadata/payload 不应横向溢出，纵向内容由 popup `.popup-content` 滚动承载。
 - PWA cache 名称升级后设计文档也必须同步；`tests/pwa.test.js` 应从 service worker 解析 `CACHE_NAME` 并检查文档含当前 cache 名称和 Install prompt E2E 覆盖。
 - 托管版仅有 Node runtime smoke 还不能证明部署产物可用；Docker smoke 应构建镜像、用临时 config/data volume 启动容器，并验证 health、manifest、service worker 和首页。
 - 本机当前没有 `docker` 命令，容器 smoke 需要由 CI 或有 Docker 的机器执行；脚本应在缺 Docker 时清晰失败，不能静默跳过。
+- 首轮 Docker smoke CI run `28268635091` 构建和启动容器成功但健康检查超时；脚本不能用 `--rm` 隐藏失败容器日志，应保留到 finally 清理并用 `docker inspect` 提前报告退出状态。
+- Docker smoke 应从 `public/service-worker.js` 解析当前 `CACHE_NAME`，不能把 `sillytavern-shell-v3` 写死在脚本里；正常 cache bump 不应让容器 smoke 文档/脚本漂移。
+- Marketplace CI path filter 需要包含 Docker build 依赖的 default config、webpack 入口和 `public/lib.js`，否则镜像可用性相关变更可能绕过 Docker smoke。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

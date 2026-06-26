@@ -33,12 +33,16 @@ function getReadmeScriptSection(readme) {
 describe('marketplace runnable scripts', () => {
     test('defines a slow full-loop marketplace validation command', () => {
         const { scripts } = readRootPackage();
+        const readmeScriptSection = getReadmeScriptSection(readReadme());
 
         expect(scripts['test:marketplace:all']).toBe([
             'npm run test:marketplace',
             'npm run test:marketplace:smoke',
             'npm run test:marketplace:e2e:server',
         ].join(' && '));
+        expect(scripts['test:marketplace:all']).not.toContain('test:hosted:docker');
+        expect(readmeScriptSection).toContain('Docker image smoke runs separately with npm run test:hosted:docker.');
+        expect(readmeScriptSection).toContain('smoke-test marketplace/wallet/PWA flows');
     });
 
     test('keeps the fast marketplace command free of recursive slow-loop calls', () => {
@@ -117,9 +121,28 @@ describe('marketplace runnable scripts', () => {
         expect(scripts['test:hosted:docker']).toBe('node scripts/smoke-hosted-container.mjs');
         expect(syntaxGate).toContain('scripts/smoke-hosted-container.mjs');
         expect(workflow).toContain('Run hosted Docker smoke');
+        expect(workflow).toContain('timeout-minutes: 10');
         expect(workflow).toContain('npm run test:hosted:docker');
         expect(workflow).toContain('Dockerfile');
+        expect(workflow).toContain('default/**');
         expect(workflow).toContain('docker/**');
+        expect(workflow).toContain('public/lib.js');
+        expect(workflow).toContain('src/middleware/webpack-serve.js');
+        expect(workflow).toContain('webpack.config.js');
+    });
+
+    test('keeps hosted Docker smoke failures diagnosable', () => {
+        const script = fs.readFileSync(path.join(rootDirectory, 'scripts/smoke-hosted-container.mjs'), 'utf8');
+
+        expect(script).not.toContain("'--rm'");
+        expect(script).toContain('readServiceWorkerCacheName');
+        expect(script).toContain('CACHE_NAME');
+        expect(script).not.toContain("'sillytavern-shell-v3'");
+        expect(script).toContain("'docker', ['inspect'");
+        expect(script).toContain('{{json .State}}');
+        expect(script).toContain('Hosted container exited before becoming healthy');
+        expect(script).toContain('HOME=/home/node');
+        expect(script).toContain('NPM_CONFIG_CACHE=/tmp/sillytavern-npm-cache');
     });
 
     test('documents physical mobile access and PWA secure context requirements', () => {

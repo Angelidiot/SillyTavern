@@ -1347,7 +1347,7 @@
 - 发现 `docs/marketplace-currency-design.md` 仍写 `sillytavern-shell-v2`，而当前 service worker 已升级为 `sillytavern-shell-v3`。
 - 设计文档的 PWA E2E 描述已同步为应用内 Install prompt、`sillytavern-shell-v3`、network-first navigation 和 `/api/health` cache exclusion。
 - `tests/pwa.test.js` 新增从 `public/service-worker.js` 解析 `CACHE_NAME` 的辅助函数，并断言设计文档包含当前 cache 名称和 Install prompt 覆盖说明。
-- 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace`、`git diff --check`，并确认 `rg` 不再找到 `sillytavern-shell-v2`。
+- 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace`、`git diff --check`，并确认 README 和设计文档不再引用旧 `sillytavern-shell-v2`。
 - 已提交 `731adb394 Keep PWA cache docs in sync` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28268286676` 已确认 Marketplace Wallet Checks 全链路通过。
 
@@ -1361,6 +1361,13 @@
 - Marketplace Wallet Checks workflow 已纳入 Dockerfile/.dockerignore/docker 路径和 `scripts/smoke-hosted-container.mjs`，并在 runtime smoke 后执行 `npm run test:hosted:docker`。
 - 本地 `npm run test:hosted:docker` 失败信息已收敛为 `Docker is required for hosted container smoke tests: spawn docker ENOENT`，符合本机无 Docker 的环境限制。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`node --check scripts/smoke-hosted-container.mjs`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28268635091` 的 `Run hosted Docker smoke` 失败：镜像构建和容器启动成功，但 `/api/health` 等待超时；由于 `docker run --rm` 自动删除失败容器，日志只能显示 `No such container`。
+- `scripts/smoke-hosted-container.mjs` 已去掉 `--rm`，改由 finally `docker rm -f` 清理；新增 `docker inspect --format '{{json .State}}'`，容器提前退出时直接打印状态、exit code 和 docker logs。
+- Docker smoke 现在为 PUID/PGID 非 root 运行补充 `HOME=/home/node` 和 `NPM_CONFIG_CACHE=/tmp/sillytavern-npm-cache`，降低 CI 中 `npm run init` 因 cache/home 权限退出的风险。
+- Docker smoke 改为从 `public/service-worker.js` 解析当前 `CACHE_NAME`，不再硬编码 `sillytavern-shell-v3`。
+- Marketplace Wallet Checks workflow 的 path filter 已补充 `default/**`、`public/lib.js`、`src/middleware/webpack-serve.js` 和 `webpack.config.js`，Docker smoke step 也加了 `timeout-minutes: 10`。
+- README 中 runtime smoke 注释已改为 marketplace/wallet/PWA flows；`test:marketplace:all` 明确不包含 Docker image smoke，Docker 检查作为 `test:hosted:docker` 单独运行。
+- 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js pwa.test.js`、`node --check scripts/smoke-hosted-container.mjs`、`npm run test:marketplace`、`git diff --check`；本机 `npm run test:hosted:docker` 仍因没有 Docker 按预期失败并提示 `spawn docker ENOENT`。
 
 ## 五问重启检查
 | 问题 | 答案 |

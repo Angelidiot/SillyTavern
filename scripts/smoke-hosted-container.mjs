@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
 import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
@@ -9,6 +9,16 @@ const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)),
 const imageTag = process.env.HOSTED_CONTAINER_IMAGE_TAG ?? 'sillytavern-hosted-smoke:local';
 const startupTimeoutMs = Number(process.env.HOSTED_CONTAINER_SMOKE_TIMEOUT_MS ?? 180_000);
 const requestTimeoutMs = Number(process.env.HOSTED_CONTAINER_SMOKE_REQUEST_TIMEOUT_MS ?? 5_000);
+
+async function readServiceWorkerCacheName() {
+    const serviceWorker = await readFile(path.join(rootDirectory, 'public/service-worker.js'), 'utf8');
+    const match = serviceWorker.match(/const\s+CACHE_NAME\s*=\s*['"]([^'"]+)['"]/);
+    if (!match) {
+        throw new Error('Could not parse CACHE_NAME from public/service-worker.js');
+    }
+
+    return match[1];
+}
 
 function appendLog(buffer, chunk) {
     const maxLength = 30_000;
@@ -86,7 +96,7 @@ async function buildImage() {
 async function startContainer({ port, tmpRoot }) {
     const dataRoot = path.join(tmpRoot, 'data');
     const configRoot = path.join(tmpRoot, 'config');
-    const containerName = `sillytavern-hosted-smoke-${process.pid}`;
+    const containerName = `sillytavern-hosted-smoke-${process.pid}-${Date.now()}`;
     const uid = typeof process.getuid === 'function' ? String(process.getuid()) : '1000';
     const gid = typeof process.getgid === 'function' ? String(process.getgid()) : '1000';
 
@@ -95,7 +105,6 @@ async function startContainer({ port, tmpRoot }) {
 
     const args = [
         'run',
-        '--rm',
         '--detach',
         '--name',
         containerName,
@@ -105,6 +114,10 @@ async function startContainer({ port, tmpRoot }) {
         'NODE_ENV=production',
         '-e',
         'SILLYTAVERN_HEARTBEATINTERVAL=0',
+        '-e',
+        'HOME=/home/node',
+        '-e',
+        'NPM_CONFIG_CACHE=/tmp/sillytavern-npm-cache',
         '-e',
         `PUID=${uid}`,
         '-e',
@@ -169,6 +182,23 @@ async function getContainerLogs(container) {
     ].join('\n');
 }
 
+async function getContainerState(container) {
+    if (!container?.id) {
+        return null;
+    }
+
+    const result = await runCommand('docker', ['inspect', '--format', '{{json .State}}', container.id]).catch(() => null);
+    if (!result || result.code !== 0 || !result.stdout.trim()) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(result.stdout.trim());
+    } catch {
+        return null;
+    }
+}
+
 async function waitForHealth(baseUrl, container) {
     const deadline = Date.now() + startupTimeoutMs;
     let lastError;
@@ -187,6 +217,11 @@ async function waitForHealth(baseUrl, container) {
             }
         } catch (error) {
             lastError = error;
+        }
+
+        const state = await getContainerState(container);
+        if (state && ['dead', 'exited'].includes(state.Status)) {
+            throw new Error(`Hosted container exited before becoming healthy. Status: ${state.Status}; exitCode: ${state.ExitCode}; error: ${state.Error || 'none'}\n${await getContainerLogs(container)}`);
         }
 
         await new Promise(resolve => setTimeout(resolve, 750));
@@ -227,6 +262,7 @@ async function run() {
     const port = await findFreePort();
     const tmpRoot = await mkdtemp(path.join(os.tmpdir(), 'sillytavern-hosted-container-'));
     const baseUrl = `http://127.0.0.1:${port}`;
+    const serviceWorkerCacheName = await readServiceWorkerCacheName();
     let container;
 
     try {
@@ -246,7 +282,7 @@ async function run() {
         });
         console.log('container smoke ok: /manifest.json');
 
-        await assertTextEndpoint(`${baseUrl}/service-worker.js`, '/service-worker.js', 'sillytavern-shell-v3');
+        await assertTextEndpoint(`${baseUrl}/service-worker.js`, '/service-worker.js', serviceWorkerCacheName);
         await assertTextEndpoint(`${baseUrl}/service-worker.js`, '/service-worker.js', "url.pathname.startsWith('/api/')");
         console.log('container smoke ok: /service-worker.js');
 
