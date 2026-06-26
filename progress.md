@@ -1165,6 +1165,15 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28261722885` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 91：PWA 缓存 marketplace-wallet 静态资源
+- `public/service-worker.js` 的 shell cache 已升级到 `sillytavern-shell-v2`。
+- PWA 预缓存清单现在包含 marketplace-wallet manifest、window 模板、版本化 `index.js`、`filters.js` 和版本化 `style.css`。
+- `tests/pwa.test.js` 会读取扩展 manifest，并断言 service worker 清单跟随当前 JS/CSS 版本且所有资源真实存在。
+- `tests/marketplace-wallet.e2e.js` 的浏览器级 PWA cache 断言已同步检查 marketplace-wallet 扩展资源。
+- README、设计文档、findings 和 task_plan 已补充手机安装壳缓存扩展资源的说明。
+- 首次 `npm run test:pwa:e2e` 暴露测试侧 `page.evaluate()` 不能读取 Node 常量 `MARKETPLACE_WALLET_EXTENSION_VERSION`；已把 shell path 列表在 Node 侧组装后传入浏览器上下文。
+- 已通过 `npm --prefix tests run test:unit -- pwa.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

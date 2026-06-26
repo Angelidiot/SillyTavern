@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sillytavern-shell-v1';
+const CACHE_NAME = 'sillytavern-shell-v2';
 const SHELL_ASSETS = [
     '/',
     '/login.html',
@@ -11,6 +11,11 @@ const SHELL_ASSETS = [
     '/img/apple-icon-192x192.png',
     '/img/apple-icon-512x512.png',
     '/scripts/pwa.js',
+    '/scripts/extensions/marketplace-wallet/manifest.json',
+    '/scripts/extensions/marketplace-wallet/window.html',
+    '/scripts/extensions/marketplace-wallet/index.js?v=0.2.13',
+    '/scripts/extensions/marketplace-wallet/filters.js',
+    '/scripts/extensions/marketplace-wallet/style.css?v=0.2.13',
 ];
 
 self.addEventListener('install', event => {

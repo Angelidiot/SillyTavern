@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 71
+阶段 91
 
 ## 各阶段
 
@@ -830,6 +830,15 @@
 - [x] 断言每个 marketplace 单测文件都包含在 `test:marketplace` 命令中
 - [x] 保持 fast command 不递归慢速 smoke/E2E
 - [x] 更新 findings 和规划记录
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 91：PWA 缓存 marketplace-wallet 静态资源
+- [x] 将 service worker shell cache 升级到 `sillytavern-shell-v2`
+- [x] 预缓存 marketplace-wallet manifest、模板、入口 JS、filters 模块和版本化 CSS
+- [x] PWA 单测校验扩展资源路径存在，并跟随 manifest JS/CSS 版本
+- [x] 浏览器 PWA E2E 断言 marketplace-wallet 扩展资源进入 CacheStorage
+- [x] 更新 README、设计文档、findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 

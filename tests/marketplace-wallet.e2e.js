@@ -1,6 +1,19 @@
 import { test, expect } from '@playwright/test';
 
-const SHELL_CACHE_NAME = 'sillytavern-shell-v1';
+const SHELL_CACHE_NAME = 'sillytavern-shell-v2';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.13';
+const PWA_SHELL_PATHS = [
+    '/',
+    '/login.html',
+    '/manifest.json',
+    '/style.css',
+    '/scripts/pwa.js',
+    '/scripts/extensions/marketplace-wallet/manifest.json',
+    '/scripts/extensions/marketplace-wallet/window.html',
+    `/scripts/extensions/marketplace-wallet/index.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`,
+    '/scripts/extensions/marketplace-wallet/filters.js',
+    `/scripts/extensions/marketplace-wallet/style.css?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`,
+];
 
 function makeWallet(overrides = {}) {
     return {
@@ -623,16 +636,15 @@ test.describe('hosted tavern PWA browser shell', () => {
         await page.reload({ waitUntil: 'load' });
         await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller?.scriptURL.includes('/service-worker.js')))).toBe(true);
 
-        const shellCache = await page.evaluate(async cacheName => {
+        const shellCache = await page.evaluate(async ({ cacheName, shellPaths }) => {
             const cacheNames = await caches.keys();
             const cache = await caches.open(cacheName);
-            const shellPaths = ['/', '/login.html', '/manifest.json', '/style.css', '/scripts/pwa.js'];
             const cachedShell = Object.fromEntries(await Promise.all(shellPaths.map(async shellPath => [
                 shellPath,
                 Boolean(await cache.match(shellPath)),
             ])));
             return { cacheNames, cachedShell };
-        }, SHELL_CACHE_NAME);
+        }, { cacheName: SHELL_CACHE_NAME, shellPaths: PWA_SHELL_PATHS });
         expect(shellCache.cacheNames).toContain(SHELL_CACHE_NAME);
         expect(shellCache.cachedShell).toEqual({
             '/': true,
@@ -640,6 +652,11 @@ test.describe('hosted tavern PWA browser shell', () => {
             '/manifest.json': true,
             '/style.css': true,
             '/scripts/pwa.js': true,
+            '/scripts/extensions/marketplace-wallet/manifest.json': true,
+            '/scripts/extensions/marketplace-wallet/window.html': true,
+            [`/scripts/extensions/marketplace-wallet/index.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`]: true,
+            '/scripts/extensions/marketplace-wallet/filters.js': true,
+            [`/scripts/extensions/marketplace-wallet/style.css?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`]: true,
         });
 
         const health = await page.evaluate(async () => {

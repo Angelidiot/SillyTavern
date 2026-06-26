@@ -8,6 +8,8 @@ import { describe, expect, test } from '@jest/globals';
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, '..');
 const publicDir = path.join(rootDir, 'public');
+const marketplaceWalletDir = path.join(publicDir, 'scripts/extensions/marketplace-wallet');
+const marketplaceWalletManifest = JSON.parse(fs.readFileSync(path.join(marketplaceWalletDir, 'manifest.json'), 'utf8'));
 
 function readPublicFile(fileName) {
     return fs.readFileSync(path.join(publicDir, fileName), 'utf8');
@@ -50,22 +52,30 @@ describe('hosted tavern PWA shell', () => {
 
         expect(serviceWorker).toContain("request.method !== 'GET'");
         expect(serviceWorker).toContain("url.pathname.startsWith('/api/')");
-        expect(serviceWorker).toContain('sillytavern-shell-v1');
+        expect(serviceWorker).toContain('sillytavern-shell-v2');
     });
 
     test('precache shell assets exist in the public directory', () => {
         const shellAssets = readServiceWorkerShellAssets();
+        const marketplaceWalletAssets = [
+            '/scripts/extensions/marketplace-wallet/manifest.json',
+            '/scripts/extensions/marketplace-wallet/window.html',
+            `/scripts/extensions/marketplace-wallet/${marketplaceWalletManifest.js}`,
+            '/scripts/extensions/marketplace-wallet/filters.js',
+            `/scripts/extensions/marketplace-wallet/${marketplaceWalletManifest.css}`,
+        ];
 
         expect(shellAssets).toEqual(expect.arrayContaining([
             '/',
             '/manifest.json',
             '/scripts/pwa.js',
+            ...marketplaceWalletAssets,
         ]));
 
         for (const asset of shellAssets) {
             expect(asset).toMatch(/^\//);
 
-            const relativePath = asset === '/' ? 'index.html' : asset.slice(1);
+            const relativePath = asset === '/' ? 'index.html' : asset.slice(1).split('?')[0];
             expect(fs.existsSync(path.join(publicDir, relativePath))).toBe(true);
         }
     });

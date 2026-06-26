@@ -486,7 +486,7 @@ Library 接口只返回当前用户 active entitlements 对应的资产摘要、
 本地 MVP 的市场浏览先用客户端筛选和排序，支持类型、价格、访问状态、标题/摘要/创作者/标签/语言/内容分级搜索、最新、热门和价格排序；正式 SaaS 需要服务端搜索与排序索引。
 当前 marketplace-wallet 在筛选结果为空且存在激活筛选时显示 Clear filters，移动端也可以一键回到默认浏览状态。
 托管探活使用公开 `GET /api/health`，返回 `ok/status/service/version/uptime/timestamp`，不需要登录、不返回用户或账务数据。
-`npm run test:pwa:e2e` 会用临时 server 和真实浏览器验证 `/login.html` 注册 `/service-worker.js`、`sillytavern-shell-v1` 缓存包含静态 shell 资源，并确认 `/api/health` 不会进入 CacheStorage。
+`npm run test:pwa:e2e` 会用临时 server 和真实浏览器验证 `/login.html` 注册 `/service-worker.js`、`sillytavern-shell-v2` 缓存包含静态 shell 与 marketplace-wallet 扩展资源，并确认 `/api/health` 不会进入 CacheStorage。
 发布前慢速验证可运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`，它会顺序执行 marketplace contract/Jest、runtime smoke 和浏览器 E2E。
 
 该接口只返回当前用户自己的资产列表和聚合统计，例如草稿/待审核/上架/拒绝数量、领取数、付费销量、安装数、销售收入和 earnings 当前余额。marketplace-wallet 的 Creator Center 会直接展示这些状态拆分、提交/通过日期、拒绝原因摘要和收益余额；完整钱包余额和 ledger 明细仍由 Wallet API 提供，市场 summary 不暴露原始 `wallet` 对象、`recent_earnings` 流水或资产 `normalized_payload`。

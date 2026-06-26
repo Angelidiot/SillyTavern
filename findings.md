@@ -44,6 +44,7 @@
 | 手机端 MVP 优先走 PWA | 现有 HTML 已有移动 meta、manifest 和 touch icons；补 service worker 比原生壳更小、更快可验证 |
 | PWA 缓存只覆盖静态壳 | `/api/*`、POST 和动态业务请求不能进 shell cache，避免钱包、市场、聊天出现旧数据 |
 | PWA 预缓存资源需要文件存在性测试 | `cache.addAll(SHELL_ASSETS)` 是全有或全无，任一路径丢失都会影响手机安装壳离线缓存 |
+| marketplace-wallet 静态资源也属于 PWA shell | 手机安装壳需要缓存扩展 manifest、window 模板、入口 JS、filters 和样式；API 仍保持不缓存，避免钱包/市场业务数据陈旧 |
 | 设计文档需要拆分当前 MVP 与 Future SaaS | 当前代码只实现本地 market/wallet/health 路由；充值、退款、版本、评论、独立 Creator/Admin API 都应明确为后续 |
 | 运行态 smoke 使用临时 config/data | 从根目录启动真实 server 验证公开端点时，必须传入临时 `configPath` 和 `dataRoot`，避免污染仓库或用户数据 |
 | 筛选排序逻辑适合抽成纯函数测试 | marketplace-wallet 的 DOM 只负责读取控件值，核心筛选排序可在 Jest 里直接用资产样本断言 |
@@ -154,6 +155,7 @@
 - API reference 单测锁定当前完整 MVP 路由集合，包括 library、reports admin、submit/approve/reject/delist/purchase/install 和 wallet ledger。
 - API reference 现在包含关键权限/隐私标注：payload redaction、admin-only 队列/审核/赠币、Library scope、Wallet read scope 和 report 长度边界。
 - PWA 浏览器 E2E 需要等待 service worker 从 `activating` 进入 `activated`，再 reload 确认页面受 controller 控制；这样才能稳定验证 shell cache 和 `/api/*` 不缓存。
+- PWA shell cache 已升级到 `sillytavern-shell-v2`，并预缓存 marketplace-wallet 的 manifest、window 模板、版本化入口 JS/CSS 和 filters 模块；PWA Jest 与浏览器 E2E 都会校验这些资源。
 - `test:marketplace:all` 作为慢速发布前闭环命令，顺序跑 contract/Jest、runtime smoke 和 browser E2E；日常快速反馈仍用 `test:marketplace`。
 
 ---
