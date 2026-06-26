@@ -1316,6 +1316,7 @@
 - README 和设计文档已同步 service worker 跳过 waiting、清理旧缓存后 claim clients 的更新策略。
 - 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e`。
 - 已通过 `npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28266894912` 已确认 Marketplace Wallet Checks 全链路通过。
 
 ## 五问重启检查
 | 问题 | 答案 |
