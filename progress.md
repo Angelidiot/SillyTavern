@@ -1213,6 +1213,15 @@
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "serializes concurrent marketplace asset creates"`、`npm --prefix tests run test:unit -- market-wallet.test.js -t "serializes concurrent fixed price purchases by buyer wallet"`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28263428644` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 96：详情 payload 预览截断
+- `public/scripts/extensions/marketplace-wallet/index.js` 新增 `MAX_PAYLOAD_PREVIEW_LENGTH = 20000` 和 `formatPayloadPreview()`，Details/Inspect 弹窗只渲染大 payload 的前 20KB。
+- 被截断的 payload 会显示 `Large payload preview truncated for performance.` 和剩余字符数提示；payload 权限、安装和修订使用的数据不变。
+- `public/scripts/extensions/marketplace-wallet/style.css` 新增 `.marketplace-wallet-preview-note` 轻量提示样式。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和 E2E 常量已从 `0.2.15` 升到 `0.2.16`。
+- `tests/marketplace-wallet.e2e.js` 新增大 payload Details 弹窗测试，确认显示截断提示且尾部哨兵字符串不进入弹窗预览。
+- `tests/marketplace-wallet-ui.test.js` 已锁定 payload preview 截断常量、函数和提示样式。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "truncates large payloads" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

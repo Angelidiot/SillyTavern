@@ -99,6 +99,7 @@
 - marketplace-wallet Details 弹窗现在展示 language、content rating 和创建/上架/更新时间；日期使用 `YYYY-MM-DD` 稳定格式，避免浏览器 locale 影响自动化断言。
 - marketplace-wallet Details 弹窗现在展示 delisted 日期；未下架资产显示 not delisted。
 - marketplace-wallet Details 弹窗现在展示当前用户 entitlement 来源、授权日期和购买引用；未授权资产显示 not in library/not entitled。
+- marketplace-wallet Details/Inspect 对大 payload 只渲染 20KB 预览并显示截断提示，避免手机/PWA 弹窗因为超大角色卡或世界书 JSON 卡顿。
 - marketplace-wallet 市场筛选条新增价格、访问状态和排序控件，继续使用本地列表做客户端过滤。
 - marketplace-wallet 搜索现在会匹配资产 language 和 content_rating，和 Details 里已展示的元数据保持一致。
 - 市场资产列表摘要现在返回 `language` 和 `content_rating`，让真实 API 数据也能支持前端按语言/分级搜索，同时继续不返回 `normalized_payload`。

@@ -14,6 +14,7 @@ const MAX_UPLOAD_TAGS = 20;
 const MAX_UPLOAD_TAG_LENGTH = 40;
 const MAX_REPORT_REASON_LENGTH = 120;
 const MAX_REPORT_BODY_LENGTH = 2000;
+const MAX_PAYLOAD_PREVIEW_LENGTH = 20000;
 
 const state = {
     assets: [],
@@ -358,6 +359,21 @@ function createStatusBadge(asset) {
     return $badge;
 }
 
+function formatPayloadPreview(payload) {
+    const json = JSON.stringify(payload, null, 2);
+    if (json.length <= MAX_PAYLOAD_PREVIEW_LENGTH) {
+        return {
+            text: json,
+            truncated: false,
+        };
+    }
+
+    return {
+        text: `${json.slice(0, MAX_PAYLOAD_PREVIEW_LENGTH)}\n... truncated ${formatCoins(json.length - MAX_PAYLOAD_PREVIEW_LENGTH)} more characters`,
+        truncated: true,
+    };
+}
+
 function createAssetPreview(asset, entitlement = null) {
     const $preview = $('<div class="marketplace-wallet-asset-preview"></div>');
     const $title = $('<h3></h3>').text(asset.title || 'Untitled asset');
@@ -392,8 +408,12 @@ function createAssetPreview(asset, entitlement = null) {
 
     $preview.append($title, $summary, $meta);
     if (hasPayload) {
+        const payloadPreview = formatPayloadPreview(asset.normalized_payload);
         $preview.append($('<b></b>').text('Payload'));
-        $preview.append($('<pre class="marketplace-wallet-preview-payload"></pre>').text(JSON.stringify(asset.normalized_payload, null, 2)));
+        if (payloadPreview.truncated) {
+            $preview.append($('<small class="marketplace-wallet-preview-note"></small>').text('Large payload preview truncated for performance.'));
+        }
+        $preview.append($('<pre class="marketplace-wallet-preview-payload"></pre>').text(payloadPreview.text));
     }
     return $preview;
 }

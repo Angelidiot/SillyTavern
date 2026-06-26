@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 95
+阶段 96
 
 ## 各阶段
 
@@ -875,6 +875,15 @@
 - [x] 保留 fixed-price purchase 的 buyer wallet lock，避免钱包并发透支
 - [x] 后端测试覆盖同一 store 并发创建不会丢资产
 - [x] 更新 findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 96：详情 payload 预览截断
+- [x] Details/Inspect payload 预览超过 20KB 时截断显示
+- [x] 保留 payload 权限和安装/修订数据不变，仅限制弹窗渲染体积
+- [x] 增加大 payload 详情弹窗浏览器 E2E
+- [x] 同步 marketplace-wallet manifest/service worker cache 版本
+- [x] 更新 UI contract、findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 

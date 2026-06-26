@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.15');
+        expect(manifest.version).toBe('0.2.16');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -206,12 +206,17 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('const purchaseRef = entitlement?.purchase_id ? String(entitlement.purchase_id) : \'\'');
         expect(script).toContain("fetchJson(`/api/market/assets/${encodeURIComponent(assetId)}`");
         expect(script).toContain('asset.normalized_payload');
+        expect(script).toContain('MAX_PAYLOAD_PREVIEW_LENGTH = 20000');
+        expect(script).toContain('function formatPayloadPreview(payload)');
+        expect(script).toContain('Large payload preview truncated for performance.');
+        expect(script).toContain('... truncated ${formatCoins(json.length - MAX_PAYLOAD_PREVIEW_LENGTH)} more characters');
         expect(script).toContain('function getAssetTags(asset)');
         expect(script).toContain('function createTagList(asset)');
         expect(script).toContain('class="marketplace-wallet-tags"');
         expect(script).toContain('class="marketplace-wallet-tag"');
         expect(script).toContain('POPUP_TYPE.TEXT');
-        expect(script).toContain("JSON.stringify(asset.normalized_payload, null, 2)");
+        expect(script).toContain('const payloadPreview = formatPayloadPreview(asset.normalized_payload)');
+        expect(script).toContain('payloadPreview.text');
         expect(script).toContain("okButton: 'Close'");
         expect(script).toContain('allowVerticalScrolling: true');
         expect(script).toContain("action: 'delist'");
@@ -277,6 +282,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('.marketplace-wallet-upload-status');
         expect(css).toContain('.marketplace-wallet-asset-preview h3');
         expect(css).toContain('.marketplace-wallet-preview-payload');
+        expect(css).toContain('.marketplace-wallet-preview-note');
         expect(css).toContain('.marketplace-wallet-tags');
         expect(css).toContain('.marketplace-wallet-tag');
         expect(css).toContain('.marketplace-wallet-affordability');

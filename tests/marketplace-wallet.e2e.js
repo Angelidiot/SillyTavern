@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v2';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.15';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.16';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -66,6 +66,10 @@ function makeListedAsset(overrides = {}) {
         created_at: '2026-06-25T10:00:00.000Z',
         listed_at: '2026-06-26T11:00:00.000Z',
         updated_at: '2026-06-26T11:00:00.000Z',
+        normalized_payload: {
+            name: 'Listed World',
+            entries: {},
+        },
         ...overrides,
     };
 }
@@ -832,6 +836,39 @@ test.describe('marketplace wallet extension', () => {
         await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('not in library');
         await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('Entitled on');
         await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('not entitled');
+        await detailsPopup.locator('.popup-button-ok').click();
+    });
+
+    test('truncates large payloads in the Details popup', async ({ page }) => {
+        const detailAsset = makeListedAsset({
+            id: 'large-payload-world',
+            title: 'Large Payload World',
+            summary: 'A world book with a very large payload.',
+            normalized_payload: {
+                name: 'Large Payload World',
+                entries: {
+                    lore: {
+                        key: ['giant'],
+                        content: `${'A'.repeat(24000)}TAIL_SENTINEL`,
+                    },
+                },
+            },
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [detailAsset],
+        });
+
+        await loadSillyTavern(page);
+
+        const assetRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Large Payload World' });
+        await assetRow.locator('[data-marketplace-wallet-action="details"]').click();
+
+        await expect.poll(() => apiCalls.details).toEqual(['large-payload-world']);
+        const detailsPopup = page.getByRole('dialog').filter({ hasText: 'Large Payload World' });
+        await expect(detailsPopup).toBeVisible();
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-note')).toContainText('Large payload preview truncated for performance.');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-payload')).toContainText('truncated');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-payload')).not.toContainText('TAIL_SENTINEL');
         await detailsPopup.locator('.popup-button-ok').click();
     });
 
