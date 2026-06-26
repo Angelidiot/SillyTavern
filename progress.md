@@ -1434,7 +1434,8 @@
 - README 和设计文档已同步 Details/Inspect 显示完整描述的边界。
 - Noether 子 agent 只读复核建议锁定 description 不进入搜索、长描述移动端不横向溢出和设计文档字段列表；已补对应过滤测试、移动 E2E 和文档。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-filters.test.js marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows asset detail metadata|keeps the Details popup usable on mobile width|truncates large payloads" --workers=1`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
-- 本阶段待提交推送并等待 GitHub Actions。
+- 已提交 `036a4d34c Show marketplace asset descriptions` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28271463413` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
