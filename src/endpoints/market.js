@@ -31,6 +31,7 @@ const MAX_REPORT_BODY_LENGTH = 2000;
 
 export const router = express.Router();
 const marketPurchaseLocks = new Map();
+const marketStoreLocks = new Map();
 
 function createId(prefix) {
     return `${prefix}_${crypto.randomBytes(16).toString('hex')}`;
@@ -93,6 +94,27 @@ async function withMarketPurchaseLock(key, action) {
         release();
         if (marketPurchaseLocks.get(key) === tail) {
             marketPurchaseLocks.delete(key);
+        }
+    }
+}
+
+async function withMarketStoreLock(request, action) {
+    const storePath = getStorePath(request);
+    const previous = marketStoreLocks.get(storePath) || Promise.resolve();
+    let release;
+    const gate = new Promise(resolve => {
+        release = resolve;
+    });
+    const tail = previous.then(() => gate, () => gate);
+    marketStoreLocks.set(storePath, tail);
+    await previous.catch(() => {});
+
+    try {
+        return await action();
+    } finally {
+        release();
+        if (marketStoreLocks.get(storePath) === tail) {
+            marketStoreLocks.delete(storePath);
         }
     }
 }
@@ -638,7 +660,7 @@ router.get('/reports/admin', requireAdminMiddleware, (request, response) => {
     return response.json({ reports });
 });
 
-router.post('/reports/:id/resolve', requireAdminMiddleware, (request, response) => {
+router.post('/reports/:id/resolve', requireAdminMiddleware, (request, response) => withMarketStoreLock(request, async () => {
     const store = readStore(request);
     const report = findReport(store, request.params.id);
     if (!report) {
@@ -663,9 +685,9 @@ router.post('/reports/:id/resolve', requireAdminMiddleware, (request, response) 
 
     const asset = store.assets.find(item => item.id === report.asset_id);
     return response.json({ report: toReportListItem(report, asset) });
-});
+}));
 
-router.post('/assets', (request, response) => {
+router.post('/assets', (request, response) => withMarketStoreLock(request, async () => {
     const normalized = normalizeCreateBody(request.body);
     if (normalized.errors.length > 0) {
         return response.status(400).json({ error: 'Invalid market asset', details: normalized.errors });
@@ -694,9 +716,9 @@ router.post('/assets', (request, response) => {
     writeStore(request, store);
 
     return response.status(201).json({ asset });
-});
+}));
 
-router.patch('/assets/:id', (request, response) => {
+router.patch('/assets/:id', (request, response) => withMarketStoreLock(request, async () => {
     const normalized = normalizeCreateBody(request.body);
     if (normalized.errors.length > 0) {
         return response.status(400).json({ error: 'Invalid market asset', details: normalized.errors });
@@ -727,9 +749,9 @@ router.patch('/assets/:id', (request, response) => {
     writeStore(request, store);
 
     return response.json({ asset });
-});
+}));
 
-router.post('/assets/:id/submit', (request, response) => {
+router.post('/assets/:id/submit', (request, response) => withMarketStoreLock(request, async () => {
     const currentUserId = getUserId(request);
     const store = readStore(request);
     const asset = findAsset(store, request.params.id);
@@ -750,9 +772,9 @@ router.post('/assets/:id/submit', (request, response) => {
     writeStore(request, store);
 
     return response.json({ asset });
-});
+}));
 
-router.post('/assets/:id/approve', requireAdminMiddleware, (request, response) => {
+router.post('/assets/:id/approve', requireAdminMiddleware, (request, response) => withMarketStoreLock(request, async () => {
     const store = readStore(request);
     const asset = findAsset(store, request.params.id);
     if (!asset) {
@@ -777,9 +799,9 @@ router.post('/assets/:id/approve', requireAdminMiddleware, (request, response) =
     writeStore(request, store);
 
     return response.json({ asset });
-});
+}));
 
-router.post('/assets/:id/reject', requireAdminMiddleware, (request, response) => {
+router.post('/assets/:id/reject', requireAdminMiddleware, (request, response) => withMarketStoreLock(request, async () => {
     const store = readStore(request);
     const asset = findAsset(store, request.params.id);
     if (!asset) {
@@ -798,9 +820,9 @@ router.post('/assets/:id/reject', requireAdminMiddleware, (request, response) =>
     writeStore(request, store);
 
     return response.json({ asset });
-});
+}));
 
-router.post('/assets/:id/delist', requireAdminMiddleware, (request, response) => {
+router.post('/assets/:id/delist', requireAdminMiddleware, (request, response) => withMarketStoreLock(request, async () => {
     const store = readStore(request);
     const asset = findAsset(store, request.params.id);
     if (!asset) {
@@ -819,9 +841,9 @@ router.post('/assets/:id/delist', requireAdminMiddleware, (request, response) =>
     writeStore(request, store);
 
     return response.json({ asset });
-});
+}));
 
-router.post('/assets/:id/report', (request, response) => {
+router.post('/assets/:id/report', (request, response) => withMarketStoreLock(request, async () => {
     const currentUserId = getUserId(request);
     const store = readStore(request);
     const asset = findAsset(store, request.params.id);
@@ -853,13 +875,13 @@ router.post('/assets/:id/report', (request, response) => {
     writeStore(request, store);
 
     return response.status(201).json({ report });
-});
+}));
 
 router.post('/assets/:id/purchase', async (request, response) => {
     const currentUserId = getUserId(request);
     const lockKey = `wallet:${currentUserId}`;
 
-    return withMarketPurchaseLock(lockKey, async () => {
+    return withMarketPurchaseLock(lockKey, async () => withMarketStoreLock(request, async () => {
         const store = readStore(request);
         const asset = findAsset(store, request.params.id);
         if (!asset || !canPurchaseAsset(asset, currentUserId)) {
@@ -920,10 +942,10 @@ router.post('/assets/:id/purchase', async (request, response) => {
             already_owned: false,
             purchase: toPurchaseResult(purchase),
         });
-    });
+    }));
 });
 
-router.post('/assets/:id/install', (request, response) => {
+router.post('/assets/:id/install', (request, response) => withMarketStoreLock(request, async () => {
     let installed = null;
     try {
         const currentUserId = getUserId(request);
@@ -965,4 +987,4 @@ router.post('/assets/:id/install', (request, response) => {
         console.error('Market asset install failed:', error);
         return response.status(400).json({ error: error.message || 'Failed to install market asset' });
     }
-});
+}));

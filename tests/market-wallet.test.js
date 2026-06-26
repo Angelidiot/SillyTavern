@@ -843,6 +843,46 @@ describe('market and wallet MVP endpoints', () => {
         });
     });
 
+    test('serializes concurrent marketplace asset creates in the same store', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const baseBody = {
+            type: 'character_card',
+            normalized_payload: createCharacterPayload(),
+        };
+
+        const results = await Promise.all([
+            request(aliceApp, '/api/market/assets', {
+                method: 'POST',
+                body: {
+                    ...baseBody,
+                    title: 'Concurrent Create One',
+                },
+            }),
+            request(aliceApp, '/api/market/assets', {
+                method: 'POST',
+                body: {
+                    ...baseBody,
+                    title: 'Concurrent Create Two',
+                },
+            }),
+        ]);
+
+        expect(results.map(result => result.status)).toEqual([201, 201]);
+
+        const listResult = await request(aliceApp, '/api/market/creator/summary', { method: 'GET' });
+        expect(listResult.status).toBe(200);
+        expect(listResult.body.assets.map(asset => asset.title).sort()).toEqual([
+            'Concurrent Create One',
+            'Concurrent Create Two',
+        ]);
+
+        const store = JSON.parse(fs.readFileSync(path.join(dataRoot, 'market-assets.json'), 'utf8'));
+        expect(store.assets.map(asset => asset.title).sort()).toEqual([
+            'Concurrent Create One',
+            'Concurrent Create Two',
+        ]);
+    });
+
     test('validates and normalizes marketplace asset text metadata', async () => {
         const aliceApp = createApp(createUser('alice', true));
         const baseBody = {

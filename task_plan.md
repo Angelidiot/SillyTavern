@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 94
+阶段 95
 
 ## 各阶段
 
@@ -865,6 +865,15 @@
 - [x] `toAssetListItem` 返回 `content_rating`
 - [x] 后端公开列表测试断言 language/content_rating 都在摘要中
 - [x] 确认列表仍不返回 `normalized_payload`
+- [x] 更新 findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 95：market store 写入串行化
+- [x] 新增按 `market-assets.json` store path 分组的写锁
+- [x] 将 create/revise/submit/review/delist/report/purchase/install 等写路由包进 store lock
+- [x] 保留 fixed-price purchase 的 buyer wallet lock，避免钱包并发透支
+- [x] 后端测试覆盖同一 store 并发创建不会丢资产
 - [x] 更新 findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete

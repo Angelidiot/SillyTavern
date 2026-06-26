@@ -31,6 +31,7 @@
 | UGC 资产可能包含侵权、恶意提示词或违法内容 | 引入上传校验、机器审核、人工复审、举报和下架机制 |
 | 现有角色导入函数会删除上传源文件 | 市场安装不直接复用导入函数，改为在 market endpoint 中生成安装副本 |
 | JSON 文件市场存储无法防止并发覆盖 | MVP 可用于单进程验证；正式 SaaS 需要数据库事务、append-only ledger 或按 store path 串行化写入 |
+| market JSON store 需要单进程写锁 | 当前 MVP 使用 `market-assets.json`，同进程写路由应按 store path 串行 read-modify-write，降低 create/report/install 等并发覆盖风险 |
 | listed 资产详情不能泄漏 `normalized_payload` | 未购买用户只能看元数据；创建者、管理员或已授权用户才能读取 payload |
 | 市场/钱包前端适合作为 SillyTavern 内置扩展 | 复用 extension manifest、模板渲染、CSS 加载和 Extensions 面板，避免污染主入口脚本 |
 | 市场列表的 `owned` 只代表创建者身份 | 前端不能把它当成已购买状态；普通用户购买后再安装，重复购买依赖后端幂等返回 |
@@ -132,6 +133,7 @@
 - paid purchase API 响应现在只返回 entitlement、`already_owned`、purchase id 和 buyer balance；完整 ledger entries 与 creator balance 不再通过购买响应暴露，仍可由买家/创作者通过各自 Wallet API 和 Creator Center 查询。
 - runtime smoke 现在同时覆盖免费角色卡和固定价世界书：真实 server 下执行 admin grant、fixed-price purchase、buyer paid debit、creator earnings ledger、purchase response 隐私 shape、安装落盘和 Library 可见性。
 - 固定价购买需要按买家钱包串行化，而不仅是按资产+买家串行；否则同一买家并发购买两个不同资产时可能同时读到旧余额并透支。
+- market store 写路由现在按 store path 串行执行；并发创建测试确认同一 `market-assets.json` 中不会因为 read-modify-write 覆盖丢资产。
 - marketplace-wallet 浏览器 E2E mock 现在维护可变 wallet/ledger/library 状态，覆盖 fixed-price Buy & Install 后余额刷新、Purchase 负流水、Library 安装数和移动布局。
 - marketplace-wallet 固定价资产只按 bonus+paid 判断购买力；余额不足时卡片显示缺口金额，避免移动端只看到 disabled 按钮。
 - marketplace-wallet 浏览器 E2E 现在覆盖创作者 world_book JSON 上传并 Save & Submit，断言新资产进入 Review Queue，Creator Center 统计和资产列表刷新。
