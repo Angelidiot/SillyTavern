@@ -1231,6 +1231,7 @@
 - `tests/market-wallet.test.js` 新增超限 metadata、超限 payload、修订超限、手工 store 绕过 submit/approve 的后端契约测试。
 - `scripts/export-marketplace-api-reference.mjs`、README 和设计文档已记录 create/patch 的 metadata/payload 字节上限。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "rejects oversized marketplace asset metadata and normalized payload"`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28264287518` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
