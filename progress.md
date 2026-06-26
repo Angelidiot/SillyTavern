@@ -1408,6 +1408,8 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`node --check scripts/smoke-hosted-container.mjs` 和 `git diff --check`。
 - 首次 `npm run test:marketplace` 中 `market-wallet.test.js` 的 report queue 边界用例出现一次 404；单独重跑该用例通过，随后完整 `npm run test:marketplace` 重跑通过 59/59。
 - 本机 `npm run test:hosted:docker` 仍因没有 Docker 按预期失败并提示 `Docker is required for hosted container smoke tests: spawn docker ENOENT`。
+- 已提交 `4da0d71f1 Use Docker-assigned smoke ports` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28270526366` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
