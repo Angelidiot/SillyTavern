@@ -1002,6 +1002,8 @@
 - [x] 让 Docker smoke 保留失败容器到 finally 清理，增加 `docker inspect` 状态检测和非 root npm cache 环境
 - [x] 从 service worker 解析当前 cache 名称，避免 Docker smoke 硬编码旧 PWA cache
 - [x] 扩展 Marketplace CI Docker 触发路径并给 Docker smoke step 增加 timeout
+- [x] 调查 GitHub run `28269151597` 失败：Docker smoke 关闭 whitelist/basic auth 后触发 listen-mode 安全保护退出
+- [x] 保留默认 whitelist 安全启动，并为 Docker host/gateway 增加 host-gateway 映射
 - [ ] 等待 GitHub 上修复后的 Docker smoke 通过
 - **状态：** in_progress
 

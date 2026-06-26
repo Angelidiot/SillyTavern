@@ -1368,6 +1368,8 @@
 - Marketplace Wallet Checks workflow 的 path filter 已补充 `default/**`、`public/lib.js`、`src/middleware/webpack-serve.js` 和 `webpack.config.js`，Docker smoke step 也加了 `timeout-minutes: 10`。
 - README 中 runtime smoke 注释已改为 marketplace/wallet/PWA flows；`test:marketplace:all` 明确不包含 Docker image smoke，Docker 检查作为 `test:hosted:docker` 单独运行。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js pwa.test.js`、`node --check scripts/smoke-hosted-container.mjs`、`npm run test:marketplace`、`git diff --check`；本机 `npm run test:hosted:docker` 仍因没有 Docker 按预期失败并提示 `spawn docker ENOENT`。
+- GitHub run `28269151597` 的 Docker smoke 失败已暴露真实根因：容器启动时 `--listen` 与 `--whitelist=false --basicAuthMode=false` 组合触发 SillyTavern listen-mode 安全保护，进程主动退出并提示 `Enable whitelisting, basic authentication or user accounts`。
+- `scripts/smoke-hosted-container.mjs` 已移除 `--whitelist=false` 和 `--basicAuthMode=false`，保留默认 whitelist 保护；同时通过 `--add-host host.docker.internal:host-gateway` 和 `gateway.docker.internal:host-gateway` 帮助容器白名单解析宿主/网关地址。
 
 ## 五问重启检查
 | 问题 | 答案 |

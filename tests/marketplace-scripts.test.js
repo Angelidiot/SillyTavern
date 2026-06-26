@@ -138,6 +138,10 @@ describe('marketplace runnable scripts', () => {
         expect(script).toContain('readServiceWorkerCacheName');
         expect(script).toContain('CACHE_NAME');
         expect(script).not.toContain("'sillytavern-shell-v3'");
+        expect(script).not.toContain('--whitelist=false');
+        expect(script).not.toContain('--basicAuthMode=false');
+        expect(script).toContain('host.docker.internal:host-gateway');
+        expect(script).toContain('gateway.docker.internal:host-gateway');
         expect(script).toContain("'docker', ['inspect'");
         expect(script).toContain('{{json .State}}');
         expect(script).toContain('Hosted container exited before becoming healthy');
