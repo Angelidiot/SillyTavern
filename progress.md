@@ -1211,6 +1211,7 @@
 - fixed-price purchase 仍保留 buyer wallet lock，并在 wallet lock 内进入 store lock，继续防止同一买家并发透支。
 - `tests/market-wallet.test.js` 新增同一 store 并发创建两个资产的契约测试，确认 creator summary 和底层 store 都保留两条资产。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "serializes concurrent marketplace asset creates"`、`npm --prefix tests run test:unit -- market-wallet.test.js -t "serializes concurrent fixed price purchases by buyer wallet"`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28263428644` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
