@@ -1340,6 +1340,8 @@
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps the Details popup usable on mobile width" --workers=1`。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server` 显示 20/20 browser E2E 全部通过；父会话在测试摘要后未自动返回 shell，手动 Ctrl-C 后输出 `20 passed (3.2m)`。
+- 已提交 `956275a05 Validate mobile asset details popup` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28268051992` 已确认 Marketplace Wallet Checks 全链路通过。
 
 ## 五问重启检查
 | 问题 | 答案 |
