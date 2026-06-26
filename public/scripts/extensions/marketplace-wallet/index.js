@@ -614,6 +614,7 @@ function clearUploadForm() {
     $('#marketplace_wallet_upload_type').val('character_card');
     $('#marketplace_wallet_upload_title').val('');
     $('#marketplace_wallet_upload_summary').val('');
+    $('#marketplace_wallet_upload_description').val('');
     $('#marketplace_wallet_upload_tags').val('');
     $('#marketplace_wallet_upload_language').val('en');
     $('#marketplace_wallet_upload_content_rating').val('general');
@@ -627,6 +628,7 @@ function fillUploadForm(asset) {
     $('#marketplace_wallet_upload_type').val(asset.type || 'character_card');
     $('#marketplace_wallet_upload_title').val(asset.title || '');
     $('#marketplace_wallet_upload_summary').val(asset.summary || '');
+    $('#marketplace_wallet_upload_description').val(asset.description || '');
     $('#marketplace_wallet_upload_tags').val(getAssetTags(asset).join(', '));
     $('#marketplace_wallet_upload_language').val(asset.language || 'en');
     $('#marketplace_wallet_upload_content_rating').val(asset.content_rating || 'general');
@@ -1169,6 +1171,7 @@ async function createAsset(submitForReview) {
     const type = String($('#marketplace_wallet_upload_type').val() || '');
     const title = String($('#marketplace_wallet_upload_title').val() || '').trim();
     const summary = String($('#marketplace_wallet_upload_summary').val() || '').trim();
+    const description = String($('#marketplace_wallet_upload_description').val() || '').trim();
     const language = String($('#marketplace_wallet_upload_language').val() || 'en').trim() || 'en';
     const contentRating = String($('#marketplace_wallet_upload_content_rating').val() || 'general').trim() || 'general';
     const priceType = String($('#marketplace_wallet_upload_price_type').val() || 'free');
@@ -1205,6 +1208,7 @@ async function createAsset(submitForReview) {
                 type,
                 title,
                 summary,
+                description,
                 tags,
                 language,
                 content_rating: contentRating,

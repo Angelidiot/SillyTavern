@@ -1411,6 +1411,19 @@
 - 已提交 `4da0d71f1 Use Docker-assigned smoke ports` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28270526366` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 113：上传描述字段前端闭环
+- 开始补齐 marketplace-wallet 创作者上传/修订表单的 `description` 字段；后端已有 description 长度与 trim 契约，本阶段聚焦网页/PWA/手机表单闭环。
+- `public/scripts/extensions/marketplace-wallet/window.html` 新增 10000 字符 `Description` textarea。
+- `public/scripts/extensions/marketplace-wallet/index.js` 现在会在 create/patch body 中提交 `description`，修订 draft/rejected 时回填旧描述，清空表单时重置描述。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和浏览器 E2E 常量已从 `0.2.19` 升到 `0.2.20`。
+- `tests/marketplace-wallet-ui.test.js` 已锁定 description 表单、提交 body、回填和清空逻辑。
+- `tests/marketplace-wallet.e2e.js` 已在 creator upload 与 rejected revision/resubmit 流程里断言 description 写入 create/patch payload。
+- README、设计文档和 API reference 生成脚本已同步为 `title/summary/description/tags/language/content_rating` 上传元数据；`docs/marketplace-api-reference.md` 已重生成。
+- Lagrange 子 agent 只读复核发现设计文档一度过度暗示 description 进入列表/搜索；已收窄为列表/搜索继续用短摘要、标签、语言和分级，详情/审核保留完整描述。
+- `tests/market-wallet.test.js` 已补充 PATCH 修订时更新和清空 `description` 的后端断言。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-api-reference.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- market-wallet.test.js -t "allows creators to revise draft and rejected assets before resubmission"`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "submits a world book upload|revises a rejected creator asset" --workers=1`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+- 本阶段待提交推送并等待 GitHub Actions。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

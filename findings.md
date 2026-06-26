@@ -200,6 +200,9 @@
 - Docker 业务 smoke 保持只读：容器 smoke 不应重复 runtime smoke 的 seed、购买、安装和写账闭环；只验证 wallet balance shape 和 market asset list shape，降低 CI 时间和状态复杂度。
 - Docker smoke 端口应由 Docker 分配：Node 先找空端口再关闭 socket 会留下端口抢占窗口；`-p 127.0.0.1::8000` 加 `docker port` 可避免同一 runner 上的低概率绑定竞态。
 - Docker smoke 端口解析必须保持 loopback 契约：如果 `docker port` 只返回 `0.0.0.0:<port>`，脚本应失败而不是回退通过，否则会削弱只暴露到本机的 CI 安全边界。
+- marketplace 后端已经把 `description` 作为一等文本元数据校验到 10000 字符；前端上传和修订表单也应暴露该字段，否则网页/手机创作者只能提交短 summary。
+- 上传模板增加字段后必须同步 marketplace-wallet manifest 和 PWA shell 预缓存版本，避免已安装手机壳继续使用旧模板和旧 ESM 入口。
+- API reference 应点名 `title`/`summary`/`description`/`tags`/`language`/`content_rating`，而不是笼统写 text metadata，方便网页/手机版外部客户端按同一上传契约实现。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

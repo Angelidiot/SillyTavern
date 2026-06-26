@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 112
+阶段 113
 
 ## 各阶段
 
@@ -1040,6 +1040,18 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 113：上传描述字段前端闭环
+- [x] 确认后端已经支持 `description` 文本元数据，但 marketplace-wallet 上传/修订表单未暴露该字段
+- [x] 上传表单新增 `description` textarea，并限制为后端同源的 10000 字符
+- [x] create/patch body 提交 `description`，draft/rejected 修订回填旧描述，清空表单时重置
+- [x] marketplace-wallet manifest 和 PWA shell 预缓存版本升级到 `0.2.20`
+- [x] 同步 README、设计文档、API reference 生成脚本与 checked-in 文档
+- [x] 补充 UI contract 和浏览器 E2E 断言
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

@@ -1759,6 +1759,7 @@ describe('market and wallet MVP endpoints', () => {
                 type: 'character_card',
                 title: 'Revised Draft',
                 summary: 'Ready for review',
+                description: 'Detailed creator revision notes',
                 price_type: 'fixed_price',
                 price_coins: 5,
                 normalized_payload: createCharacterPayload(),
@@ -1774,6 +1775,7 @@ describe('market and wallet MVP endpoints', () => {
             creator_id: 'charlie',
             title: 'Revised Draft',
             summary: 'Ready for review',
+            description: 'Detailed creator revision notes',
             status: 'draft',
             visibility: 'private',
             price_type: 'fixed_price',
@@ -1835,6 +1837,7 @@ describe('market and wallet MVP endpoints', () => {
         const rejectedAssetId = await createSubmittedAsset(charlieApp, {
             type: 'world_book',
             title: 'Rejected World',
+            description: 'Old rejected description',
             normalized_payload: {
                 name: 'Rejected World',
                 entries: {},
@@ -1862,6 +1865,7 @@ describe('market and wallet MVP endpoints', () => {
                 type: 'world_book',
                 title: 'Revised World',
                 summary: 'Updated after rejection',
+                description: '',
                 normalized_payload: {
                     name: 'Revised World',
                     entries: {},
@@ -1874,6 +1878,7 @@ describe('market and wallet MVP endpoints', () => {
             status: 'draft',
             visibility: 'private',
             title: 'Revised World',
+            description: '',
             review_notes: '',
             reviewed_by: null,
             submitted_at: null,
