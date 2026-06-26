@@ -1173,6 +1173,7 @@
 - README、设计文档、findings 和 task_plan 已补充手机安装壳缓存扩展资源的说明。
 - 首次 `npm run test:pwa:e2e` 暴露测试侧 `page.evaluate()` 不能读取 Node 常量 `MARKETPLACE_WALLET_EXTENSION_VERSION`；已把 shell path 列表在 Node 侧组装后传入浏览器上下文。
 - 已通过 `npm --prefix tests run test:unit -- pwa.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e` 和 `git diff --check`。
+- GitHub run `28262083653` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
