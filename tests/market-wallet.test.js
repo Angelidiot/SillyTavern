@@ -429,6 +429,7 @@ describe('market and wallet MVP endpoints', () => {
         });
         expect(installResult.status).toBe(201);
         expect(installResult.body.installed.type).toBe('character_card');
+        expect(installResult.body.installed.absolute_path).toBeUndefined();
         expect(installResult.body.install.user_id).toBe('bob');
         expect(installResult.body.install.asset_id).toBe(assetId);
         expect(fs.existsSync(path.join(dataRoot, 'bob', 'characters', `${installResult.body.installed.file_name}.png`))).toBe(true);

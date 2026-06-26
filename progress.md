@@ -1086,6 +1086,16 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js -t 'generates markdown from current MVP routes'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28258943055` 已确认 Marketplace Wallet Checks 全链路通过；仅有 GitHub Actions Node 20 runner deprecation annotation，不影响本次门禁结果。
 
+## 2026-06-26 阶段 81：API reference 市场生命周期说明
+- `npm run marketplace:export:api` 生成文档现在说明 submit/approve/reject 的 creator/admin 审核状态流。
+- 同一生成文档现在说明 purchase 会 claim free 或用 `bonus -> paid` 买 fixed-price listed 资产，且响应不暴露 full ledger entries 或 creator balances。
+- 同一生成文档现在说明 install 只允许 creator-owned 或 entitled 资产，响应返回去掉 absolute path 的本地引用。
+- `marketplace-api-reference.test.js` 已锁定上述 lifecycle generated Markdown notes。
+- 根据只读 explorer 复核，补充角色卡安装响应直接断言 `installed.absolute_path` 不外露，同时保留真实文件落盘检查。
+- README 和 findings 已补充 API reference lifecycle/purchase/install 边界说明。
+- 首次 `npm run test:marketplace` 在同一安装用例出现一次瞬时 `fetch failed / other side closed`；目标用例单跑和重跑全量市场门禁均通过，记录为本地短连接波动。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'requires review before purchase and installs approved character cards'`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js -t 'generates markdown from current MVP routes'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
