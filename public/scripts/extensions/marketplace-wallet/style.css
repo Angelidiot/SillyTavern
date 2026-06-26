@@ -474,11 +474,27 @@
         grid-template-columns: 1fr;
     }
 
-    .marketplace-wallet-controls,
     .marketplace-wallet-upload-actions,
     .marketplace-wallet-asset-actions {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .marketplace-wallet-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .marketplace-wallet-controls .text_pole {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #marketplace_wallet_search,
+    #marketplace_wallet_clear_filters {
+        grid-column: 1 / -1;
     }
 
     .marketplace-wallet-admin-grid,

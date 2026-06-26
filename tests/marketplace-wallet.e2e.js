@@ -1321,4 +1321,74 @@ test.describe('marketplace wallet extension', () => {
             overflowing: [],
         });
     });
+
+    test('keeps marketplace filters compact without mobile overflow', async ({ page }) => {
+        await page.setViewportSize({ width: 360, height: 740 });
+        await mockMarketplaceApis(page, {
+            assets: [
+                makeListedAsset({
+                    id: 'mobile-filter-free-world',
+                    title: 'Mobile Filter Free World',
+                    price_type: 'free',
+                    price_coins: 0,
+                }),
+                makeListedAsset({
+                    id: 'mobile-filter-paid-world',
+                    title: 'Mobile Filter Paid World',
+                    price_type: 'fixed_price',
+                    price_coins: 25,
+                }),
+            ],
+        });
+
+        await loadSillyTavern(page);
+        await page.locator('#marketplace_wallet_price_filter').selectOption('free');
+        await expect(page.locator('#marketplace_wallet_clear_filters')).toBeVisible();
+
+        const layout = await page.locator('#marketplace_wallet_ui').evaluate(element => {
+            const controls = element.querySelector('.marketplace-wallet-controls');
+            const search = element.querySelector('#marketplace_wallet_search');
+            const type = element.querySelector('#marketplace_wallet_type_filter');
+            const price = element.querySelector('#marketplace_wallet_price_filter');
+            const access = element.querySelector('#marketplace_wallet_access_filter');
+            const sort = element.querySelector('#marketplace_wallet_sort');
+            const clearFilters = element.querySelector('#marketplace_wallet_clear_filters');
+            const assets = element.querySelector('#marketplace_wallet_assets');
+            const viewportWidth = document.documentElement.clientWidth;
+            const rect = node => node.getBoundingClientRect();
+            const columns = getComputedStyle(controls).gridTemplateColumns.split(' ').filter(Boolean);
+            const overflowing = [...element.querySelectorAll('*')]
+                .filter(child => {
+                    const childRect = child.getBoundingClientRect();
+                    return childRect.width > 0 && (childRect.left < -1 || childRect.right > viewportWidth + 1);
+                })
+                .map(child => ({
+                    tag: child.tagName,
+                    id: child.id,
+                    className: String(child.className),
+                }));
+
+            return {
+                columns: columns.length,
+                searchSpansFullWidth: rect(search).width > rect(type).width * 1.5,
+                typeAndPriceSameRow: Math.abs(rect(type).top - rect(price).top) < 2,
+                accessAndSortSameRow: Math.abs(rect(access).top - rect(sort).top) < 2,
+                clearSpansFullWidth: rect(clearFilters).width > rect(type).width * 1.5,
+                controlsHeight: rect(controls).height,
+                assetsBelowControls: rect(assets).top >= rect(controls).bottom,
+                overflowing,
+            };
+        });
+
+        expect(layout).toMatchObject({
+            columns: 2,
+            searchSpansFullWidth: true,
+            typeAndPriceSameRow: true,
+            accessAndSortSameRow: true,
+            clearSpansFullWidth: true,
+            assetsBelowControls: true,
+            overflowing: [],
+        });
+        expect(layout.controlsHeight).toBeLessThanOrEqual(170);
+    });
 });

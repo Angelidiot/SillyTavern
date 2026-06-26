@@ -261,7 +261,12 @@ describe('marketplace wallet extension UI contract', () => {
 
         expect(css).toContain('@media screen and (max-width: 700px)');
         expect(css).toContain('.marketplace-wallet-creator-stats');
+        expect(css).toContain('.marketplace-wallet-controls {');
+        expect(css).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
         expect(css).toContain('.marketplace-wallet-controls .text_pole');
+        expect(css).toContain('#marketplace_wallet_search,');
+        expect(css).toContain('#marketplace_wallet_clear_filters');
+        expect(css).toContain('grid-column: 1 / -1;');
         expect(css).toContain('.marketplace-wallet-controls .menu_button');
         expect(css).toContain('.marketplace-wallet-library-items');
         expect(css).toContain('.marketplace-wallet-library-item');

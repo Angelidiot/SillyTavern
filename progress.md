@@ -1233,6 +1233,14 @@
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "rejects oversized marketplace asset metadata and normalized payload"`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28264287518` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 98：移动端筛选区紧凑布局
+- `public/scripts/extensions/marketplace-wallet/style.css` 在 700px 以下将 `.marketplace-wallet-controls` 改为两列 grid。
+- 搜索框和 Clear filters 跨整行，type/price/access/sort select 在手机宽度下两列排列，减少首屏筛选区高度。
+- `tests/marketplace-wallet.e2e.js` 新增 360px 宽度浏览器测试，断言筛选区两列、搜索/清空跨整行、资产列表在控件下方且无横向溢出。
+- `tests/marketplace-wallet-ui.test.js` 已锁定 mobile controls grid、跨行选择器和 no-overflow 相关 CSS contract。
+- 首次移动端 E2E 显示筛选区高度为 172px，略超 170px 预算；已把 mobile controls gap 从 8px 收紧到 6px。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps marketplace filters compact" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

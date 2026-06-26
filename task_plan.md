@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 97
+阶段 98
 
 ## 各阶段
 
@@ -893,6 +893,14 @@
 - [x] create/patch/submit/approve 都复用大小边界，避免旧 store 绕过
 - [x] 后端 Jest 覆盖超限 metadata、payload、修订和审核兜底
 - [x] 更新 API reference、README、设计文档、findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 98：移动端筛选区紧凑布局
+- [x] 手机宽度下 marketplace 筛选控件改为两列 grid
+- [x] 搜索框和 Clear filters 保持跨整行，select 控件两列排列
+- [x] 增加 360px 宽度浏览器 E2E，断言无横向溢出
+- [x] 更新 UI contract、findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 
