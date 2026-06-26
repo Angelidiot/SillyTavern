@@ -1133,6 +1133,7 @@
 - `scripts/export-marketplace-api-reference.mjs` 和 `tests/marketplace-api-reference.test.js` 已把市场读接口说明收紧到 listed public read scope。
 - docs、findings 和 task_plan 已补充 legacy approved 公开读取边界。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'keeps legacy approved assets private'`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28260687346` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
