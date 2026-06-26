@@ -1084,6 +1084,7 @@
 - `marketplace-api-reference.test.js` 已锁定上述两条 generated Markdown note。
 - README 和 findings 已补充 API reference upload validation 说明。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js -t 'generates markdown from current MVP routes'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28258943055` 已确认 Marketplace Wallet Checks 全链路通过；仅有 GitHub Actions Node 20 runner deprecation annotation，不影响本次门禁结果。
 
 ## 五问重启检查
 | 问题 | 答案 |
