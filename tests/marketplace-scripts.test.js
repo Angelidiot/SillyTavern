@@ -30,6 +30,15 @@ function getReadmeScriptSection(readme) {
     return readme.slice(start, end);
 }
 
+function getWorkflowStep(workflow, stepName) {
+    const startMarker = `- name: ${stepName}`;
+    const start = workflow.indexOf(startMarker);
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const next = workflow.indexOf('\n      - name:', start + startMarker.length);
+    return next === -1 ? workflow.slice(start) : workflow.slice(start, next);
+}
+
 describe('marketplace runnable scripts', () => {
     test('defines a slow full-loop marketplace validation command', () => {
         const { scripts } = readRootPackage();
@@ -117,12 +126,12 @@ describe('marketplace runnable scripts', () => {
         const { scripts } = readRootPackage();
         const syntaxGate = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');
         const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
+        const dockerStep = getWorkflowStep(workflow, 'Run hosted Docker smoke');
 
         expect(scripts['test:hosted:docker']).toBe('node scripts/smoke-hosted-container.mjs');
         expect(syntaxGate).toContain('scripts/smoke-hosted-container.mjs');
-        expect(workflow).toContain('Run hosted Docker smoke');
-        expect(workflow).toContain('timeout-minutes: 10');
-        expect(workflow).toContain('npm run test:hosted:docker');
+        expect(dockerStep).toContain('timeout-minutes: 10');
+        expect(dockerStep).toContain('run: npm run test:hosted:docker');
         expect(workflow).toContain('Dockerfile');
         expect(workflow).toContain('default/**');
         expect(workflow).toContain('docker/**');
@@ -147,11 +156,16 @@ describe('marketplace runnable scripts', () => {
         expect(script).toContain('Hosted container exited before becoming healthy');
         expect(script).toContain('HOME=/home/node');
         expect(script).toContain('NPM_CONFIG_CACHE=/tmp/sillytavern-npm-cache');
+        expect(script).toContain('/api/wallet');
+        expect(script).toContain('wallet.balance.buckets?.[bucket]');
+        expect(script).toContain('/api/market/assets');
+        expect(script).toContain('Array.isArray(market.assets)');
     });
 
     test('keeps marketplace browser E2E wrapper bounded and cleanup-aware', () => {
         const script = fs.readFileSync(path.join(rootDirectory, 'scripts/run-marketplace-e2e.mjs'), 'utf8');
         const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
+        const e2eStep = getWorkflowStep(workflow, 'Run marketplace browser E2E');
 
         expect(script).toContain('MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS');
         expect(script).toContain('playwrightTimeoutMs');
@@ -160,8 +174,11 @@ describe('marketplace runnable scripts', () => {
         expect(script).toContain("process.kill(targetPid, 'SIGTERM')");
         expect(script).toContain("process.kill(targetPid, 'SIGKILL')");
         expect(script).toContain('Timed out waiting for Playwright marketplace E2E');
-        expect(workflow).toContain('Run marketplace browser E2E');
-        expect(workflow).toContain('timeout-minutes: 10');
+        expect(script).toContain('process.exitCode = exitCode');
+        expect(script).not.toContain('process.exit(exitCode)');
+        expect(e2eStep).toContain('timeout-minutes: 10');
+        expect(e2eStep).toContain('PLAYWRIGHT_BROWSER_CHANNEL: chrome');
+        expect(e2eStep).toContain('run: npm run test:marketplace:e2e:server');
     });
 
     test('documents physical mobile access and PWA secure context requirements', () => {

@@ -243,7 +243,8 @@ async function run() {
         const exitCode = await runPlaywright(baseUrl, extraArgs);
         if (exitCode !== 0) {
             console.error(getLogs());
-            process.exit(exitCode);
+            process.exitCode = exitCode;
+            return;
         }
     } finally {
         if (server) {

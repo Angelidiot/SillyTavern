@@ -277,6 +277,28 @@ async function run() {
         await waitForHealth(baseUrl, container);
         console.log('container smoke ok: /api/health');
 
+        await assertJsonEndpoint(`${baseUrl}/api/wallet`, '/api/wallet', wallet => {
+            if (!wallet || typeof wallet.handle !== 'string') {
+                throw new Error(`Unexpected wallet payload: ${JSON.stringify(wallet)}`);
+            }
+            if (!wallet.balance || typeof wallet.balance.total !== 'number') {
+                throw new Error(`Wallet payload missing numeric total: ${JSON.stringify(wallet)}`);
+            }
+            for (const bucket of ['bonus', 'paid', 'earnings']) {
+                if (typeof wallet.balance.buckets?.[bucket] !== 'number') {
+                    throw new Error(`Wallet payload missing ${bucket} bucket: ${JSON.stringify(wallet)}`);
+                }
+            }
+        });
+        console.log('container smoke ok: /api/wallet');
+
+        await assertJsonEndpoint(`${baseUrl}/api/market/assets`, '/api/market/assets', market => {
+            if (!Array.isArray(market.assets)) {
+                throw new Error(`Unexpected market assets payload: ${JSON.stringify(market)}`);
+            }
+        });
+        console.log('container smoke ok: /api/market/assets');
+
         await assertJsonEndpoint(`${baseUrl}/manifest.json`, '/manifest.json', manifest => {
             if (manifest.display !== 'standalone' || manifest.scope !== '/' || manifest.start_url !== '/') {
                 throw new Error(`Unexpected manifest payload: ${JSON.stringify(manifest)}`);

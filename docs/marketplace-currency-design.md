@@ -487,7 +487,7 @@ Library 接口只返回当前用户 active entitlements 对应的资产摘要、
 当前 marketplace-wallet 在筛选结果为空且存在激活筛选时显示 Clear filters，移动端也可以一键回到默认浏览状态。
 托管探活使用公开 `GET /api/health`，返回 `ok/status/service/version/uptime/timestamp`，不需要登录、不返回用户或账务数据。
 `npm run test:pwa:e2e` 会用临时 server 和真实浏览器验证应用内 Install prompt、`/login.html` 注册并受 `/service-worker.js` 控制、`sillytavern-shell-v3` 缓存包含静态 shell 与 marketplace-wallet 扩展资源、导航请求优先使用网络版本，并确认 `/api/health` 不会进入 CacheStorage。
-`npm run test:hosted:docker` 会构建 Docker 镜像、使用临时 config/data volume 启动容器，并验证 `/api/health`、`/manifest.json`、`/service-worker.js` 和首页可访问，证明托管部署产物也能暴露 PWA shell。
+`npm run test:hosted:docker` 会构建 Docker 镜像、使用临时 config/data volume 启动容器，并验证 `/api/health`、`/api/wallet`、`/api/market/assets`、`/manifest.json`、`/service-worker.js` 和首页可访问，证明托管部署产物能暴露钱包/市场业务路由和 PWA shell。
 发布前慢速验证可运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`，它会顺序执行 marketplace contract/Jest、runtime smoke 和浏览器 E2E。Docker 镜像 smoke 保持为独立的 `npm run test:hosted:docker` 检查，并在 CI 中作为单独步骤运行。
 
 该接口只返回当前用户自己的资产列表和聚合统计，例如草稿/待审核/上架/拒绝数量、领取数、付费销量、安装数、销售收入和 earnings 当前余额。marketplace-wallet 的 Creator Center 会直接展示这些状态拆分、提交/通过日期、拒绝原因摘要和收益余额；完整钱包余额和 ledger 明细仍由 Wallet API 提供，市场 summary 不暴露原始 `wallet` 对象、`recent_earnings` 流水或资产 `normalized_payload`。

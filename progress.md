@@ -1382,14 +1382,26 @@
 - 已提交 `f27d8bd19 Bound marketplace E2E wrapper` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28269647693` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 111：托管 Docker 业务读路由 smoke
+- 回收 Franklin 子 agent 审计后发现 `scripts/run-marketplace-e2e.mjs` 在 Playwright 非 0 退出时仍会 `process.exit(exitCode)`，这会跳过 `finally` 清理。
+- `scripts/run-marketplace-e2e.mjs` 已改为设置 `process.exitCode = exitCode` 并 `return`，让临时 server 和 tmpRoot 在失败路径也会清理。
+- `tests/marketplace-scripts.test.js` 新增 `getWorkflowStep()`，Docker smoke 和 browser E2E timeout 断言现在锁定到具体 workflow step，避免被另一个 step 的 `timeout-minutes` 误满足。
+- `scripts/smoke-hosted-container.mjs` 在 Docker 容器健康后新增 GET `/api/wallet`，验证 handle、balance.total 和 bonus/paid/earnings bucket 都是数字。
+- `scripts/smoke-hosted-container.mjs` 新增 GET `/api/market/assets`，验证 assets 为数组，证明托管镜像中 market route 已注册且默认用户上下文可读。
+- Docker 容器 smoke 仍保持只读，不做 demo seed、purchase、install 或 wallet grant；写路径和完整业务闭环继续由 `npm run test:marketplace:smoke` 覆盖。
+- Euler 子 agent 只读确认：默认 Docker config 关闭 user accounts，私有 `/api/wallet` 和 `/api/market/assets` 会通过 middleware 注入 `default-user`；空 data volume 下 wallet 从空 ledger 算余额，market 缺 store 时返回空数组。
+- README 验证矩阵和设计文档已同步 `test:hosted:docker` 现在覆盖 `/api/wallet` 与 `/api/market/assets`。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`node --check scripts/run-marketplace-e2e.mjs && node --check scripts/smoke-hosted-container.mjs`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+- 本机 `npm run test:hosted:docker` 仍因没有 Docker 按预期失败并提示 `Docker is required for hosted container smoke tests: spawn docker ENOENT`；真正容器验证需要 GitHub runner。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
-| 我在哪里？ | 已完成市场/钱包后端、前端、管理员入口、基础脚本、Creator Center summary、PWA 安装壳、市场下架闭环、举报处理队列、审核预览、创作者修订重提、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、marketplace 语法门禁、PWA 缓存清单完整性检查、设计文档 MVP/API 边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、市场/钱包只读快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags 与 JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示，以及市场筛选无结果清空入口 |
+| 我在哪里？ | 已完成市场/钱包后端、前端、管理员入口、基础脚本、Creator Center summary、PWA 安装壳、市场下架闭环、举报处理队列、审核预览、创作者修订重提、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、marketplace 语法门禁、PWA 缓存清单完整性检查、设计文档 MVP/API 边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、市场/钱包只读快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags 与 JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、托管 Docker smoke 和 E2E wrapper 清理兜底 |
 | 我要去哪里？ | 下一步继续数据库迁移、真实支付、搜索审核和原生移动封装 |
 | 目标是什么？ | 让托管版 AI 酒馆支持用户上传、购买和安装角色卡/世界书等资产 |
 | 我学到了什么？ | 见 findings.md |
-| 我做了什么？ | 创建规划文件、设计文档、后端 MVP、前端 marketplace-wallet 扩展、管理员审核/赠币入口、Creator Center、PWA 安装壳、市场下架闭环、举报处理闭环、审核预览、创作者修订闭环、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、README、基础测试脚本、PWA 缓存完整性测试、文档边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、marketplace/wallet 快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags/JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示和市场筛选无结果清空入口 |
+| 我做了什么？ | 创建规划文件、设计文档、后端 MVP、前端 marketplace-wallet 扩展、管理员审核/赠币入口、Creator Center、PWA 安装壳、市场下架闭环、举报处理闭环、审核预览、创作者修订闭环、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、README、基础测试脚本、PWA 缓存完整性测试、文档边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、marketplace/wallet 快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags/JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、Docker 容器业务读路由 smoke 和 E2E wrapper 失败清理修正 |
 
 ---
 *每个阶段完成后或遇到错误时更新此文件*

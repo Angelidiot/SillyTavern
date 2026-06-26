@@ -195,6 +195,9 @@
 - Marketplace CI path filter 需要包含 Docker build 依赖的 default config、webpack 入口和 `public/lib.js`，否则镜像可用性相关变更可能绕过 Docker smoke。
 - Docker smoke 不能通过 `--whitelist=false --basicAuthMode=false` 关闭所有 listen-mode 保护；SillyTavern 会因不安全配置主动退出。容器 smoke 应保留默认 whitelist，并映射 Docker host/gateway 让宿主健康检查通过白名单。
 - 本机 Chrome E2E 历史上多次出现测试已通过但 wrapper 父进程延迟退出；`run-marketplace-e2e.mjs` 应给 Playwright 子进程设置超时并清理进程组，避免可运行脚本无限挂起。
+- E2E wrapper 失败也必须清理：`process.exit(exitCode)` 会跳过 `finally`，Playwright 非 0 退出应设置 `process.exitCode` 后返回，确保临时 server 和 tmpRoot 被清理。
+- Docker smoke 也应触达业务读路由：托管镜像 smoke 只测 health/PWA shell 仍可能漏掉 wallet/market 路由注册或默认用户上下文问题；保守 GET `/api/wallet` 和 `/api/market/assets` 可补齐这层验证。
+- Docker 业务 smoke 保持只读：容器 smoke 不应重复 runtime smoke 的 seed、购买、安装和写账闭环；只验证 wallet balance shape 和 market asset list shape，降低 CI 时间和状态复杂度。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

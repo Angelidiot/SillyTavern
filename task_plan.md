@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 110
+阶段 111
 
 ## 各阶段
 
@@ -1015,6 +1015,19 @@
 - [x] 运行基础验证并提交推送
 - [x] GitHub run `28269647693` 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 111：托管 Docker 业务读路由 smoke
+- [x] 采纳子 agent 发现：E2E wrapper 非 0 退出路径不应直接 `process.exit(exitCode)` 跳过 `finally`
+- [x] 将 Playwright 非 0 退出改为设置 `process.exitCode` 后返回，确保临时 server/tmpRoot 清理
+- [x] 将 workflow timeout 契约测试收紧到具体 Docker/E2E step
+- [x] 扩展 `scripts/smoke-hosted-container.mjs`，在容器内验证 `/api/wallet` 余额 shape
+- [x] 扩展 `scripts/smoke-hosted-container.mjs`，在容器内验证 `/api/market/assets` 列表 shape
+- [x] 保持 Docker smoke 只做保守 GET 读路径，不 seed、不写账、不上传，避免和 runtime smoke 重叠过重
+- [x] 更新 README、设计文档、findings 和 progress
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
