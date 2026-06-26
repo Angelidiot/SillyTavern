@@ -1396,6 +1396,19 @@
 - 已提交 `eeb30cb18 Extend hosted smoke business checks` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28270145252` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 112：Docker smoke 动态端口绑定
+- 采纳 Nietzsche 子 agent 早前发现：`findFreePort()` 先 bind 再 close，随后 Docker 再绑定同一端口，中间有低概率端口抢占窗口。
+- `scripts/smoke-hosted-container.mjs` 已移除 `node:net` 和 `findFreePort()`。
+- Docker smoke 现在使用 `-p 127.0.0.1::8000`，让 Docker 在 loopback 上分配随机 host port。
+- 新增 `getPublishedPort(container)`，通过 `docker port <id> 8000/tcp` 解析实际端口并构造 `http://127.0.0.1:<port>`。
+- `tests/marketplace-scripts.test.js` 已锁定脚本不再导入 `node:net`/`findFreePort`，并包含动态 publish、`getPublishedPort()` 和 `docker port 8000/tcp`。
+- Sagan 子 agent 复核确认 GitHub hosted runner 上该方案可行，同时建议不要回退接受非 loopback 映射。
+- `getPublishedPort(container)` 已收紧为必须匹配 `127.0.0.1:<port>`；若 `docker port` 输出 `0.0.0.0:<port>` 或空输出会直接失败，保持 Docker smoke 只暴露本机的安全边界。
+- `tests/marketplace-scripts.test.js` 已新增契约，禁止 `?? mappings[0]` 回退并锁定 loopback regex 与错误文案。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`node --check scripts/smoke-hosted-container.mjs` 和 `git diff --check`。
+- 首次 `npm run test:marketplace` 中 `market-wallet.test.js` 的 report queue 边界用例出现一次 404；单独重跑该用例通过，随后完整 `npm run test:marketplace` 重跑通过 59/59。
+- 本机 `npm run test:hosted:docker` 仍因没有 Docker 按预期失败并提示 `Docker is required for hosted container smoke tests: spawn docker ENOENT`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

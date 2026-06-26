@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process';
 import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
-import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,26 +23,6 @@ function appendLog(buffer, chunk) {
     const maxLength = 30_000;
     const next = buffer + chunk.toString();
     return next.length > maxLength ? next.slice(next.length - maxLength) : next;
-}
-
-async function findFreePort() {
-    return new Promise((resolve, reject) => {
-        const server = net.createServer();
-        server.once('error', reject);
-        server.listen(0, '127.0.0.1', () => {
-            const address = server.address();
-            const port = typeof address === 'object' && address ? address.port : null;
-
-            server.close(() => {
-                if (!port) {
-                    reject(new Error('Could not allocate a hosted container smoke port'));
-                    return;
-                }
-
-                resolve(port);
-            });
-        });
-    });
 }
 
 function runCommand(command, args, options = {}) {
@@ -93,7 +72,7 @@ async function buildImage() {
     }
 }
 
-async function startContainer({ port, tmpRoot }) {
+async function startContainer({ tmpRoot }) {
     const dataRoot = path.join(tmpRoot, 'data');
     const configRoot = path.join(tmpRoot, 'config');
     const containerName = `sillytavern-hosted-smoke-${process.pid}-${Date.now()}`;
@@ -113,7 +92,7 @@ async function startContainer({ port, tmpRoot }) {
         '--add-host',
         'gateway.docker.internal:host-gateway',
         '-p',
-        `127.0.0.1:${port}:8000`,
+        '127.0.0.1::8000',
         '-e',
         'NODE_ENV=production',
         '-e',
@@ -143,6 +122,22 @@ async function startContainer({ port, tmpRoot }) {
         id: result.stdout.trim(),
         name: containerName,
     };
+}
+
+async function getPublishedPort(container) {
+    const result = await runCommand('docker', ['port', container.id, '8000/tcp']);
+    if (result.code !== 0) {
+        throw new Error(`Could not read hosted container port mapping with exit code ${result.code}\n--- stdout ---\n${result.stdout.trim()}\n--- stderr ---\n${result.stderr.trim()}`);
+    }
+
+    const mappings = result.stdout.trim().split('\n').map(line => line.trim()).filter(Boolean);
+    const mapping = mappings.find(line => line.startsWith('127.0.0.1:'));
+    const match = mapping?.match(/^127\.0\.0\.1:(\d+)$/);
+    if (!match) {
+        throw new Error(`Expected hosted container to publish on 127.0.0.1, got: ${result.stdout.trim() || '(empty)'}`);
+    }
+
+    return Number(match[1]);
 }
 
 async function stopContainer(container) {
@@ -261,9 +256,7 @@ async function assertTextEndpoint(url, label, expectedText) {
 async function run() {
     await requireDocker();
 
-    const port = await findFreePort();
     const tmpRoot = await mkdtemp(path.join(os.tmpdir(), 'sillytavern-hosted-container-'));
-    const baseUrl = `http://127.0.0.1:${port}`;
     const serviceWorkerCacheName = await readServiceWorkerCacheName();
     let container;
 
@@ -271,8 +264,12 @@ async function run() {
         await buildImage();
         console.log(`container smoke ok: built ${imageTag}`);
 
-        container = await startContainer({ port, tmpRoot });
+        container = await startContainer({ tmpRoot });
         console.log(`container smoke ok: started ${container.id}`);
+
+        const port = await getPublishedPort(container);
+        const baseUrl = `http://127.0.0.1:${port}`;
+        console.log(`container smoke ok: published ${baseUrl}`);
 
         await waitForHealth(baseUrl, container);
         console.log('container smoke ok: /api/health');

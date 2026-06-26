@@ -198,6 +198,8 @@
 - E2E wrapper 失败也必须清理：`process.exit(exitCode)` 会跳过 `finally`，Playwright 非 0 退出应设置 `process.exitCode` 后返回，确保临时 server 和 tmpRoot 被清理。
 - Docker smoke 也应触达业务读路由：托管镜像 smoke 只测 health/PWA shell 仍可能漏掉 wallet/market 路由注册或默认用户上下文问题；保守 GET `/api/wallet` 和 `/api/market/assets` 可补齐这层验证。
 - Docker 业务 smoke 保持只读：容器 smoke 不应重复 runtime smoke 的 seed、购买、安装和写账闭环；只验证 wallet balance shape 和 market asset list shape，降低 CI 时间和状态复杂度。
+- Docker smoke 端口应由 Docker 分配：Node 先找空端口再关闭 socket 会留下端口抢占窗口；`-p 127.0.0.1::8000` 加 `docker port` 可避免同一 runner 上的低概率绑定竞态。
+- Docker smoke 端口解析必须保持 loopback 契约：如果 `docker port` 只返回 `0.0.0.0:<port>`，脚本应失败而不是回退通过，否则会削弱只暴露到本机的 CI 安全边界。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

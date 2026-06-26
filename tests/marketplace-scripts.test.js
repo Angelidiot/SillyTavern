@@ -147,6 +147,15 @@ describe('marketplace runnable scripts', () => {
         expect(script).toContain('readServiceWorkerCacheName');
         expect(script).toContain('CACHE_NAME');
         expect(script).not.toContain("'sillytavern-shell-v3'");
+        expect(script).not.toContain("import net from 'node:net'");
+        expect(script).not.toContain('function findFreePort');
+        expect(script).toContain('127.0.0.1::8000');
+        expect(script).toContain('function getPublishedPort');
+        expect(script).toContain("'docker', ['port'");
+        expect(script).toContain("'8000/tcp'");
+        expect(script).not.toContain('?? mappings[0]');
+        expect(script).toContain("mapping?.match(/^127\\.0\\.0\\.1:(\\d+)$/)");
+        expect(script).toContain('Expected hosted container to publish on 127.0.0.1');
         expect(script).not.toContain('--whitelist=false');
         expect(script).not.toContain('--basicAuthMode=false');
         expect(script).toContain('host.docker.internal:host-gateway');
