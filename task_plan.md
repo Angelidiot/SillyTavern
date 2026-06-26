@@ -1004,8 +1004,8 @@
 - [x] 扩展 Marketplace CI Docker 触发路径并给 Docker smoke step 增加 timeout
 - [x] 调查 GitHub run `28269151597` 失败：Docker smoke 关闭 whitelist/basic auth 后触发 listen-mode 安全保护退出
 - [x] 保留默认 whitelist 安全启动，并为 Docker host/gateway 增加 host-gateway 映射
-- [ ] 等待 GitHub 上修复后的 Docker smoke 通过
-- **状态：** in_progress
+- [x] GitHub run `28269291526` 确认 Docker smoke、runtime smoke 和 browser E2E 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

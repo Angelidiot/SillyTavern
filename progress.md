@@ -1370,6 +1370,7 @@
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js pwa.test.js`、`node --check scripts/smoke-hosted-container.mjs`、`npm run test:marketplace`、`git diff --check`；本机 `npm run test:hosted:docker` 仍因没有 Docker 按预期失败并提示 `spawn docker ENOENT`。
 - GitHub run `28269151597` 的 Docker smoke 失败已暴露真实根因：容器启动时 `--listen` 与 `--whitelist=false --basicAuthMode=false` 组合触发 SillyTavern listen-mode 安全保护，进程主动退出并提示 `Enable whitelisting, basic authentication or user accounts`。
 - `scripts/smoke-hosted-container.mjs` 已移除 `--whitelist=false` 和 `--basicAuthMode=false`，保留默认 whitelist 保护；同时通过 `--add-host host.docker.internal:host-gateway` 和 `gateway.docker.internal:host-gateway` 帮助容器白名单解析宿主/网关地址。
+- GitHub run `28269291526` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
