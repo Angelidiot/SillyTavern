@@ -50,6 +50,27 @@ describe('marketplace runnable scripts', () => {
         expect(scripts['test:marketplace']).not.toContain('test:marketplace:e2e:server');
     });
 
+    test('includes every marketplace unit test file in the fast marketplace command', () => {
+        const { scripts } = readRootPackage();
+        const testsDirectory = path.join(rootDirectory, 'tests');
+        const marketplaceTestFiles = fs.readdirSync(testsDirectory)
+            .filter(fileName => /^marketplace.*\.test\.js$/.test(fileName))
+            .sort();
+
+        expect(marketplaceTestFiles).toEqual(expect.arrayContaining([
+            'marketplace-api-reference.test.js',
+            'marketplace-demo-seed.test.js',
+            'marketplace-scripts.test.js',
+            'marketplace-snapshot-export.test.js',
+            'marketplace-wallet-filters.test.js',
+            'marketplace-wallet-ui.test.js',
+        ]));
+
+        for (const fileName of marketplaceTestFiles) {
+            expect(scripts['test:marketplace']).toContain(fileName);
+        }
+    });
+
     test('checks marketplace wallet static extension assets in the syntax gate', () => {
         const script = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');
 

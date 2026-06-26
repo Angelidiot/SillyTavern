@@ -1158,6 +1158,12 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28261520847` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 90：marketplace 测试清单防漏
+- `tests/marketplace-scripts.test.js` 现在扫描所有 `tests/marketplace*.test.js`，并断言每个文件名都在根目录 `test:marketplace` 命令中。
+- 该测试保留 fast command 不递归 `test:marketplace:all` 或 `test:marketplace:e2e:server` 的约束，防止基础命令悄悄变慢。
+- findings 和 task_plan 已补充 `test:marketplace` 显式清单防漏边界。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
