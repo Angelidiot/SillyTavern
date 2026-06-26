@@ -55,6 +55,13 @@ describe('hosted tavern PWA shell', () => {
         expect(serviceWorker).toContain('sillytavern-shell-v2');
     });
 
+    test('activates updated service workers without waiting for every tab to close', () => {
+        const serviceWorker = readPublicFile('service-worker.js');
+
+        expect(serviceWorker).toContain('self.skipWaiting()');
+        expect(serviceWorker).toContain('self.clients.claim()');
+    });
+
     test('uses network-first navigation so installed shells can update', () => {
         const serviceWorker = readPublicFile('service-worker.js');
 

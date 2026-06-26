@@ -58,7 +58,7 @@ The demo seed command writes two listed assets into the explicit data root: a fr
 
 The local MVP APIs live under `/api/market` and `/api/wallet`. Creator Center uses `GET /api/market/creator/summary`; full wallet balances and ledger history remain available through `/api/wallet` and `/api/wallet/ledger`. Hosted probes can use `GET /api/health` without a logged-in session.
 
-On a physical phone, `127.0.0.1` points at the phone itself. Start the server with `npm start -- --listen=true`, then open `http://<your-computer-lan-ip>:8000` from the phone while both devices are on the same network, or use an HTTPS tunnel/hosted URL. Browser PWA install prompts and service workers require a secure context: HTTPS is safest for hosted/mobile testing, while localhost is only treated as secure on the same device. The PWA service worker uses network-first navigation with cached offline fallback, caches static shell assets, and never caches `/api/*` wallet, market, or chat requests.
+On a physical phone, `127.0.0.1` points at the phone itself. Start the server with `npm start -- --listen=true`, then open `http://<your-computer-lan-ip>:8000` from the phone while both devices are on the same network, or use an HTTPS tunnel/hosted URL. Browser PWA install prompts and service workers require a secure context: HTTPS is safest for hosted/mobile testing, while localhost is only treated as secure on the same device. The PWA service worker skips waiting, claims current clients after old cache cleanup, uses network-first navigation with cached offline fallback, caches static shell assets, and never caches `/api/*` wallet, market, or chat requests.
 
 ### Useful Scripts
 

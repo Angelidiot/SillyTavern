@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 104
+阶段 105
 
 ## 各阶段
 
@@ -952,6 +952,14 @@
 - [x] service worker 对导航请求使用 network-first，失败时回退缓存
 - [x] 静态资源继续 cache-first，保持离线 shell 能力
 - [x] `/api/*` 和非 GET 请求继续完全绕过缓存
+- [x] 补充 PWA Jest 契约和浏览器 service worker E2E
+- [x] 运行完整基础验证并提交推送
+- **状态：** complete
+
+### 阶段 105：PWA service worker 主动接管
+- [x] install 阶段调用 `self.skipWaiting()`
+- [x] activate 阶段调用 `self.clients.claim()`
+- [x] 保留旧 cache 清理和 shell 预缓存行为
 - [x] 补充 PWA Jest 契约和浏览器 service worker E2E
 - [x] 运行完整基础验证并提交推送
 - **状态：** complete

@@ -180,6 +180,8 @@
 - submit 失败提示应始终包含“Draft saved/Changes saved”，后端错误只能作为附加上下文，避免用户误以为内容丢失。
 - PWA service worker 对导航请求使用 cache-first 会让已安装手机壳长期看到旧首页/登录页；导航应 network-first，离线时再回退静态缓存。
 - PWA 静态 JS/CSS/manifest 资源仍可 cache-first，业务 `/api/*` 和非 GET 请求继续不进入 CacheStorage。
+- PWA 更新发布后若不调用 `skipWaiting()` 和 `clients.claim()`，已安装手机壳可能继续由旧 service worker 控制到用户关闭所有标签页；主动接管能缩短更新生效窗口。
+- `clients.claim()` 应在旧 cache 清理之后执行，减少新 service worker 接管后命中旧 shell cache 的短窗口。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

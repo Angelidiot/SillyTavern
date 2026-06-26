@@ -676,6 +676,7 @@ test.describe('hosted tavern PWA browser shell', () => {
             state: 'activated',
         });
         expect(registration.activeScript).toContain('/service-worker.js');
+        await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller?.scriptURL.includes('/service-worker.js')))).toBe(true);
 
         await page.reload({ waitUntil: 'load' });
         await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller?.scriptURL.includes('/service-worker.js')))).toBe(true);

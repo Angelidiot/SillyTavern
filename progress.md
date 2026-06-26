@@ -1308,6 +1308,15 @@
 - 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28266565822` 已确认 Marketplace Wallet Checks 全链路通过。
 
+## 2026-06-26 阶段 105：PWA service worker 主动接管
+- `public/service-worker.js` 的 install 事件现在通过 `Promise.all([self.skipWaiting(), cache.addAll(...)])` 预缓存 shell 并立即跳过 waiting。
+- activate 事件现在会先清理旧 cache，再调用 `self.clients.claim()` 立即接管受 scope 覆盖的页面。
+- `tests/pwa.test.js` 新增 `skipWaiting()` 和 `clients.claim()` 契约断言。
+- `tests/marketplace-wallet.e2e.js` 的 PWA 浏览器测试现在会在 reload 前确认页面已经受 `/service-worker.js` controller 控制。
+- README 和设计文档已同步 service worker 跳过 waiting、清理旧缓存后 claim clients 的更新策略。
+- 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e`。
+- 已通过 `npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
