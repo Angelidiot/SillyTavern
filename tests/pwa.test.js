@@ -29,6 +29,20 @@ function readServiceWorkerShellAssets() {
     return sandbox.__SHELL_ASSETS__;
 }
 
+function readServiceWorkerCacheName() {
+    const serviceWorker = readPublicFile('service-worker.js');
+    const sandbox = {
+        self: {
+            addEventListener: () => {},
+        },
+    };
+
+    vm.createContext(sandbox);
+    vm.runInContext(`${serviceWorker}\nthis.__CACHE_NAME__ = CACHE_NAME;`, sandbox);
+
+    return sandbox.__CACHE_NAME__;
+}
+
 describe('hosted tavern PWA shell', () => {
     test('defines installable manifest metadata', () => {
         const manifest = JSON.parse(readPublicFile('manifest.json'));
@@ -113,5 +127,15 @@ describe('hosted tavern PWA shell', () => {
             const relativePath = asset === '/' ? 'index.html' : asset.slice(1).split('?')[0];
             expect(fs.existsSync(path.join(publicDir, relativePath))).toBe(true);
         }
+    });
+
+    test('documents the current service worker cache and install prompt coverage', () => {
+        const cacheName = readServiceWorkerCacheName();
+        const designDoc = fs.readFileSync(path.join(rootDir, 'docs/marketplace-currency-design.md'), 'utf8');
+
+        expect(cacheName).toBe('sillytavern-shell-v3');
+        expect(designDoc).toContain(cacheName);
+        expect(designDoc).toContain('应用内 Install prompt');
+        expect(designDoc).toContain('导航请求优先使用网络版本');
     });
 });

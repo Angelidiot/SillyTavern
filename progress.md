@@ -1343,6 +1343,12 @@
 - 已提交 `956275a05 Validate mobile asset details popup` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28268051992` 已确认 Marketplace Wallet Checks 全链路通过。
 
+## 2026-06-26 阶段 108：PWA 文档缓存版本防漂移
+- 发现 `docs/marketplace-currency-design.md` 仍写 `sillytavern-shell-v2`，而当前 service worker 已升级为 `sillytavern-shell-v3`。
+- 设计文档的 PWA E2E 描述已同步为应用内 Install prompt、`sillytavern-shell-v3`、network-first navigation 和 `/api/health` cache exclusion。
+- `tests/pwa.test.js` 新增从 `public/service-worker.js` 解析 `CACHE_NAME` 的辅助函数，并断言设计文档包含当前 cache 名称和 Install prompt 覆盖说明。
+- 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace`、`git diff --check`，并确认 `rg` 不再找到 `sillytavern-shell-v2`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

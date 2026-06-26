@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 107
+阶段 108
 
 ## 各阶段
 
@@ -981,6 +981,14 @@
 - [x] 必要时为 marketplace-wallet preview/popup 增加移动端宽度兜底
 - [x] 更新 UI contract、findings 和 progress
 - [x] 运行目标 E2E、基础验证并提交推送
+- **状态：** complete
+
+### 阶段 108：PWA 文档缓存版本防漂移
+- [x] 发现设计文档仍引用旧 `sillytavern-shell-v2`
+- [x] 同步设计文档到当前 `sillytavern-shell-v3` 和应用内 Install E2E 说明
+- [x] 增加测试，锁定设计文档中的 PWA cache 名称与 service worker 一致
+- [x] 更新 findings/progress
+- [x] 运行基础验证并提交推送
 - **状态：** complete
 
 ## 关键问题
