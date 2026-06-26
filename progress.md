@@ -1196,6 +1196,7 @@
 - `tests/marketplace-wallet.e2e.js` 的 clear-filter 用例新增有结果筛选路径：选择 free 仍看到资产时 Clear filters 可见，点击后恢复默认筛选。
 - `tests/marketplace-wallet-ui.test.js` 已同步锁定 `setClearFiltersVisibility(hasFilters)`。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "clears active marketplace filters" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28262958359` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
