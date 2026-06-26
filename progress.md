@@ -1223,6 +1223,15 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "truncates large payloads" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28263806838` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 97：上传 payload/metadata 大小门禁
+- `src/endpoints/market.js` 新增 `MAX_MARKET_METADATA_BYTES = 65536` 和 `MAX_MARKET_NORMALIZED_PAYLOAD_BYTES = 1048576`。
+- create/patch 会在保存前校验 `metadata` 和 `normalized_payload` 的 JSON 字节大小，避免超大资产写入 `market-assets.json`。
+- submit 和 approve 也会复查同一大小边界，防止旧 store 或手工写入数据绕过上传入口。
+- approve 现在通过 `validateAssetForApproval()` 同时校验 metadata/payload 大小和 payload 格式。
+- `tests/market-wallet.test.js` 新增超限 metadata、超限 payload、修订超限、手工 store 绕过 submit/approve 的后端契约测试。
+- `scripts/export-marketplace-api-reference.mjs`、README 和设计文档已记录 create/patch 的 metadata/payload 字节上限。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "rejects oversized marketplace asset metadata and normalized payload"`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

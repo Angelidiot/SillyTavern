@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 96
+阶段 97
 
 ## 各阶段
 
@@ -884,6 +884,15 @@
 - [x] 增加大 payload 详情弹窗浏览器 E2E
 - [x] 同步 marketplace-wallet manifest/service worker cache 版本
 - [x] 更新 UI contract、findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 97：上传 payload/metadata 大小门禁
+- [x] 后端限制 `metadata` JSON 不超过 65536 字节
+- [x] 后端限制 `normalized_payload` JSON 不超过 1048576 字节
+- [x] create/patch/submit/approve 都复用大小边界，避免旧 store 绕过
+- [x] 后端 Jest 覆盖超限 metadata、payload、修订和审核兜底
+- [x] 更新 API reference、README、设计文档、findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 

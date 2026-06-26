@@ -41,7 +41,7 @@ function createUser(handle, admin = false) {
 
 function createApp(user) {
     const app = express();
-    app.use(express.json());
+    app.use(express.json({ limit: '2mb' }));
     app.use((request, _response, next) => {
         request.user = {
             profile: user,
@@ -974,6 +974,135 @@ describe('market and wallet MVP endpoints', () => {
                 'metadata must be an object',
                 'normalized_payload must be an object',
             ],
+        });
+    });
+
+    test('rejects oversized marketplace asset metadata and normalized payload', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const charlieApp = createApp(createUser('charlie', false));
+        const maxMetadataBytes = 64 * 1024;
+        const maxPayloadBytes = 1024 * 1024;
+
+        const validBoundary = await request(aliceApp, '/api/market/assets', {
+            method: 'POST',
+            body: {
+                type: 'character_card',
+                title: 'Boundary Sized Asset',
+                metadata: {
+                    note: 'x'.repeat(maxMetadataBytes - Buffer.byteLength(JSON.stringify({ note: '' }), 'utf8')),
+                },
+                normalized_payload: createCharacterPayload(),
+            },
+        });
+        expect(validBoundary.status).toBe(201);
+
+        const oversizedMetadata = await request(aliceApp, '/api/market/assets', {
+            method: 'POST',
+            body: {
+                type: 'character_card',
+                title: 'Oversized Metadata',
+                metadata: {
+                    note: 'x'.repeat(maxMetadataBytes),
+                },
+                normalized_payload: createCharacterPayload(),
+            },
+        });
+        expect(oversizedMetadata.status).toBe(400);
+        expect(oversizedMetadata.body).toMatchObject({
+            error: 'Invalid market asset',
+            details: [`metadata must be ${maxMetadataBytes} bytes or less`],
+        });
+
+        const oversizedPayload = await request(aliceApp, '/api/market/assets', {
+            method: 'POST',
+            body: {
+                type: 'world_book',
+                title: 'Oversized Payload',
+                normalized_payload: {
+                    name: 'Oversized Payload',
+                    entries: {
+                        lore: {
+                            content: 'x'.repeat(maxPayloadBytes),
+                        },
+                    },
+                },
+            },
+        });
+        expect(oversizedPayload.status).toBe(400);
+        expect(oversizedPayload.body).toMatchObject({
+            error: 'Invalid market asset',
+            details: [`normalized_payload must be ${maxPayloadBytes} bytes or less`],
+        });
+
+        const draftResult = await request(charlieApp, '/api/market/assets', {
+            method: 'POST',
+            body: {
+                type: 'world_book',
+                title: 'Draft Payload Boundary',
+                normalized_payload: {
+                    name: 'Draft Payload Boundary',
+                    entries: {},
+                },
+            },
+        });
+        expect(draftResult.status).toBe(201);
+
+        const oversizedPatch = await request(charlieApp, `/api/market/assets/${draftResult.body.asset.id}`, {
+            method: 'PATCH',
+            body: {
+                type: 'world_book',
+                title: 'Patched Oversized Payload',
+                normalized_payload: {
+                    name: 'Patched Oversized Payload',
+                    entries: {
+                        lore: {
+                            content: 'x'.repeat(maxPayloadBytes),
+                        },
+                    },
+                },
+            },
+        });
+        expect(oversizedPatch.status).toBe(400);
+        expect(oversizedPatch.body).toMatchObject({
+            error: 'Invalid market asset',
+            details: [`normalized_payload must be ${maxPayloadBytes} bytes or less`],
+        });
+
+        const storePath = path.join(dataRoot, 'market-assets.json');
+        const store = JSON.parse(fs.readFileSync(storePath, 'utf8'));
+        const draftAsset = store.assets.find(asset => asset.id === draftResult.body.asset.id);
+        draftAsset.normalized_payload = {
+            name: 'Manually Oversized Payload',
+            entries: {
+                lore: {
+                    content: 'x'.repeat(maxPayloadBytes),
+                },
+            },
+        };
+        fs.writeFileSync(storePath, JSON.stringify(store, null, 4), 'utf8');
+
+        const blockedSubmit = await request(charlieApp, `/api/market/assets/${draftResult.body.asset.id}/submit`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(blockedSubmit.status).toBe(400);
+        expect(blockedSubmit.body).toMatchObject({
+            error: 'Invalid status transition',
+            details: [`normalized_payload must be ${maxPayloadBytes} bytes or less`],
+        });
+
+        draftAsset.status = 'submitted';
+        draftAsset.visibility = 'review';
+        fs.writeFileSync(storePath, JSON.stringify(store, null, 4), 'utf8');
+
+        const blockedApproval = await request(aliceApp, `/api/market/assets/${draftResult.body.asset.id}/approve`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(blockedApproval.status).toBe(400);
+        expect(blockedApproval.body).toMatchObject({
+            error: 'Invalid market asset',
+            details: [`normalized_payload must be ${maxPayloadBytes} bytes or less`],
         });
     });
 

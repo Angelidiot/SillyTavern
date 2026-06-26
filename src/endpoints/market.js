@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -28,6 +29,8 @@ const MAX_TAG_LENGTH = 40;
 const MAX_PRICE_COINS = 1000000;
 const MAX_REPORT_REASON_LENGTH = 120;
 const MAX_REPORT_BODY_LENGTH = 2000;
+const MAX_MARKET_METADATA_BYTES = 64 * 1024;
+const MAX_MARKET_NORMALIZED_PAYLOAD_BYTES = 1024 * 1024;
 
 export const router = express.Router();
 const marketPurchaseLocks = new Map();
@@ -125,6 +128,15 @@ function getUserId(request) {
 
 function isPlainObject(value) {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function validateJsonByteLength(value, fieldName, maxBytes, errors) {
+    const bytes = Buffer.byteLength(JSON.stringify(value), 'utf8');
+    if (bytes > maxBytes) {
+        errors.push(`${fieldName} must be ${maxBytes} bytes or less`);
+        return false;
+    }
+    return true;
 }
 
 function normalizeString(value, maxLength, fieldName, errors, { required = false } = {}) {
@@ -232,11 +244,15 @@ function normalizeCreateBody(body) {
     const metadata = body.metadata === undefined ? {} : body.metadata;
     if (!isPlainObject(metadata)) {
         errors.push('metadata must be an object');
+    } else {
+        validateJsonByteLength(metadata, 'metadata', MAX_MARKET_METADATA_BYTES, errors);
     }
 
     const normalizedPayload = body.normalized_payload;
     if (!isPlainObject(normalizedPayload)) {
         errors.push('normalized_payload must be an object');
+    } else {
+        validateJsonByteLength(normalizedPayload, 'normalized_payload', MAX_MARKET_NORMALIZED_PAYLOAD_BYTES, errors);
     }
 
     return {
@@ -275,10 +291,27 @@ function validateAssetForSubmit(asset) {
     }
     if (!isPlainObject(asset.metadata)) {
         errors.push('metadata must be an object');
+    } else {
+        validateJsonByteLength(asset.metadata, 'metadata', MAX_MARKET_METADATA_BYTES, errors);
     }
     if (!isPlainObject(asset.normalized_payload)) {
         errors.push('normalized_payload must be an object');
+    } else if (validateJsonByteLength(asset.normalized_payload, 'normalized_payload', MAX_MARKET_NORMALIZED_PAYLOAD_BYTES, errors)) {
+        errors.push(...validateNormalizedPayload(asset));
+    }
+    return errors;
+}
+
+function validateAssetForApproval(asset) {
+    const errors = [];
+    if (!isPlainObject(asset.metadata)) {
+        errors.push('metadata must be an object');
     } else {
+        validateJsonByteLength(asset.metadata, 'metadata', MAX_MARKET_METADATA_BYTES, errors);
+    }
+    if (!isPlainObject(asset.normalized_payload)) {
+        errors.push('normalized_payload must be an object');
+    } else if (validateJsonByteLength(asset.normalized_payload, 'normalized_payload', MAX_MARKET_NORMALIZED_PAYLOAD_BYTES, errors)) {
         errors.push(...validateNormalizedPayload(asset));
     }
     return errors;
@@ -784,7 +817,7 @@ router.post('/assets/:id/approve', requireAdminMiddleware, (request, response) =
         return response.status(400).json({ error: 'asset must be submitted before approval' });
     }
 
-    const errors = validateNormalizedPayload(asset);
+    const errors = validateAssetForApproval(asset);
     if (errors.length > 0) {
         return response.status(400).json({ error: 'Invalid market asset', details: errors });
     }

@@ -32,6 +32,7 @@
 | 现有角色导入函数会删除上传源文件 | 市场安装不直接复用导入函数，改为在 market endpoint 中生成安装副本 |
 | JSON 文件市场存储无法防止并发覆盖 | MVP 可用于单进程验证；正式 SaaS 需要数据库事务、append-only ledger 或按 store path 串行化写入 |
 | market JSON store 需要单进程写锁 | 当前 MVP 使用 `market-assets.json`，同进程写路由应按 store path 串行 read-modify-write，降低 create/report/install 等并发覆盖风险 |
+| 市场上传 payload/metadata 需要字节上限 | 主服务 JSON parser 允许大请求，marketplace 自己必须限制 `metadata` 和 `normalized_payload`，避免单个资产拖垮 JSON store、审核详情和移动端 PWA |
 | listed 资产详情不能泄漏 `normalized_payload` | 未购买用户只能看元数据；创建者、管理员或已授权用户才能读取 payload |
 | 市场/钱包前端适合作为 SillyTavern 内置扩展 | 复用 extension manifest、模板渲染、CSS 加载和 Extensions 面板，避免污染主入口脚本 |
 | 市场列表的 `owned` 只代表创建者身份 | 前端不能把它当成已购买状态；普通用户购买后再安装，重复购买依赖后端幂等返回 |
@@ -100,6 +101,7 @@
 - marketplace-wallet Details 弹窗现在展示 delisted 日期；未下架资产显示 not delisted。
 - marketplace-wallet Details 弹窗现在展示当前用户 entitlement 来源、授权日期和购买引用；未授权资产显示 not in library/not entitled。
 - marketplace-wallet Details/Inspect 对大 payload 只渲染 20KB 预览并显示截断提示，避免手机/PWA 弹窗因为超大角色卡或世界书 JSON 卡顿。
+- marketplace 后端现在限制 `metadata` 不超过 65536 字节、`normalized_payload` 不超过 1048576 字节；create/patch/submit/approve 都会执行该边界。
 - marketplace-wallet 市场筛选条新增价格、访问状态和排序控件，继续使用本地列表做客户端过滤。
 - marketplace-wallet 搜索现在会匹配资产 language 和 content_rating，和 Details 里已展示的元数据保持一致。
 - 市场资产列表摘要现在返回 `language` 和 `content_rating`，让真实 API 数据也能支持前端按语言/分级搜索，同时继续不返回 `normalized_payload`。
