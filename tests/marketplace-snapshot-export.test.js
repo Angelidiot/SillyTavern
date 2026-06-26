@@ -191,6 +191,28 @@ describe('marketplace snapshot export script', () => {
         })).toThrow();
     });
 
+    test('rejects unknown and incomplete arguments', () => {
+        const dataRoot = makeTempRoot();
+
+        expect(() => execFileSync(process.execPath, [exportScript, '--unknown'], {
+            cwd: rootDirectory,
+            encoding: 'utf8',
+            stdio: 'pipe',
+        })).toThrow('Unknown argument: --unknown');
+        expect(() => execFileSync(process.execPath, [exportScript, '--dataRoot'], {
+            cwd: rootDirectory,
+            encoding: 'utf8',
+            stdio: 'pipe',
+        })).toThrow('Missing value for --dataRoot');
+        expect(() => execFileSync(process.execPath, [exportScript, '--dataRoot='], {
+            cwd: rootDirectory,
+            encoding: 'utf8',
+            stdio: 'pipe',
+        })).toThrow('Missing value for --dataRoot');
+        expect(() => runExport(dataRoot, ['--out'])).toThrow('Missing value for --out');
+        expect(() => runExport(dataRoot, ['--out='])).toThrow('Missing value for --out');
+    });
+
     test('exports redacted market and wallet summaries to stdout', async () => {
         const dataRoot = makeTempRoot();
         writeMarketStore(dataRoot);

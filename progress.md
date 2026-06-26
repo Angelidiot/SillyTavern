@@ -1113,6 +1113,12 @@
 - 已通过 `npm run test:marketplace:syntax`、`npm run test:marketplace`、workflow pin smoke 和 `git diff --check`。
 - GitHub run `28259729756` 已确认 Marketplace Wallet Checks 全链路通过，且本次 run 不再出现 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 84：snapshot export 参数错误边界
+- `scripts/export-marketplace-snapshot.mjs` 现在对 `--dataRoot`、`--dataRoot=`、`--out`、`--out=` 缺失值返回明确错误。
+- `tests/marketplace-snapshot-export.test.js` 新增未知参数、缺失 dataRoot 值和缺失 out 值覆盖。
+- findings 已补充 snapshot export CLI 参数错误边界。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-snapshot-export.test.js -t 'rejects unknown and incomplete arguments'`、`npm --prefix tests run test:unit -- marketplace-snapshot-export.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

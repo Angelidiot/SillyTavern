@@ -42,24 +42,40 @@ function parseArgs(argv) {
         }
 
         if (arg === '--dataRoot') {
-            options.dataRoot = argv[index + 1] || '';
+            const dataRoot = argv[index + 1] || '';
+            if (!dataRoot || dataRoot.startsWith('--')) {
+                throw new Error('Missing value for --dataRoot');
+            }
+            options.dataRoot = dataRoot;
             index += 1;
             continue;
         }
 
         if (arg.startsWith('--dataRoot=')) {
-            options.dataRoot = arg.slice('--dataRoot='.length);
+            const dataRoot = arg.slice('--dataRoot='.length);
+            if (!dataRoot) {
+                throw new Error('Missing value for --dataRoot');
+            }
+            options.dataRoot = dataRoot;
             continue;
         }
 
         if (arg === '--out') {
-            options.out = argv[index + 1] || '';
+            const outPath = argv[index + 1] || '';
+            if (!outPath || outPath.startsWith('--')) {
+                throw new Error('Missing value for --out');
+            }
+            options.out = outPath;
             index += 1;
             continue;
         }
 
         if (arg.startsWith('--out=')) {
-            options.out = arg.slice('--out='.length);
+            const outPath = arg.slice('--out='.length);
+            if (!outPath) {
+                throw new Error('Missing value for --out');
+            }
+            options.out = outPath;
             continue;
         }
 
