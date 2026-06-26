@@ -427,6 +427,11 @@
     overflow-wrap: anywhere;
 }
 
+.marketplace-wallet-preview-description {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .marketplace-wallet-preview-meta {
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr);

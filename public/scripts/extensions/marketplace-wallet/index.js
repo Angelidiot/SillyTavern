@@ -379,6 +379,10 @@ function createAssetPreview(asset, entitlement = null) {
     const $preview = $('<div class="marketplace-wallet-asset-preview"></div>');
     const $title = $('<h3></h3>').text(asset.title || 'Untitled asset');
     const $summary = $('<p></p>').text(asset.summary || 'No summary provided.');
+    const description = String(asset.description || '').trim();
+    const $description = description
+        ? $('<p class="marketplace-wallet-preview-description"></p>').text(description)
+        : $();
     const $meta = $('<dl class="marketplace-wallet-preview-meta"></dl>');
     const hasPayload = asset.payload_available && asset.normalized_payload;
     const entitlementSource = entitlement?.source ? String(entitlement.source) : '';
@@ -407,7 +411,7 @@ function createAssetPreview(asset, entitlement = null) {
         $meta.append($('<dd></dd>').text(String(value)));
     }
 
-    $preview.append($title, $summary, $meta);
+    $preview.append($title, $summary, $description, $meta);
     if (hasPayload) {
         const payloadPreview = formatPayloadPreview(asset.normalized_payload);
         $preview.append($('<b></b>').text('Payload'));

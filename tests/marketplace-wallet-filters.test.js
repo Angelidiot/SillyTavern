@@ -29,6 +29,7 @@ describe('marketplace wallet asset filters', () => {
             id: 'free-character',
             title: 'Free Character',
             summary: 'Cozy tavern companion',
+            description: 'Hidden long description sentinel',
             tags: ['friendly'],
             sales_count: 4,
             install_count: 8,
@@ -99,6 +100,7 @@ describe('marketplace wallet asset filters', () => {
         expect(filterAndSortAssets(assets, { search: 'teen' }).map(asset => asset.id)).toEqual([
             'paid-world',
         ]);
+        expect(filterAndSortAssets(assets, { search: 'sentinel' }).map(asset => asset.id)).toEqual([]);
     });
 
     test('sorts by recency, popularity, and price without mutating source assets', () => {

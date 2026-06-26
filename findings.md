@@ -203,6 +203,8 @@
 - marketplace 后端已经把 `description` 作为一等文本元数据校验到 10000 字符；前端上传和修订表单也应暴露该字段，否则网页/手机创作者只能提交短 summary。
 - 上传模板增加字段后必须同步 marketplace-wallet manifest 和 PWA shell 预缓存版本，避免已安装手机壳继续使用旧模板和旧 ESM 入口。
 - API reference 应点名 `title`/`summary`/`description`/`tags`/`language`/`content_rating`，而不是笼统写 text metadata，方便网页/手机版外部客户端按同一上传契约实现。
+- Details/Inspect 可以展示完整 description，但列表摘要和搜索仍应保持短字段，避免 10000 字符长描述进入高频列表渲染和移动端筛选路径。
+- 详情描述必须用 `.text()` 之类安全文本渲染并配合 `white-space: pre-wrap`/`overflow-wrap: anywhere`，保留换行同时防止 HTML 注入和窄屏横向溢出。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.20');
+        expect(manifest.version).toBe('0.2.21');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -168,6 +168,9 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('const inspectAsset = viewAssetDetails;');
         expect(script).toContain('function formatAssetDate(value)');
         expect(script).toContain("return date.toISOString().slice(0, 10)");
+        expect(script).toContain("const description = String(asset.description || '').trim()");
+        expect(script).toContain('marketplace-wallet-preview-description');
+        expect(script).toContain('.text(description)');
         expect(script).toContain("['Language', asset.language || 'unknown']");
         expect(script).toContain("['Content rating', asset.content_rating || 'unrated']");
         expect(script).toContain("['Created', formatAssetDate(asset.created_at) || 'unknown']");
@@ -325,6 +328,8 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('.marketplace-wallet-upload-status');
         expect(css).toContain('.marketplace-wallet-asset-preview h3');
         expect(css).toContain('.marketplace-wallet-asset-preview');
+        expect(css).toContain('.marketplace-wallet-preview-description');
+        expect(css).toContain('white-space: pre-wrap;');
         expect(css).toContain('.marketplace-wallet-preview-payload');
         expect(css).toContain('max-width: 100%;');
         expect(css).toContain('.marketplace-wallet-preview-note');

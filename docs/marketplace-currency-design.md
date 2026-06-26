@@ -91,7 +91,7 @@ listed -> suspended
   -> 上架
 ```
 
-当前本地 MVP 不做 multipart 服务端文件上传解析；内置 marketplace-wallet 扩展可读取本地 JSON 文件或粘贴的 JSON，把内容写入 `normalized_payload`，并按 payload 形状自动选择角色卡或世界书类型。上传表单会提交 `title`、`summary`、`description`、最多 20 个且每个 40 字符以内的 `tags`，以及后端同样支持的 `language` 和 `content_rating` 元数据；资产卡片和搜索继续使用短摘要、标签、语言和分级，详情/审核接口保留完整描述。后端会把 `metadata` 限制在 65536 字节以内、`normalized_payload` 限制在 1048576 字节以内，避免单个超大资产拖慢本地 JSON store、审核详情和移动端 PWA。正式 SaaS 再补角色卡 PNG/JSON、世界书 JSON、预设 JSON 的解析、对象存储和安全扫描流水线。
+当前本地 MVP 不做 multipart 服务端文件上传解析；内置 marketplace-wallet 扩展可读取本地 JSON 文件或粘贴的 JSON，把内容写入 `normalized_payload`，并按 payload 形状自动选择角色卡或世界书类型。上传表单会提交 `title`、`summary`、`description`、最多 20 个且每个 40 字符以内的 `tags`，以及后端同样支持的 `language` 和 `content_rating` 元数据；资产卡片和搜索继续使用短摘要、标签、语言和分级，Details/Inspect 弹窗会以安全文本展示完整描述。后端会把 `metadata` 限制在 65536 字节以内、`normalized_payload` 限制在 1048576 字节以内，避免单个超大资产拖慢本地 JSON store、审核详情和移动端 PWA。正式 SaaS 再补角色卡 PNG/JSON、世界书 JSON、预设 JSON 的解析、对象存储和安全扫描流水线。
 
 ### 上传校验
 
@@ -482,7 +482,7 @@ npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
 创作者可修改自己的 draft/rejected 资产，修改后回到 draft/private，再重新 submit 进入审核；submitted/listed/delisted 资产不允许原地修改，后续应改走版本化发布。
 Review Queue 展示资产类型、创作者、价格、更新时间、标签和安全摘要片段；payload 仍只在管理员点击 Inspect 后通过资产详情权限懒加载。上传和修订入口会提交 `title`/`summary`/`description`/`tags`/`language`/`content_rating` 并限制 `metadata`/`normalized_payload` 的 JSON 字节大小，submit 和 approve 也会复查该边界，防止旧数据或手工写入的 store 绕过限制。
 Library 接口只返回当前用户 active entitlements 对应的资产摘要、授权来源和安装记录摘要，不返回 `normalized_payload`；已下架但仍授权的资产也会保留在用户库中。marketplace-wallet 的 My Library 条目展示授权日期、最近安装日期和本地引用摘要，并提供 Details 和 Install，用户可从库里查看授权资产元数据并重新安装，不需要回到公开市场列表查找。
-资产详情弹窗复用 `GET /api/market/assets/:id`；未授权用户只能看到元数据，创建者、管理员或已授权用户才会看到 payload。当前 marketplace-wallet 弹窗会显示类型、状态、创建者、语言、内容分级、价格、标签、稳定的创建/上架/下架/更新时间，以及当前用户的 entitlement 来源、授权日期和购买引用摘要。
+资产详情弹窗复用 `GET /api/market/assets/:id`；未授权用户只能看到元数据，创建者、管理员或已授权用户才会看到 payload。当前 marketplace-wallet 弹窗会以安全文本显示完整描述，并显示类型、状态、创建者、语言、内容分级、价格、标签、稳定的创建/上架/下架/更新时间，以及当前用户的 entitlement 来源、授权日期和购买引用摘要。
 本地 MVP 的市场浏览先用客户端筛选和排序，支持类型、价格、访问状态、标题/摘要/创作者/标签/语言/内容分级搜索、最新、热门和价格排序；正式 SaaS 需要服务端搜索与排序索引。
 当前 marketplace-wallet 在筛选结果为空且存在激活筛选时显示 Clear filters，移动端也可以一键回到默认浏览状态。
 托管探活使用公开 `GET /api/health`，返回 `ok/status/service/version/uptime/timestamp`，不需要登录、不返回用户或账务数据。

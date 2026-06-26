@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.20';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.21';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -880,6 +880,7 @@ test.describe('marketplace wallet extension', () => {
             id: 'details-world',
             title: 'Details World',
             summary: 'Metadata-rich world book.',
+            description: 'A long creator description with\nmultiple lines and <strong>plain text only</strong>.',
             language: 'ja',
             content_rating: 'teen',
             created_at: '2026-06-24T09:00:00.000Z',
@@ -899,6 +900,9 @@ test.describe('marketplace wallet extension', () => {
         await expect.poll(() => apiCalls.details).toEqual(['details-world']);
         const detailsPopup = page.getByRole('dialog').filter({ hasText: 'Details World' });
         await expect(detailsPopup).toBeVisible();
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-description')).toContainText('A long creator description with');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-description')).toContainText('<strong>plain text only</strong>');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-description strong')).toHaveCount(0);
         await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('Language');
         await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('ja');
         await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('Content rating');
@@ -958,6 +962,7 @@ test.describe('marketplace wallet extension', () => {
             id: 'mobile-details-world',
             title: `Mobile Details World ${longToken}`,
             summary: `A mobile detail summary with a long unbroken token ${longToken}.`,
+            description: `A mobile detail description with line breaks.\n${longToken}\n${longToken}`,
             language: `mobile-language-${longToken}`,
             content_rating: `mobile-rating-${longToken}`,
             tags: ['mobile', longToken],
@@ -984,6 +989,8 @@ test.describe('marketplace wallet extension', () => {
         const detailsPopup = page.getByRole('dialog').filter({ hasText: 'Mobile Details World' });
         await expect(detailsPopup).toBeVisible();
         await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('Content rating');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-description')).toContainText('A mobile detail description');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-description')).toContainText(longToken);
         await expect(detailsPopup.locator('.marketplace-wallet-preview-payload')).toContainText(longToken);
 
         const layout = await detailsPopup.evaluate(dialog => {
@@ -991,9 +998,10 @@ test.describe('marketplace wallet extension', () => {
             const viewportHeight = document.documentElement.clientHeight;
             const rect = dialog.getBoundingClientRect();
             const meta = dialog.querySelector('.marketplace-wallet-preview-meta');
+            const description = dialog.querySelector('.marketplace-wallet-preview-description');
             const payload = dialog.querySelector('.marketplace-wallet-preview-payload');
             const closeButton = dialog.querySelector('.popup-button-ok');
-            const horizontalElements = [meta, payload].filter(Boolean);
+            const horizontalElements = [meta, description, payload].filter(Boolean);
             const horizontallyOverflowing = horizontalElements
                 .filter(element => {
                     const elementRect = element.getBoundingClientRect();

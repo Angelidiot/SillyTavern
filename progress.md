@@ -1425,6 +1425,17 @@
 - 已提交 `17a80cc7a Add marketplace upload descriptions` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28271087368` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 114：详情弹窗显示完整描述
+- 开始补齐 Details/Inspect 弹窗中的 `description` 展示；本阶段不把 description 加到列表摘要或搜索字段，避免长文本拖慢手机端浏览。
+- `public/scripts/extensions/marketplace-wallet/index.js` 的 asset preview 现在会在 summary 后用 `.text(description)` 安全渲染非空描述。
+- `public/scripts/extensions/marketplace-wallet/style.css` 新增 `.marketplace-wallet-preview-description`，用 `white-space: pre-wrap` 和 `overflow-wrap: anywhere` 支撑换行和窄屏长词。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和浏览器 E2E 常量已从 `0.2.20` 升到 `0.2.21`。
+- `tests/marketplace-wallet-ui.test.js` 已锁定详情描述渲染和 CSS；`tests/marketplace-wallet.e2e.js` 已断言 Details 弹窗将 `<strong>` 作为纯文本显示。
+- README 和设计文档已同步 Details/Inspect 显示完整描述的边界。
+- Noether 子 agent 只读复核建议锁定 description 不进入搜索、长描述移动端不横向溢出和设计文档字段列表；已补对应过滤测试、移动 E2E 和文档。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-filters.test.js marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows asset detail metadata|keeps the Details popup usable on mobile width|truncates large payloads" --workers=1`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+- 本阶段待提交推送并等待 GitHub Actions。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
