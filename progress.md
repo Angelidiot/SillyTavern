@@ -1306,6 +1306,7 @@
 - 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e`。
 - 首次并行运行 `npm run test:marketplace` 时 `market-wallet.test.js` 的固定价购买用例出现一次 `TypeError: fetch failed` / `SocketError: other side closed`；单独重跑该用例通过，随后完整 `npm run test:marketplace` 重跑通过 53/53。
 - 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28266565822` 已确认 Marketplace Wallet Checks 全链路通过。
 
 ## 五问重启检查
 | 问题 | 答案 |
