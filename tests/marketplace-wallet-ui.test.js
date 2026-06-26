@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.16');
+        expect(manifest.version).toBe('0.2.17');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -67,6 +67,13 @@ describe('marketplace wallet extension UI contract', () => {
         expect(html).toContain('id="marketplace_wallet_upload_mode"');
         expect(html).toContain('id="marketplace_wallet_upload_cancel"');
         expect(html).toContain('id="marketplace_wallet_upload_tags"');
+        expect(html).toContain('id="marketplace_wallet_upload_language"');
+        expect(html).toContain('id="marketplace_wallet_upload_content_rating"');
+        expect(html).toContain('list="marketplace_wallet_content_rating_options"');
+        expect(html).toContain('maxlength="40"');
+        expect(html).toContain('<option value="general"></option>');
+        expect(html).toContain('<option value="teen"></option>');
+        expect(html).toContain('<option value="mature"></option>');
         expect(html).toContain('Tags, comma separated');
         expect(html).toContain('Report Queue');
     });
@@ -185,8 +192,16 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('Payload JSON must be ${formatCoins(MAX_UPLOAD_PAYLOAD_BYTES)} bytes or less');
         expect(script).toContain("tags = parseTagInput($('#marketplace_wallet_upload_tags').val())");
         expect(script).toContain("tags,");
+        expect(script).toContain("const language = String($('#marketplace_wallet_upload_language').val() || 'en').trim() || 'en'");
+        expect(script).toContain("const contentRating = String($('#marketplace_wallet_upload_content_rating').val() || 'general').trim() || 'general'");
+        expect(script).toContain('language,');
+        expect(script).toContain('content_rating: contentRating');
         expect(script).toContain("$('#marketplace_wallet_upload_tags').val(getAssetTags(asset).join(', '))");
         expect(script).toContain("$('#marketplace_wallet_upload_tags').val('')");
+        expect(script).toContain("$('#marketplace_wallet_upload_language').val(asset.language || 'en')");
+        expect(script).toContain("$('#marketplace_wallet_upload_language').val('en')");
+        expect(script).toContain("$('#marketplace_wallet_upload_content_rating').val(asset.content_rating || 'general')");
+        expect(script).toContain("$('#marketplace_wallet_upload_content_rating').val('general')");
         expect(script).toContain('function inferPayloadType(payload)');
         expect(script).toContain('function getPayloadTitleHint(payload');
         expect(script).toContain('function applyUploadPayloadHints(payload');

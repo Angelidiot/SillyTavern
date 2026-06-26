@@ -1273,6 +1273,15 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28265389723` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 102：上传语言与内容分级元数据
+- `public/scripts/extensions/marketplace-wallet/window.html` 上传表单新增 language 输入和 content rating datalist 输入，默认 `en/general`，同时保留自定义 content rating。
+- `public/scripts/extensions/marketplace-wallet/index.js` 的 create/patch 请求现在提交 `language` 和 `content_rating`；`fillUploadForm()` 修订流会回填旧元数据，`clearUploadForm()` 会恢复默认值。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和 E2E 常量已从 `0.2.16` 升到 `0.2.17`，避免 PWA/mobile shell 加载旧模板。
+- `tests/marketplace-wallet.e2e.js` 覆盖创作者上传 world book 时提交 language/content_rating，以及 rejected 资产修订时回填并提交新 language/content_rating。
+- `scripts/export-marketplace-api-reference.mjs` 和 `docs/marketplace-api-reference.md` 已同步 create body 文案，明确 bounded text metadata 包含 tags/language/content_rating。
+- README 和设计文档已点名上传表单支持 language/content_rating 元数据，测试矩阵也同步到 upload tags/language/rating。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js marketplace-scripts.test.js marketplace-wallet-ui.test.js pwa.test.js` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "submits a world book upload|revises a rejected creator asset" --workers=1`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

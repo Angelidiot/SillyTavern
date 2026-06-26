@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v2';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.16';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.17';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -243,7 +243,8 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
             type: payload.type,
             title: payload.title,
             summary: payload.summary,
-            language: 'en',
+            language: payload.language || 'en',
+            content_rating: payload.content_rating || 'general',
             tags: Array.isArray(payload.tags) ? payload.tags : [],
             status: 'draft',
             owned: true,
@@ -1168,6 +1169,8 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('Creator Browser World');
         await page.locator('#marketplace_wallet_upload_summary').fill('Submitted from the browser E2E flow.');
         await page.locator('#marketplace_wallet_upload_tags').fill('browser, lore, browser');
+        await page.locator('#marketplace_wallet_upload_language').fill('ja');
+        await page.locator('#marketplace_wallet_upload_content_rating').fill('teen');
         await page.locator('#marketplace_wallet_upload_price_type').selectOption('free');
         await page.locator('[data-marketplace-wallet-upload="review"]').click();
 
@@ -1177,6 +1180,8 @@ test.describe('marketplace wallet extension', () => {
             title: 'Creator Browser World',
             summary: 'Submitted from the browser E2E flow.',
             tags: ['browser', 'lore'],
+            language: 'ja',
+            content_rating: 'teen',
             price_type: 'free',
             price_coins: 0,
             normalized_payload: {
@@ -1205,6 +1210,8 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_creator_earnings_balance')).toHaveText('25');
         await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('');
         await expect(page.locator('#marketplace_wallet_upload_tags')).toHaveValue('');
+        await expect(page.locator('#marketplace_wallet_upload_language')).toHaveValue('en');
+        await expect(page.locator('#marketplace_wallet_upload_content_rating')).toHaveValue('general');
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
     });
 
@@ -1241,6 +1248,8 @@ test.describe('marketplace wallet extension', () => {
             type: 'world_book',
             title: 'Rejected Browser World',
             summary: 'Needs a cleaner lore entry.',
+            language: 'fr',
+            content_rating: 'mature',
             creator_id: 'default-user',
             status: 'rejected',
             owned: true,
@@ -1288,10 +1297,14 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_upload_mode')).toHaveText('Editing Rejected Browser World');
         await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('Rejected Browser World');
         await expect(page.locator('#marketplace_wallet_upload_summary')).toHaveValue('Needs a cleaner lore entry.');
+        await expect(page.locator('#marketplace_wallet_upload_language')).toHaveValue('fr');
+        await expect(page.locator('#marketplace_wallet_upload_content_rating')).toHaveValue('mature');
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue(/Old rejected lore entry\./);
 
         await page.locator('#marketplace_wallet_upload_title').fill('Revised Browser World');
         await page.locator('#marketplace_wallet_upload_summary').fill('Ready for a second review.');
+        await page.locator('#marketplace_wallet_upload_language').fill('de');
+        await page.locator('#marketplace_wallet_upload_content_rating').fill('teen');
         await page.locator('#marketplace_wallet_upload_payload').fill(JSON.stringify({
             name: 'Revised Browser World',
             entries: {
@@ -1310,6 +1323,8 @@ test.describe('marketplace wallet extension', () => {
                 type: 'world_book',
                 title: 'Revised Browser World',
                 summary: 'Ready for a second review.',
+                language: 'de',
+                content_rating: 'teen',
                 price_type: 'free',
                 price_coins: 0,
                 normalized_payload: {
@@ -1331,6 +1346,8 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_creator_assets_list')).toContainText('submitted');
         await expect(page.locator('#marketplace_wallet_upload_mode')).toHaveText('');
         await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('');
+        await expect(page.locator('#marketplace_wallet_upload_language')).toHaveValue('en');
+        await expect(page.locator('#marketplace_wallet_upload_content_rating')).toHaveValue('general');
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
     });
 

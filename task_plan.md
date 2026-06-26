@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 101
+阶段 102
 
 ## 各阶段
 
@@ -927,6 +927,15 @@
 - [x] README 和设计文档使用 docs 输出路径
 - [x] 更新 findings 和 progress
 - [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 102：上传语言与内容分级元数据
+- [x] 上传表单增加 `language` 和 `content_rating` 控件，并保留自定义分级输入
+- [x] create/patch 请求提交 language/content_rating 顶层字段
+- [x] rejected/draft 修订流回填并可修改 language/content_rating
+- [x] 同步 marketplace-wallet manifest 和 PWA 预缓存版本
+- [x] 更新 README、设计文档、API reference、UI contract 和浏览器 E2E
+- [x] 运行完整基础验证并提交推送
 - **状态：** complete
 
 ## 关键问题

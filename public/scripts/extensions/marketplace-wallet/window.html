@@ -146,6 +146,13 @@
                             <option value="world_book" data-i18n="World book">World book</option>
                         </select>
                         <input id="marketplace_wallet_upload_title" class="text_pole" maxlength="160" placeholder="Title" data-i18n="[placeholder]Title" aria-label="Title">
+                        <input id="marketplace_wallet_upload_language" class="text_pole" maxlength="16" placeholder="Language" value="en" data-i18n="[placeholder]Language" aria-label="Language">
+                        <input id="marketplace_wallet_upload_content_rating" class="text_pole" maxlength="40" list="marketplace_wallet_content_rating_options" placeholder="Content rating" value="general" data-i18n="[placeholder]Content rating" aria-label="Content rating">
+                        <datalist id="marketplace_wallet_content_rating_options">
+                            <option value="general"></option>
+                            <option value="teen"></option>
+                            <option value="mature"></option>
+                        </datalist>
                         <select id="marketplace_wallet_upload_price_type" class="text_pole" aria-label="Price type">
                             <option value="free" data-i18n="Free">Free</option>
                             <option value="fixed_price" data-i18n="Fixed price">Fixed price</option>

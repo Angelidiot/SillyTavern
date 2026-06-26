@@ -615,6 +615,8 @@ function clearUploadForm() {
     $('#marketplace_wallet_upload_title').val('');
     $('#marketplace_wallet_upload_summary').val('');
     $('#marketplace_wallet_upload_tags').val('');
+    $('#marketplace_wallet_upload_language').val('en');
+    $('#marketplace_wallet_upload_content_rating').val('general');
     $('#marketplace_wallet_upload_price_type').val('free').trigger('change');
     $('#marketplace_wallet_upload_price').val(0);
     $('#marketplace_wallet_upload_payload').val('');
@@ -626,6 +628,8 @@ function fillUploadForm(asset) {
     $('#marketplace_wallet_upload_title').val(asset.title || '');
     $('#marketplace_wallet_upload_summary').val(asset.summary || '');
     $('#marketplace_wallet_upload_tags').val(getAssetTags(asset).join(', '));
+    $('#marketplace_wallet_upload_language').val(asset.language || 'en');
+    $('#marketplace_wallet_upload_content_rating').val(asset.content_rating || 'general');
     $('#marketplace_wallet_upload_price_type').val(asset.price_type || 'free').trigger('change');
     $('#marketplace_wallet_upload_price').val(Number(asset.price_coins || 0));
     $('#marketplace_wallet_upload_payload').val(JSON.stringify(asset.normalized_payload ?? {}, null, 2));
@@ -1165,6 +1169,8 @@ async function createAsset(submitForReview) {
     const type = String($('#marketplace_wallet_upload_type').val() || '');
     const title = String($('#marketplace_wallet_upload_title').val() || '').trim();
     const summary = String($('#marketplace_wallet_upload_summary').val() || '').trim();
+    const language = String($('#marketplace_wallet_upload_language').val() || 'en').trim() || 'en';
+    const contentRating = String($('#marketplace_wallet_upload_content_rating').val() || 'general').trim() || 'general';
     const priceType = String($('#marketplace_wallet_upload_price_type').val() || 'free');
     const priceCoins = priceType === 'fixed_price' ? Number($('#marketplace_wallet_upload_price').val() || 0) : 0;
 
@@ -1200,6 +1206,8 @@ async function createAsset(submitForReview) {
                 title,
                 summary,
                 tags,
+                language,
+                content_rating: contentRating,
                 price_type: priceType,
                 price_coins: priceCoins,
                 normalized_payload: payload,

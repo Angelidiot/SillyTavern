@@ -171,6 +171,10 @@
 - PWA shell cache 已升级到 `sillytavern-shell-v2`，并预缓存 marketplace-wallet 的 manifest、window 模板、版本化入口 JS/CSS 和 filters 模块；PWA Jest 与浏览器 E2E 都会校验这些资源。
 - marketplace-wallet 初次加载市场资产失败时现在会显示 “Marketplace could not be loaded.”、后端错误摘要和 Retry 按钮；浏览器 E2E 覆盖 500 后点击 Retry 恢复列表。
 - `test:marketplace:all` 作为慢速发布前闭环命令，顺序跑 contract/Jest、runtime smoke 和 browser E2E；日常快速反馈仍用 `test:marketplace`。
+- marketplace-wallet 上传表单现在可以提交 `language` 和 `content_rating`；修订 rejected/draft 资产时会回填旧值，保存/提交后会进入 create/patch body。
+- `content_rating` 前端使用 datalist 输入而不是硬枚举 select，避免后端允许的自定义分级在修订时被清空。
+- marketplace-wallet manifest 和 PWA shell 预缓存版本需要随上传模板变更同步 bump，避免移动端/PWA 保留旧表单。
+- Marketplace API reference 的 create body 文案现在点名 `tags/language/content_rating` 边界，便于网页/手机版外部客户端按同一契约提交资产。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*
