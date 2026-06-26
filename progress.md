@@ -1281,6 +1281,8 @@
 - `scripts/export-marketplace-api-reference.mjs` 和 `docs/marketplace-api-reference.md` 已同步 create body 文案，明确 bounded text metadata 包含 tags/language/content_rating。
 - README 和设计文档已点名上传表单支持 language/content_rating 元数据，测试矩阵也同步到 upload tags/language/rating。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js marketplace-scripts.test.js marketplace-wallet-ui.test.js pwa.test.js` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "submits a world book upload|revises a rejected creator asset" --workers=1`。
+- 已通过 `npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28265880089` 已确认 Marketplace Wallet Checks 全链路通过。
 
 ## 五问重启检查
 | 问题 | 答案 |
