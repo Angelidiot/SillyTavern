@@ -433,7 +433,7 @@ function getCreatorSummary(store, currentUserId, balance, ledger) {
 function canReadAsset(asset, currentUserId, store = null, isAdmin = false) {
     return isAdmin
         || asset.creator_id === currentUserId
-        || ['approved', 'listed'].includes(asset.status)
+        || asset.status === 'listed'
         || (store && hasActiveEntitlement(store, asset, currentUserId));
 }
 

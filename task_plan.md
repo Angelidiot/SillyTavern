@@ -791,6 +791,15 @@
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 
+### 阶段 86：legacy approved 公开读取边界
+- [x] 普通用户公开读取只认 `listed` 资产
+- [x] 契约测试覆盖历史 `approved` 未 listed 资产不出现在列表/详情/举报/购买
+- [x] 契约测试保留 creator/admin 读取与 admin approve 兼容路径
+- [x] API reference 说明 listed public read scope
+- [x] 更新 findings 和规划记录
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -828,6 +837,7 @@
 | API reference 必须记录上传边界 | 托管 API 使用者需要从生成文档看到 create/revision 的 body shape、tags/text 和 fixed_price 价格约束 |
 | API reference 必须记录交易与安装边界 | 购买响应隐私、bonus/paid 消费顺序和安装路径脱敏是托管 API 使用者必须知道的行为 |
 | API reference 必须记录读接口隐私 | 列表和 Creator summary 是高频读取接口，必须明确不返回 payload、raw wallet 或 recent earnings ledger |
+| 公开市场读取只认 listed 资产 | `approved` 是历史/中间状态，当前审核通过会直接 listed；未 listed 资产不应对普通用户开放浏览、举报或购买 |
 | Marketplace CI 应消除 action runtime 噪音 | 远端门禁已用 Node 24 跑测试，但 v4 actions 仍产生 Node 20 deprecation annotation；升级 v5 能让门禁结果更干净 |
 | snapshot export 参数错误必须清晰 | 迁移/备份脚本若把下一个 flag 当路径值会误导操作者；缺失值应直接失败并说明字段 |
 | demo seed 参数错误必须清晰 | 开箱体验脚本会被新部署者直接复制运行，缺失 creator/dataRoot 值必须明确失败 |

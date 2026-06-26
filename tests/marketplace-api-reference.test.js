@@ -43,8 +43,8 @@ describe('marketplace API reference export script', () => {
         expect(markdown).toContain('## Public health API');
         expect(markdown).toContain('GET    /api/health');
         expect(markdown).toContain('Notes:');
-        expect(markdown).toContain('- GET /api/market/assets: Lists visible assets as metadata summaries only; normalized_payload is never included in list responses.');
-        expect(markdown).toContain('- GET /api/market/assets/:id: Payload is returned only to the creator, admins, or entitled users; other readers receive redacted metadata.');
+        expect(markdown).toContain('- GET /api/market/assets: Lists listed public assets plus assets readable by the creator, admins, or entitled users as metadata summaries only; normalized_payload is never included in list responses.');
+        expect(markdown).toContain('- GET /api/market/assets/:id: Listed public assets are readable as redacted metadata; payload is returned only to the creator, admins, or entitled users.');
         expect(markdown).toContain('- GET /api/market/creator/summary: Returns only the current creator\'s asset summaries and aggregate stats; raw wallet objects, recent earnings ledgers, and asset payloads are excluded.');
         expect(markdown).toContain('- GET /api/market/library: Returns only the authenticated user\'s active entitlements and install summaries.');
         expect(markdown).toContain('- GET /api/market/reports/admin: Admin-only report queue; report bodies are visible here but asset payloads remain excluded.');

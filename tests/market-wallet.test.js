@@ -602,6 +602,86 @@ describe('market and wallet MVP endpoints', () => {
         expect(listedAsset.normalized_payload).toBeUndefined();
     });
 
+    test('keeps legacy approved assets private until they are listed', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const bobApp = createApp(createUser('bob', false));
+        const charlieApp = createApp(createUser('charlie', false));
+        const timestamp = new Date().toISOString();
+        const legacyAsset = {
+            id: 'asset_legacyapproved01',
+            creator_id: 'charlie',
+            type: 'world_book',
+            title: 'Legacy Approved World',
+            summary: 'Historically approved but not listed yet.',
+            description: '',
+            language: 'en',
+            content_rating: 'general',
+            price_type: 'free',
+            price_coins: 0,
+            tags: ['legacy'],
+            metadata: {},
+            normalized_payload: {
+                name: 'Legacy Approved World',
+                entries: {},
+            },
+            visibility: 'review',
+            status: 'approved',
+            sales_count: 0,
+            install_count: 0,
+            rating_avg: 0,
+            rating_count: 0,
+            created_at: timestamp,
+            updated_at: timestamp,
+            submitted_at: timestamp,
+            approved_at: timestamp,
+            listed_at: null,
+        };
+
+        fs.writeFileSync(path.join(dataRoot, 'market-assets.json'), JSON.stringify({
+            version: 1,
+            assets: [legacyAsset],
+            entitlements: [],
+            installs: [],
+            reports: [],
+        }, null, 4), 'utf8');
+
+        const publicList = await request(bobApp, '/api/market/assets', { method: 'GET' });
+        expect(publicList.status).toBe(200);
+        expect(publicList.body.assets.some(asset => asset.id === legacyAsset.id)).toBe(false);
+
+        const publicDetail = await request(bobApp, `/api/market/assets/${legacyAsset.id}`, { method: 'GET' });
+        expect(publicDetail.status).toBe(404);
+
+        const publicReport = await request(bobApp, `/api/market/assets/${legacyAsset.id}/report`, {
+            method: 'POST',
+            body: { reason: 'not yet listed' },
+        });
+        expect(publicReport.status).toBe(404);
+
+        const publicPurchase = await request(bobApp, `/api/market/assets/${legacyAsset.id}/purchase`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(publicPurchase.status).toBe(404);
+
+        const creatorDetail = await request(charlieApp, `/api/market/assets/${legacyAsset.id}`, { method: 'GET' });
+        expect(creatorDetail.status).toBe(200);
+        expect(creatorDetail.body.asset.payload_available).toBe(true);
+
+        const adminApproval = await request(aliceApp, `/api/market/assets/${legacyAsset.id}/approve`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(adminApproval.status).toBe(200);
+        expect(adminApproval.body.asset.status).toBe('listed');
+        expect(adminApproval.body.asset.visibility).toBe('public');
+
+        const listedDetail = await request(bobApp, `/api/market/assets/${legacyAsset.id}`, { method: 'GET' });
+        expect(listedDetail.status).toBe(200);
+        expect(listedDetail.body.asset.payload_available).toBe(false);
+        expect(listedDetail.body.asset.normalized_payload).toBeUndefined();
+    });
+
     test('validates marketplace report reason and body length', async () => {
         const aliceApp = createApp(createUser('alice', true));
         const bobApp = createApp(createUser('bob', false));

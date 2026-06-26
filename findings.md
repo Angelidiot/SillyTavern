@@ -134,6 +134,7 @@
 - Marketplace API reference 导出现在记录 asset create/revision 的 body shape、metadata/payload、tags/text 和 fixed_price 价格约束。
 - Marketplace API reference 导出现在记录 submit/approve/reject/purchase/install 的审核状态、购买隐私和安装路径脱敏边界。
 - Marketplace API reference 导出现在记录列表和 Creator summary 读接口的 payload、wallet 与 recent earnings 脱敏边界。
+- marketplace 普通用户公开读取现在只认 `listed` 资产；历史 `approved` 但未 listed 的资产仍仅 creator/admin 可读，避免审核中间态出现在公开浏览、详情、举报或购买入口。
 - Marketplace Wallet Checks workflow 升级到 pinned `actions/checkout@v5` 与 `actions/setup-node@v5`，避免远端门禁继续产生 Node 20 action runtime deprecation annotation。
 - marketplace-wallet Load JSON 会按 payload 形状自动切换 `character_card` 或 `world_book`，减少用户上传角色卡/世界书时选错类型。
 - marketplace-wallet 粘贴 JSON textarea 也复用同一类型/标题识别逻辑，且已有标题不会被 payload name 覆盖。

@@ -1127,6 +1127,13 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-demo-seed.test.js -t 'rejects unknown and incomplete arguments'`、`npm --prefix tests run test:unit -- marketplace-demo-seed.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28260223957` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 86：legacy approved 公开读取边界
+- `src/endpoints/market.js` 的普通公开读取现在只把 `listed` 资产视为公开；历史 `approved` 但未 listed 的资产仍只允许 creator/admin/entitled 用户读取。
+- `tests/market-wallet.test.js` 新增 legacy approved 契约测试，覆盖普通用户列表、详情、举报、购买均不可见，同时保留 creator detail 和 admin approve 到 listed 的兼容路径。
+- `scripts/export-marketplace-api-reference.mjs` 和 `tests/marketplace-api-reference.test.js` 已把市场读接口说明收紧到 listed public read scope。
+- docs、findings 和 task_plan 已补充 legacy approved 公开读取边界。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'keeps legacy approved assets private'`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
