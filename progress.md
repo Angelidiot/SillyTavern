@@ -1156,6 +1156,7 @@
 - `tests/marketplace-scripts.test.js` 新增契约测试锁定手机真机访问和 PWA secure context 说明。
 - findings 和 task_plan 已补充手机真机访问边界。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28261520847` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
