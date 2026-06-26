@@ -1111,6 +1111,7 @@
 - `.github/workflows/marketplace-wallet-checks.yml` 已仅升级 Marketplace Wallet Checks workflow 的 checkout/setup-node action pins，测试 Node 仍为 24。
 - findings 已记录本阶段用于消除远端 Node 20 action runtime deprecation annotation。
 - 已通过 `npm run test:marketplace:syntax`、`npm run test:marketplace`、workflow pin smoke 和 `git diff --check`。
+- GitHub run `28259729756` 已确认 Marketplace Wallet Checks 全链路通过，且本次 run 不再出现 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
