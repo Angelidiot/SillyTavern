@@ -20,6 +20,7 @@ function runSeed(dataRoot, args = []) {
     return execFileSync(process.execPath, [seedScript, '--dataRoot', dataRoot, ...args], {
         cwd: rootDirectory,
         encoding: 'utf8',
+        stdio: 'pipe',
     });
 }
 
@@ -40,6 +41,28 @@ describe('marketplace demo seed script', () => {
             encoding: 'utf8',
             stdio: 'pipe',
         })).toThrow();
+    });
+
+    test('rejects unknown and incomplete arguments', () => {
+        const dataRoot = makeTempRoot();
+
+        expect(() => execFileSync(process.execPath, [seedScript, '--unknown'], {
+            cwd: rootDirectory,
+            encoding: 'utf8',
+            stdio: 'pipe',
+        })).toThrow('Unknown argument: --unknown');
+        expect(() => execFileSync(process.execPath, [seedScript, '--dataRoot'], {
+            cwd: rootDirectory,
+            encoding: 'utf8',
+            stdio: 'pipe',
+        })).toThrow('Missing value for --dataRoot');
+        expect(() => execFileSync(process.execPath, [seedScript, '--dataRoot='], {
+            cwd: rootDirectory,
+            encoding: 'utf8',
+            stdio: 'pipe',
+        })).toThrow('Missing value for --dataRoot');
+        expect(() => runSeed(dataRoot, ['--creator'])).toThrow('Missing value for --creator');
+        expect(() => runSeed(dataRoot, ['--creator='])).toThrow('Missing value for --creator');
     });
 
     test('creates listed demo assets and preserves wallet storage isolation', () => {

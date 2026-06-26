@@ -31,24 +31,40 @@ function parseArgs(argv) {
         }
 
         if (arg === '--dataRoot') {
-            options.dataRoot = argv[index + 1] || '';
+            const dataRoot = argv[index + 1] || '';
+            if (!dataRoot || dataRoot.startsWith('--')) {
+                throw new Error('Missing value for --dataRoot');
+            }
+            options.dataRoot = dataRoot;
             index += 1;
             continue;
         }
 
         if (arg.startsWith('--dataRoot=')) {
-            options.dataRoot = arg.slice('--dataRoot='.length);
+            const dataRoot = arg.slice('--dataRoot='.length);
+            if (!dataRoot) {
+                throw new Error('Missing value for --dataRoot');
+            }
+            options.dataRoot = dataRoot;
             continue;
         }
 
         if (arg === '--creator') {
-            options.creator = argv[index + 1] || '';
+            const creator = argv[index + 1] || '';
+            if (!creator || creator.startsWith('--')) {
+                throw new Error('Missing value for --creator');
+            }
+            options.creator = creator;
             index += 1;
             continue;
         }
 
         if (arg.startsWith('--creator=')) {
-            options.creator = arg.slice('--creator='.length);
+            const creator = arg.slice('--creator='.length);
+            if (!creator) {
+                throw new Error('Missing value for --creator');
+            }
+            options.creator = creator;
             continue;
         }
 
