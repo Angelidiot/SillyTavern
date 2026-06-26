@@ -1345,6 +1345,91 @@ describe('market and wallet MVP endpoints', () => {
         expect(store.entitlements.filter(entitlement => entitlement.asset_id === assetId && entitlement.user_id === 'bob')).toHaveLength(1);
     });
 
+    test('serializes concurrent fixed price purchases by buyer wallet', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const bobApp = createApp(createUser('bob', false));
+        const charlieApp = createApp(createUser('charlie', false));
+        const firstAssetId = await createSubmittedAsset(charlieApp, {
+            type: 'character_card',
+            title: 'Concurrent Wallet One',
+            price_type: 'fixed_price',
+            price_coins: 30,
+            normalized_payload: createCharacterPayload(),
+        });
+        const secondAssetId = await createSubmittedAsset(charlieApp, {
+            type: 'character_card',
+            title: 'Concurrent Wallet Two',
+            price_type: 'fixed_price',
+            price_coins: 30,
+            normalized_payload: createCharacterPayload(),
+        });
+
+        for (const assetId of [firstAssetId, secondAssetId]) {
+            const approveResult = await request(aliceApp, `/api/market/assets/${assetId}/approve`, {
+                method: 'POST',
+                body: {},
+            });
+            expect(approveResult.status).toBe(200);
+        }
+
+        const grantResult = await request(aliceApp, '/api/wallet/grants/admin', {
+            method: 'POST',
+            body: {
+                targetHandle: 'bob',
+                amount: 30,
+                bucket: 'paid',
+            },
+        });
+        expect(grantResult.status).toBe(201);
+
+        const results = await Promise.all([
+            request(bobApp, `/api/market/assets/${firstAssetId}/purchase`, {
+                method: 'POST',
+                body: {},
+            }),
+            request(bobApp, `/api/market/assets/${secondAssetId}/purchase`, {
+                method: 'POST',
+                body: {},
+            }),
+        ]);
+
+        expect(results.map(result => result.status).sort()).toEqual([201, 402]);
+        const createdPurchase = results.find(result => result.status === 201);
+        const rejectedPurchase = results.find(result => result.status === 402);
+        expect(createdPurchase.body.already_owned).toBe(false);
+        expect(createdPurchase.body.entitlement.user_id).toBe('bob');
+        expect([firstAssetId, secondAssetId]).toContain(createdPurchase.body.entitlement.asset_id);
+        expect(rejectedPurchase.body).toMatchObject({
+            error: 'Insufficient wallet balance',
+            balance: {
+                buckets: expect.objectContaining({
+                    paid: 0,
+                }),
+            },
+        });
+
+        const bobLedger = await request(bobApp, '/api/wallet/ledger', { method: 'GET' });
+        expect(bobLedger.status).toBe(200);
+        expect(bobLedger.body.balance.buckets.paid).toBe(0);
+        expect(bobLedger.body.ledger.filter(entry => entry.type === 'market_purchase_debit')).toHaveLength(1);
+        expect(bobLedger.body.ledger.filter(entry => entry.type === 'market_purchase_debit')[0]).toMatchObject({
+            amount: -30,
+            metadata: expect.objectContaining({
+                buyer_handle: 'bob',
+                creator_handle: 'charlie',
+            }),
+        });
+
+        const charlieLedger = await request(charlieApp, '/api/wallet/ledger', { method: 'GET' });
+        expect(charlieLedger.status).toBe(200);
+        expect(charlieLedger.body.balance.buckets.earnings).toBe(30);
+        expect(charlieLedger.body.ledger.filter(entry => entry.type === 'market_creator_earning')).toHaveLength(1);
+
+        const store = JSON.parse(fs.readFileSync(path.join(dataRoot, 'market-assets.json'), 'utf8'));
+        expect(store.entitlements.filter(entitlement => entitlement.user_id === 'bob')).toHaveLength(1);
+        expect(store.assets.filter(asset => [firstAssetId, secondAssetId].includes(asset.id)).map(asset => asset.sales_count).sort()).toEqual([0, 1]);
+    });
+
     test('returns creator summary with owned assets and earnings', async () => {
         const aliceApp = createApp(createUser('alice', true));
         const bobApp = createApp(createUser('bob', false));

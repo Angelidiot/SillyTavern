@@ -856,7 +856,7 @@ router.post('/assets/:id/report', (request, response) => {
 
 router.post('/assets/:id/purchase', async (request, response) => {
     const currentUserId = getUserId(request);
-    const lockKey = `${request.params.id}:${currentUserId}`;
+    const lockKey = `wallet:${currentUserId}`;
 
     return withMarketPurchaseLock(lockKey, async () => {
         const store = readStore(request);

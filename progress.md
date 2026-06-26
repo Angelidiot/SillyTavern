@@ -1135,6 +1135,13 @@
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'keeps legacy approved assets private'`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28260687346` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 87：固定价购买按买家钱包串行
+- `src/endpoints/market.js` 的 fixed-price purchase 锁从 `asset:user` 调整为 `wallet:user`，让同一买家的不同付费资产购买串行读取钱包余额。
+- `tests/market-wallet.test.js` 新增同一买家并发购买两个不同 fixed-price 资产的契约测试，余额只够一件时只允许一笔 purchase 成功。
+- 新测试断言 buyer debit、creator earning、entitlement 和 asset sales_count 都只落一笔，防止并发透支。
+- findings 和 task_plan 已补充买家钱包串行化边界。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'serializes concurrent fixed price purchases by buyer wallet'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
