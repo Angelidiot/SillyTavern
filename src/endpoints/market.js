@@ -305,6 +305,7 @@ function toAssetListItem(asset, currentUserId, store = null) {
         title: asset.title,
         summary: asset.summary,
         language: asset.language,
+        content_rating: asset.content_rating,
         tags: asset.tags,
         status: asset.status,
         price_type: asset.price_type,

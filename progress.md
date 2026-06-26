@@ -1198,6 +1198,12 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "clears active marketplace filters" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28262958359` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 94：列表摘要返回内容分级
+- `src/endpoints/market.js` 的 `toAssetListItem()` 现在返回 `content_rating`，和已有 `language` 字段一起支撑真实 API 列表搜索。
+- `tests/market-wallet.test.js` 的公开 listed 列表断言已覆盖 `language: en` 和 `content_rating: general`。
+- 同一测试继续断言列表摘要不返回 `normalized_payload`，保持购买前 payload 隐私边界。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "requires review before purchase"`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

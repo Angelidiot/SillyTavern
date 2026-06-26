@@ -596,6 +596,8 @@ describe('market and wallet MVP endpoints', () => {
         expect(listedAsset).toMatchObject({
             id: assetId,
             status: 'listed',
+            language: 'en',
+            content_rating: 'general',
             owned: false,
             entitled: false,
         });
