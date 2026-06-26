@@ -1331,6 +1331,16 @@
 - 已提交 `df3382145 Add PWA install prompt` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28267566537` 已确认 Marketplace Wallet Checks 全链路通过。
 
+## 2026-06-26 阶段 107：移动端 Details 弹窗可用性
+- 采纳 Ptolemy 子 agent 建议，补齐 Details popup 在 360px 手机 viewport 下的可用性验证。
+- `public/scripts/extensions/marketplace-wallet/style.css` 为 `.marketplace-wallet-asset-preview` 和 payload preview 增加 `max-width: 100%`/`overflow-wrap` 兜底，避免长标题、长 tag 或长 payload 撑宽弹窗。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和 E2E 常量已从 `0.2.18` 升到 `0.2.19`。
+- `tests/marketplace-wallet.e2e.js` 新增移动 Details popup 用例，使用长字段打开详情，断言外层 dialog 和 Close 按钮在视口内、metadata 单列、内容区纵向滚动、payload 不横向溢出且可关闭。
+- 首次目标 E2E 把内部滚动内容的纵向超出误判为失败；已改为只对 meta/payload 检查横向溢出，并断言 `.popup-content` 负责纵向滚动。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps the Details popup usable on mobile width" --workers=1`。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server` 显示 20/20 browser E2E 全部通过；父会话在测试摘要后未自动返回 shell，手动 Ctrl-C 后输出 `20 passed (3.2m)`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

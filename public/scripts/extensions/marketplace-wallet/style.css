@@ -422,6 +422,11 @@
     margin: 0 0 6px;
 }
 
+.marketplace-wallet-asset-preview {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
 .marketplace-wallet-preview-meta {
     display: grid;
     grid-template-columns: max-content minmax(0, 1fr);
@@ -438,6 +443,7 @@
 }
 
 .marketplace-wallet-preview-payload {
+    max-width: 100%;
     max-height: min(48vh, 520px);
     overflow: auto;
     white-space: pre-wrap;

@@ -186,6 +186,7 @@
 - `beforeinstallprompt` 是最小可验证的应用内 PWA 安装入口；支持的浏览器可以显示 Install 动作并调用原生 prompt，已安装/standalone 模式和 `appinstalled` 后必须隐藏入口。
 - PWA 安装入口样式应固定在安全区内并复用现有按钮体系；关闭按钮应是图标按钮，避免手机登录/聊天界面出现额外说明文案。
 - marketplace-wallet Details 弹窗还缺手机 viewport 下的可滚动/无横向溢出验证；这是 PWA 安装入口后的下一个移动端 UX 小闭环。
+- Details 弹窗在 360px 手机宽度下外层 dialog 和 Close 按钮应留在视口内；metadata/payload 不应横向溢出，纵向内容由 popup `.popup-content` 滚动承载。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

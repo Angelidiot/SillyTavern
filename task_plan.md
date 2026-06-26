@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 106
+阶段 107
 
 ## 各阶段
 
@@ -973,6 +973,14 @@
 - [x] 补充 PWA Jest、README 契约和浏览器 E2E
 - [x] 更新 README、设计文档、findings 和 progress
 - [x] 运行完整基础验证并提交推送
+- **状态：** complete
+
+### 阶段 107：移动端 Details 弹窗可用性
+- [x] 采纳子 agent 发现：Details 弹窗是手机端买前/库内复查的高频入口，但缺少窄屏验证
+- [x] 在 360px viewport 下覆盖 Details 弹窗打开、内容展示、关闭和无横向溢出
+- [x] 必要时为 marketplace-wallet preview/popup 增加移动端宽度兜底
+- [x] 更新 UI contract、findings 和 progress
+- [x] 运行目标 E2E、基础验证并提交推送
 - **状态：** complete
 
 ## 关键问题

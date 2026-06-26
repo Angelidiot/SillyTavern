@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.18';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.19';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -949,6 +949,99 @@ test.describe('marketplace wallet extension', () => {
         await expect(detailsPopup.locator('.marketplace-wallet-preview-payload')).toContainText('truncated');
         await expect(detailsPopup.locator('.marketplace-wallet-preview-payload')).not.toContainText('TAIL_SENTINEL');
         await detailsPopup.locator('.popup-button-ok').click();
+    });
+
+    test('keeps the Details popup usable on mobile width', async ({ page }) => {
+        await page.setViewportSize({ width: 360, height: 740 });
+        const longToken = 'A'.repeat(160);
+        const detailAsset = makeListedAsset({
+            id: 'mobile-details-world',
+            title: `Mobile Details World ${longToken}`,
+            summary: `A mobile detail summary with a long unbroken token ${longToken}.`,
+            language: `mobile-language-${longToken}`,
+            content_rating: `mobile-rating-${longToken}`,
+            tags: ['mobile', longToken],
+            normalized_payload: {
+                name: 'Mobile Details World',
+                entries: {
+                    lore: {
+                        key: ['mobile'],
+                        content: longToken,
+                    },
+                },
+            },
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [detailAsset],
+        });
+
+        await loadSillyTavern(page);
+
+        const assetRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Mobile Details World' });
+        await assetRow.locator('[data-marketplace-wallet-action="details"]').click();
+
+        await expect.poll(() => apiCalls.details).toEqual(['mobile-details-world']);
+        const detailsPopup = page.getByRole('dialog').filter({ hasText: 'Mobile Details World' });
+        await expect(detailsPopup).toBeVisible();
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('Content rating');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-payload')).toContainText(longToken);
+
+        const layout = await detailsPopup.evaluate(dialog => {
+            const viewportWidth = document.documentElement.clientWidth;
+            const viewportHeight = document.documentElement.clientHeight;
+            const rect = dialog.getBoundingClientRect();
+            const meta = dialog.querySelector('.marketplace-wallet-preview-meta');
+            const payload = dialog.querySelector('.marketplace-wallet-preview-payload');
+            const closeButton = dialog.querySelector('.popup-button-ok');
+            const horizontalElements = [meta, payload].filter(Boolean);
+            const horizontallyOverflowing = horizontalElements
+                .filter(element => {
+                    const elementRect = element.getBoundingClientRect();
+                    return elementRect.width > 0
+                        && (elementRect.left < -1 || elementRect.right > viewportWidth + 1);
+                })
+                .map(element => ({
+                    tag: element.tagName,
+                    className: String(element.className),
+                }));
+            const popupContent = dialog.querySelector('.popup-content');
+            const closeRect = closeButton.getBoundingClientRect();
+
+            return {
+                dialogLeft: rect.left,
+                dialogRight: rect.right,
+                dialogTop: rect.top,
+                dialogBottom: rect.bottom,
+                closeLeft: closeRect.left,
+                closeRight: closeRect.right,
+                closeTop: closeRect.top,
+                closeBottom: closeRect.bottom,
+                viewportWidth,
+                viewportHeight,
+                metaColumns: getComputedStyle(meta).gridTemplateColumns.split(' ').length,
+                contentOverflowY: getComputedStyle(popupContent).overflowY,
+                payloadOverflowX: getComputedStyle(payload).overflowX,
+                closeVisible: Boolean(closeButton?.checkVisibility?.() ?? closeButton),
+                horizontallyOverflowing,
+            };
+        });
+
+        expect(layout.dialogLeft).toBeGreaterThanOrEqual(0);
+        expect(layout.dialogRight).toBeLessThanOrEqual(layout.viewportWidth);
+        expect(layout.dialogTop).toBeGreaterThanOrEqual(0);
+        expect(layout.dialogBottom).toBeLessThanOrEqual(layout.viewportHeight);
+        expect(layout.closeLeft).toBeGreaterThanOrEqual(0);
+        expect(layout.closeRight).toBeLessThanOrEqual(layout.viewportWidth);
+        expect(layout.closeTop).toBeGreaterThanOrEqual(0);
+        expect(layout.closeBottom).toBeLessThanOrEqual(layout.viewportHeight);
+        expect(layout.metaColumns).toBe(1);
+        expect(layout.contentOverflowY).toMatch(/auto|scroll/);
+        expect(layout.payloadOverflowX).toMatch(/auto|scroll/);
+        expect(layout.closeVisible).toBe(true);
+        expect(layout.horizontallyOverflowing).toEqual([]);
+
+        await detailsPopup.locator('.popup-button-ok').click();
+        await expect(detailsPopup).toBeHidden();
     });
 
     test('claims and installs a free asset into the library', async ({ page }) => {
