@@ -1250,6 +1250,7 @@
 - 新增浏览器 E2E 覆盖固定价购买成功、自动安装失败、Library 显示 Purchased/not installed、用户从 Library 重试安装成功。
 - `tests/marketplace-wallet-ui.test.js` 已锁定安装失败 warning、刷新 Promise 和 marketplace silent reload contract。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a purchased asset in the library" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28264844045` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
