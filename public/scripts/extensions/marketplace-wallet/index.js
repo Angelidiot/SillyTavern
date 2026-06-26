@@ -986,6 +986,12 @@ async function reportAsset(assetId) {
         return;
     }
 
+    const trimmedReason = String(reason || '').trim();
+    if (!trimmedReason) {
+        toastr.warning('Report reason is required');
+        return;
+    }
+
     const details = await callGenericPopup('Add report details (optional):', POPUP_TYPE.INPUT, '', {
         okButton: 'Report',
         cancelButton: 'Cancel',
@@ -1000,7 +1006,7 @@ async function reportAsset(assetId) {
         await fetchJson(`/api/market/assets/${encodeURIComponent(assetId)}/report`, {
             method: 'POST',
             body: JSON.stringify({
-                reason: String(reason || '').slice(0, MAX_REPORT_REASON_LENGTH),
+                reason: trimmedReason.slice(0, MAX_REPORT_REASON_LENGTH),
                 body: String(details || '').slice(0, MAX_REPORT_BODY_LENGTH),
             }),
         });

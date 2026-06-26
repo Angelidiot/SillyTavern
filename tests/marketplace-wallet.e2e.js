@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.21';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.22';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -873,6 +873,26 @@ test.describe('marketplace wallet extension', () => {
         await expect(reportQueue).toContainText('unsafe_prompt');
         await expect(reportQueue).toContainText('reported 2026-06-26');
         await expect(reportQueue).toContainText('Contains a jailbreak style lore instruction.');
+    });
+
+    test('keeps empty report reasons local to the first dialog', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [makeListedAsset()],
+            reports: [],
+        });
+
+        await loadSillyTavern(page);
+
+        const assetRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Listed World' });
+        await assetRow.locator('[data-marketplace-wallet-action="report"]').click();
+
+        const reasonPopup = page.getByRole('dialog').filter({ hasText: 'Report reason:' });
+        await expect(reasonPopup).toBeVisible();
+        await reasonPopup.locator('.popup-input').fill('   ');
+        await reasonPopup.locator('.popup-button-ok').click();
+
+        await expect(page.getByRole('dialog').filter({ hasText: 'Add report details (optional):' })).toHaveCount(0);
+        await expect.poll(() => apiCalls.reports).toEqual([]);
     });
 
     test('shows asset detail metadata in the Details popup', async ({ page }) => {

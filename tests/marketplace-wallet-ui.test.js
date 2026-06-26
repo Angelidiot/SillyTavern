@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.21');
+        expect(manifest.version).toBe('0.2.22');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -266,8 +266,10 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("fetchJson(`/api/market/assets/${encodeURIComponent(assetId)}/report`");
         expect(script).toContain('MAX_REPORT_REASON_LENGTH = 120');
         expect(script).toContain('MAX_REPORT_BODY_LENGTH = 2000');
+        expect(script).toContain("const trimmedReason = String(reason || '').trim()");
+        expect(script).toContain("toastr.warning('Report reason is required')");
         expect(script).toContain("const details = await callGenericPopup('Add report details (optional):'");
-        expect(script).toContain("reason: String(reason || '').slice(0, MAX_REPORT_REASON_LENGTH)");
+        expect(script).toContain('reason: trimmedReason.slice(0, MAX_REPORT_REASON_LENGTH)');
         expect(script).toContain("body: String(details || '').slice(0, MAX_REPORT_BODY_LENGTH)");
         expect(script).toContain('void loadReportQueue();');
         expect(script).toContain("fetchJson('/api/market/reports/admin')");
