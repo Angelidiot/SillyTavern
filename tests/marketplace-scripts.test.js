@@ -122,6 +122,13 @@ describe('marketplace runnable scripts', () => {
         expect(readmeScriptSection).toContain('docs/marketplace-api-reference.md');
     });
 
+    test('runs marketplace checks when the checked-in API reference changes', () => {
+        const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
+        const apiReferencePathMatches = workflow.match(/'docs\/marketplace-api-reference\.md'/g) || [];
+
+        expect(apiReferencePathMatches).toHaveLength(2);
+    });
+
     test('wires hosted Docker smoke into scripts, syntax gate, and CI', () => {
         const { scripts } = readRootPackage();
         const syntaxGate = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');

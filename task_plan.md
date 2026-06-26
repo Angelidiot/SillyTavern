@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 115
+阶段 116
 
 ## 各阶段
 
@@ -1076,6 +1076,17 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 116：API reference 文档触发 CI
+- [x] 确认 Marketplace Wallet Checks path filter 覆盖 API reference 生成脚本和测试，但漏掉 checked-in `docs/marketplace-api-reference.md`
+- [x] pull_request path filter 增加 `docs/marketplace-api-reference.md`
+- [x] push path filter 增加 `docs/marketplace-api-reference.md`
+- [x] 补充脚本契约测试，锁定该文档路径在 workflow 中出现两次
+- [x] 更新 findings/progress
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
