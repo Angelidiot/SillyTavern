@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 103
+阶段 104
 
 ## 各阶段
 
@@ -945,6 +945,14 @@
 - [x] 用户可从资产卡片重试 Submit，避免重复创建草稿
 - [x] 同步 marketplace-wallet manifest 和 PWA 预缓存版本
 - [x] 补充 UI contract 和浏览器 E2E
+- [x] 运行完整基础验证并提交推送
+- **状态：** complete
+
+### 阶段 104：PWA 导航壳更新策略
+- [x] service worker 对导航请求使用 network-first，失败时回退缓存
+- [x] 静态资源继续 cache-first，保持离线 shell 能力
+- [x] `/api/*` 和非 GET 请求继续完全绕过缓存
+- [x] 补充 PWA Jest 契约和浏览器 service worker E2E
 - [x] 运行完整基础验证并提交推送
 - **状态：** complete
 

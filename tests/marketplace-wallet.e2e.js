@@ -703,6 +703,17 @@ test.describe('hosted tavern PWA browser shell', () => {
             [`/scripts/extensions/marketplace-wallet/style.css?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`]: true,
         });
 
+        const staleShellText = 'STALE_LOGIN_SHELL_SHOULD_NOT_RENDER';
+        await page.evaluate(async ({ cacheName, staleShellText }) => {
+            const cache = await caches.open(cacheName);
+            await cache.put('/login.html', new Response(`<!doctype html><body>${staleShellText}</body>`, {
+                headers: { 'Content-Type': 'text/html' },
+            }));
+        }, { cacheName: SHELL_CACHE_NAME, staleShellText });
+
+        await page.goto('/login.html', { waitUntil: 'load' });
+        await expect(page.locator('body')).not.toContainText(staleShellText);
+
         const health = await page.evaluate(async () => {
             const response = await fetch('/api/health', { cache: 'no-store' });
             return {

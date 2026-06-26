@@ -58,7 +58,7 @@ The demo seed command writes two listed assets into the explicit data root: a fr
 
 The local MVP APIs live under `/api/market` and `/api/wallet`. Creator Center uses `GET /api/market/creator/summary`; full wallet balances and ledger history remain available through `/api/wallet` and `/api/wallet/ledger`. Hosted probes can use `GET /api/health` without a logged-in session.
 
-On a physical phone, `127.0.0.1` points at the phone itself. Start the server with `npm start -- --listen=true`, then open `http://<your-computer-lan-ip>:8000` from the phone while both devices are on the same network, or use an HTTPS tunnel/hosted URL. Browser PWA install prompts and service workers require a secure context: HTTPS is safest for hosted/mobile testing, while localhost is only treated as secure on the same device. The PWA service worker caches only the static shell and never caches `/api/*` wallet, market, or chat requests.
+On a physical phone, `127.0.0.1` points at the phone itself. Start the server with `npm start -- --listen=true`, then open `http://<your-computer-lan-ip>:8000` from the phone while both devices are on the same network, or use an HTTPS tunnel/hosted URL. Browser PWA install prompts and service workers require a secure context: HTTPS is safest for hosted/mobile testing, while localhost is only treated as secure on the same device. The PWA service worker uses network-first navigation with cached offline fallback, caches static shell assets, and never caches `/api/*` wallet, market, or chat requests.
 
 ### Useful Scripts
 
@@ -122,7 +122,7 @@ Validation matrix:
 | `npm run test:marketplace:syntax` | Fast JS syntax gate plus marketplace-wallet manifest/window/style asset checks for marketplace/wallet endpoints, PWA files, scripts, and targeted tests. |
 | `npm run test:marketplace` | Syntax gate plus marketplace, wallet, PWA, health, seed, snapshot export, API reference export, filter, upload tags/language/rating, and UI contract tests. |
 | `npm run test:marketplace:smoke` | Temporary local server smoke covering the demo seed script, health, PWA shell, wallet, market assets, creator upload/submit/approve, Creator Center stats, report create/queue/resolve, free and fixed-price claim/install, buyer debit, creator earning, Library, and file write. |
-| `npm run test:pwa:e2e` | Temporary local server plus Playwright service worker E2E for shell and marketplace-wallet cache registration and `/api/*` cache exclusion; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. |
+| `npm run test:pwa:e2e` | Temporary local server plus Playwright service worker E2E for network-first navigation, shell and marketplace-wallet cache registration, and `/api/*` cache exclusion; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. |
 | `npm run test:marketplace:e2e:server` | Temporary local server plus Playwright marketplace browser E2E for PWA service worker, admin, report submit/resolve, asset details metadata, creator upload tags/language/rating/type auto-detect/submit, empty-filter reset, unaffordable fixed-price cards, rejected asset revise/resubmit, free and fixed-price buy/install, wallet activity, Library dates/install summaries/details/reinstall, and mobile layout; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. |
 | `npm run test:marketplace:all` | Slow pre-release loop that runs `test:marketplace`, `test:marketplace:smoke`, and `test:marketplace:e2e:server` in sequence. |
 

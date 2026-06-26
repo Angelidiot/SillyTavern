@@ -178,6 +178,8 @@
 - marketplace-wallet 上传 Save & Submit 需要把保存和提交拆开处理；保存成功但 submit 失败时，草稿已经存在，UI 不应提示保存失败或诱导用户重复创建。
 - 提交失败恢复后刷新 marketplace/Creator Center，可让创作者看到 draft 并从资产卡片重试 Submit。
 - submit 失败提示应始终包含“Draft saved/Changes saved”，后端错误只能作为附加上下文，避免用户误以为内容丢失。
+- PWA service worker 对导航请求使用 cache-first 会让已安装手机壳长期看到旧首页/登录页；导航应 network-first，离线时再回退静态缓存。
+- PWA 静态 JS/CSS/manifest 资源仍可 cache-first，业务 `/api/*` 和非 GET 请求继续不进入 CacheStorage。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

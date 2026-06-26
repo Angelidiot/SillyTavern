@@ -55,6 +55,14 @@ describe('hosted tavern PWA shell', () => {
         expect(serviceWorker).toContain('sillytavern-shell-v2');
     });
 
+    test('uses network-first navigation so installed shells can update', () => {
+        const serviceWorker = readPublicFile('service-worker.js');
+
+        expect(serviceWorker).toContain("request.mode === 'navigate'");
+        expect(serviceWorker).toContain('fetch(request).catch(() => caches.match(request))');
+        expect(serviceWorker).toContain('cached || fetch(request)');
+    });
+
     test('precache shell assets exist in the public directory', () => {
         const shellAssets = readServiceWorkerShellAssets();
         const marketplaceWalletAssets = [
