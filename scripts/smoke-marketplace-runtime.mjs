@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { access, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { access, mkdtemp, rm } from 'node:fs/promises';
 import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,6 +8,10 @@ import { fileURLToPath } from 'node:url';
 const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const startupTimeoutMs = Number(process.env.MARKETPLACE_SMOKE_TIMEOUT_MS ?? 90_000);
 const requestTimeoutMs = Number(process.env.MARKETPLACE_SMOKE_REQUEST_TIMEOUT_MS ?? 5_000);
+const demoCreatorHandle = 'smoke-creator';
+const demoFreeAssetId = 'demo_character_mira';
+const demoPaidAssetId = 'demo_world_clockwork';
+const demoPaidPrice = 25;
 
 function appendLog(buffer, chunk) {
     const maxLength = 20_000;
@@ -157,77 +161,39 @@ async function assertPathExists(filePath, label) {
     }
 }
 
-async function writeDemoMarketStore(dataRoot) {
-    const timestamp = new Date().toISOString();
-    const store = {
-        version: 1,
-        assets: [
-            {
-                id: 'smoke_asset_demo',
-                creator_id: 'smoke-creator',
-                type: 'world_book',
-                title: 'Smoke Demo World',
-                summary: 'Runtime smoke marketplace asset.',
-                description: '',
-                language: 'en',
-                content_rating: 'general',
-                price_type: 'free',
-                price_coins: 0,
-                tags: ['smoke'],
-                metadata: {},
-                normalized_payload: {
-                    name: 'Smoke Demo World',
-                    entries: {},
-                },
-                visibility: 'public',
-                status: 'listed',
-                sales_count: 0,
-                install_count: 0,
-                rating_avg: 0,
-                rating_count: 0,
-                created_at: timestamp,
-                updated_at: timestamp,
-                submitted_at: timestamp,
-                approved_at: timestamp,
-                listed_at: timestamp,
-            },
-            {
-                id: 'smoke_asset_paid_world',
-                creator_id: 'smoke-creator',
-                type: 'world_book',
-                title: 'Smoke Paid World',
-                summary: 'Runtime smoke fixed-price marketplace asset.',
-                description: '',
-                language: 'en',
-                content_rating: 'general',
-                price_type: 'fixed_price',
-                price_coins: 7,
-                tags: ['smoke', 'paid'],
-                metadata: {},
-                normalized_payload: {
-                    name: 'Smoke Paid World',
-                    entries: {},
-                },
-                visibility: 'public',
-                status: 'listed',
-                sales_count: 0,
-                install_count: 0,
-                rating_avg: 0,
-                rating_count: 0,
-                created_at: timestamp,
-                updated_at: timestamp,
-                submitted_at: timestamp,
-                approved_at: timestamp,
-                listed_at: timestamp,
-            },
-        ],
-        entitlements: [],
-        installs: [],
-        reports: [],
-    };
+async function seedDemoMarketplace(dataRoot) {
+    const child = spawn(process.execPath, [
+        'scripts/seed-marketplace-demo.mjs',
+        '--dataRoot',
+        dataRoot,
+        '--creator',
+        demoCreatorHandle,
+    ], {
+        cwd: rootDirectory,
+        stdio: ['ignore', 'pipe', 'pipe'],
+    });
 
-    await mkdir(dataRoot, { recursive: true });
-    await writeFile(path.join(dataRoot, 'market-assets.json'), JSON.stringify(store, null, 4), 'utf8');
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', chunk => {
+        stdout = appendLog(stdout, chunk);
+    });
+    child.stderr.on('data', chunk => {
+        stderr = appendLog(stderr, chunk);
+    });
+
+    const exitCode = await new Promise((resolve, reject) => {
+        child.once('error', reject);
+        child.once('exit', code => resolve(code ?? 1));
+    });
+
+    if (exitCode !== 0) {
+        throw new Error(`Demo marketplace seed failed with exit code ${exitCode}\n--- stdout ---\n${stdout.trim()}\n--- stderr ---\n${stderr.trim()}`);
+    }
+
+    if (!stdout.includes(`- ${demoFreeAssetId}:`) || !stdout.includes(`- ${demoPaidAssetId}:`)) {
+        throw new Error(`Demo marketplace seed output did not list expected assets:\n${stdout.trim()}`);
+    }
 }
 
 async function run() {
@@ -249,7 +215,8 @@ async function run() {
     ].join('\n');
 
     try {
-        await writeDemoMarketStore(dataRoot);
+        await seedDemoMarketplace(dataRoot);
+        console.log('runtime ok: marketplace demo seed');
 
         child = spawn(process.execPath, [
             'server.js',
@@ -313,12 +280,12 @@ async function run() {
             if (!Array.isArray(payload.assets)) {
                 throw new Error(`Unexpected market assets payload: ${JSON.stringify(payload)}`);
             }
-            const demoAsset = payload.assets.find(asset => asset.id === 'smoke_asset_demo');
+            const demoAsset = payload.assets.find(asset => asset.id === demoFreeAssetId);
             if (!demoAsset || demoAsset.status !== 'listed' || demoAsset.price_type !== 'free') {
                 throw new Error(`Seeded smoke asset missing from marketplace payload: ${JSON.stringify(payload)}`);
             }
-            const paidAsset = payload.assets.find(asset => asset.id === 'smoke_asset_paid_world');
-            if (!paidAsset || paidAsset.status !== 'listed' || paidAsset.price_type !== 'fixed_price' || paidAsset.price_coins !== 7) {
+            const paidAsset = payload.assets.find(asset => asset.id === demoPaidAssetId);
+            if (!paidAsset || paidAsset.status !== 'listed' || paidAsset.price_type !== 'fixed_price' || paidAsset.price_coins !== demoPaidPrice) {
                 throw new Error(`Seeded paid smoke asset missing from marketplace payload: ${JSON.stringify(payload)}`);
             }
         });
@@ -475,8 +442,8 @@ async function run() {
         });
         console.log('runtime ok: /api/market/creator/summary installed upload');
 
-        await assertJsonEndpoint(`${baseUrl}/api/market/assets/smoke_asset_demo/purchase`, 'POST /api/market/assets/:id/purchase', payload => {
-            if (payload.already_owned !== false || payload.entitlement?.source !== 'free' || payload.entitlement?.asset_id !== 'smoke_asset_demo') {
+        await assertJsonEndpoint(`${baseUrl}/api/market/assets/${demoFreeAssetId}/purchase`, 'POST /api/market/assets/:id/purchase', payload => {
+            if (payload.already_owned !== false || payload.entitlement?.source !== 'free' || payload.entitlement?.asset_id !== demoFreeAssetId) {
                 throw new Error(`Unexpected marketplace purchase payload: ${JSON.stringify(payload)}`);
             }
         }, {
@@ -486,9 +453,9 @@ async function run() {
         console.log('runtime ok: POST /api/market/assets/:id/purchase');
 
         let reportId = '';
-        await assertJsonEndpoint(`${baseUrl}/api/market/assets/smoke_asset_demo/report`, 'POST /api/market/assets/:id/report', payload => {
+        await assertJsonEndpoint(`${baseUrl}/api/market/assets/${demoFreeAssetId}/report`, 'POST /api/market/assets/:id/report', payload => {
             const report = payload.report;
-            if (!report?.id || report.asset_id !== 'smoke_asset_demo' || report.reporter_id !== 'default-user') {
+            if (!report?.id || report.asset_id !== demoFreeAssetId || report.reporter_id !== 'default-user') {
                 throw new Error(`Unexpected marketplace report payload: ${JSON.stringify(payload)}`);
             }
             if (report.reason !== 'runtime_smoke_report' || report.body !== 'Runtime smoke report body.' || report.status !== 'open') {
@@ -510,7 +477,7 @@ async function run() {
                 throw new Error(`Unexpected report queue payload: ${JSON.stringify(payload)}`);
             }
             const report = payload.reports.find(item => item.id === reportId);
-            if (!report || report.status !== 'open' || report.asset?.id !== 'smoke_asset_demo' || report.asset?.title !== 'Smoke Demo World') {
+            if (!report || report.status !== 'open' || report.asset?.id !== demoFreeAssetId || report.asset?.title !== 'Mira the Harbor Oracle') {
                 throw new Error(`Open marketplace report missing from admin queue: ${JSON.stringify(payload)}`);
             }
             const assetKeys = Object.keys(report.asset || {}).sort();
@@ -545,25 +512,25 @@ async function run() {
         console.log('runtime ok: /api/market/reports/admin after resolve');
 
         await assertJsonEndpoint(`${baseUrl}/api/wallet/grants/admin`, 'POST /api/wallet/grants/admin', payload => {
-            if (payload.entry?.userHandle !== 'default-user' || payload.entry?.bucket !== 'paid' || payload.entry?.amount !== 7) {
+            if (payload.entry?.userHandle !== 'default-user' || payload.entry?.bucket !== 'paid' || payload.entry?.amount !== demoPaidPrice) {
                 throw new Error(`Unexpected admin grant payload: ${JSON.stringify(payload)}`);
             }
-            if (payload.balance?.buckets?.paid !== 7) {
+            if (payload.balance?.buckets?.paid !== demoPaidPrice) {
                 throw new Error(`Admin grant did not update paid balance: ${JSON.stringify(payload)}`);
             }
         }, {
             method: 'POST',
             body: JSON.stringify({
                 targetHandle: 'default-user',
-                amount: 7,
+                amount: demoPaidPrice,
                 bucket: 'paid',
                 reason: 'Runtime smoke fixed-price purchase',
             }),
         });
         console.log('runtime ok: POST /api/wallet/grants/admin');
 
-        await assertJsonEndpoint(`${baseUrl}/api/market/assets/smoke_asset_paid_world/purchase`, 'POST /api/market/assets/:id/purchase fixed_price', payload => {
-            if (payload.already_owned !== false || payload.entitlement?.source !== 'purchase' || payload.entitlement?.asset_id !== 'smoke_asset_paid_world') {
+        await assertJsonEndpoint(`${baseUrl}/api/market/assets/${demoPaidAssetId}/purchase`, 'POST /api/market/assets/:id/purchase fixed_price', payload => {
+            if (payload.already_owned !== false || payload.entitlement?.source !== 'purchase' || payload.entitlement?.asset_id !== demoPaidAssetId) {
                 throw new Error(`Unexpected fixed-price purchase payload: ${JSON.stringify(payload)}`);
             }
             if (!payload.entitlement?.purchase_id || payload.purchase?.id !== payload.entitlement.purchase_id) {
@@ -585,27 +552,27 @@ async function run() {
             if (payload.balance?.buckets?.paid !== 0) {
                 throw new Error(`Buyer wallet paid balance was not debited: ${JSON.stringify(payload)}`);
             }
-            const paidDebit = payload.ledger?.find(entry => entry.type === 'market_purchase_debit' && entry.metadata?.asset_id === 'smoke_asset_paid_world');
-            if (!paidDebit || paidDebit.bucket !== 'paid' || paidDebit.amount !== -7) {
+            const paidDebit = payload.ledger?.find(entry => entry.type === 'market_purchase_debit' && entry.metadata?.asset_id === demoPaidAssetId);
+            if (!paidDebit || paidDebit.bucket !== 'paid' || paidDebit.amount !== -demoPaidPrice) {
                 throw new Error(`Buyer ledger missing fixed-price debit: ${JSON.stringify(payload)}`);
             }
         });
         console.log('runtime ok: /api/wallet/ledger buyer debits');
 
-        await assertJsonEndpoint(`${baseUrl}/api/wallet/ledger?handle=smoke-creator`, '/api/wallet/ledger creator earnings', payload => {
-            if (payload.handle !== 'smoke-creator' || payload.balance?.buckets?.earnings !== 7) {
+        await assertJsonEndpoint(`${baseUrl}/api/wallet/ledger?handle=${demoCreatorHandle}`, '/api/wallet/ledger creator earnings', payload => {
+            if (payload.handle !== demoCreatorHandle || payload.balance?.buckets?.earnings !== demoPaidPrice) {
                 throw new Error(`Creator earnings balance missing: ${JSON.stringify(payload)}`);
             }
-            const creatorEarning = payload.ledger?.find(entry => entry.type === 'market_creator_earning' && entry.metadata?.asset_id === 'smoke_asset_paid_world');
-            if (!creatorEarning || creatorEarning.bucket !== 'earnings' || creatorEarning.amount !== 7) {
+            const creatorEarning = payload.ledger?.find(entry => entry.type === 'market_creator_earning' && entry.metadata?.asset_id === demoPaidAssetId);
+            if (!creatorEarning || creatorEarning.bucket !== 'earnings' || creatorEarning.amount !== demoPaidPrice) {
                 throw new Error(`Creator ledger missing fixed-price earning: ${JSON.stringify(payload)}`);
             }
         });
         console.log('runtime ok: /api/wallet/ledger creator earnings');
 
         let installedPath = '';
-        await assertJsonEndpoint(`${baseUrl}/api/market/assets/smoke_asset_demo/install`, 'POST /api/market/assets/:id/install', payload => {
-            if (payload.installed?.type !== 'world_book' || payload.install?.asset_id !== 'smoke_asset_demo') {
+        await assertJsonEndpoint(`${baseUrl}/api/market/assets/${demoFreeAssetId}/install`, 'POST /api/market/assets/:id/install', payload => {
+            if (payload.installed?.type !== 'character_card' || payload.install?.asset_id !== demoFreeAssetId) {
                 throw new Error(`Unexpected marketplace install payload: ${JSON.stringify(payload)}`);
             }
             if (!payload.installed?.path) {
@@ -620,8 +587,8 @@ async function run() {
         console.log('runtime ok: POST /api/market/assets/:id/install');
 
         let paidInstalledPath = '';
-        await assertJsonEndpoint(`${baseUrl}/api/market/assets/smoke_asset_paid_world/install`, 'POST /api/market/assets/:id/install fixed_price', payload => {
-            if (payload.installed?.type !== 'world_book' || payload.install?.asset_id !== 'smoke_asset_paid_world') {
+        await assertJsonEndpoint(`${baseUrl}/api/market/assets/${demoPaidAssetId}/install`, 'POST /api/market/assets/:id/install fixed_price', payload => {
+            if (payload.installed?.type !== 'world_book' || payload.install?.asset_id !== demoPaidAssetId) {
                 throw new Error(`Unexpected fixed-price install payload: ${JSON.stringify(payload)}`);
             }
             if (!payload.installed?.path) {
@@ -639,11 +606,11 @@ async function run() {
             if (!Array.isArray(payload.items)) {
                 throw new Error(`Unexpected library payload: ${JSON.stringify(payload)}`);
             }
-            const demoItem = payload.items.find(item => item.asset?.id === 'smoke_asset_demo');
+            const demoItem = payload.items.find(item => item.asset?.id === demoFreeAssetId);
             if (!demoItem || demoItem.entitlement?.source !== 'free' || demoItem.install_count !== 1) {
                 throw new Error(`Installed smoke asset missing from library payload: ${JSON.stringify(payload)}`);
             }
-            const paidItem = payload.items.find(item => item.asset?.id === 'smoke_asset_paid_world');
+            const paidItem = payload.items.find(item => item.asset?.id === demoPaidAssetId);
             if (!paidItem || paidItem.entitlement?.source !== 'purchase' || paidItem.install_count !== 1 || paidItem.asset?.price_type !== 'fixed_price') {
                 throw new Error(`Installed paid smoke asset missing from library payload: ${JSON.stringify(payload)}`);
             }

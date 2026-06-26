@@ -808,6 +808,14 @@
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 
+### 阶段 88：runtime smoke 复用 demo seed
+- [x] runtime smoke 调用 `scripts/seed-marketplace-demo.mjs`
+- [x] 真实 server smoke 使用 `demo_character_mira` 跑免费领取/安装/举报
+- [x] 真实 server smoke 使用 `demo_world_clockwork` 跑固定价购买/安装/收益
+- [x] README、设计文档、findings 说明 seed 路径已纳入 smoke
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -849,6 +857,7 @@
 | Marketplace CI 应消除 action runtime 噪音 | 远端门禁已用 Node 24 跑测试，但 v4 actions 仍产生 Node 20 deprecation annotation；升级 v5 能让门禁结果更干净 |
 | snapshot export 参数错误必须清晰 | 迁移/备份脚本若把下一个 flag 当路径值会误导操作者；缺失值应直接失败并说明字段 |
 | demo seed 参数错误必须清晰 | 开箱体验脚本会被新部署者直接复制运行，缺失 creator/dataRoot 值必须明确失败 |
+| runtime smoke 应复用 demo seed | README 推荐的开箱 seed 命令必须在真实 server smoke 中跑通，避免 seed 脚本只被 JSON 形状测试覆盖 |
 | Load JSON 应自动识别资产类型 | 角色卡和世界书 payload 形状可本地判断，自动设置类型能减少用户选错后才报错的摩擦 |
 | 粘贴 JSON 应复用文件导入识别逻辑 | 创作者可能直接粘贴角色卡/世界书 JSON；只在文件导入时自动识别会造成体验不一致 |
 | 余额不足原因应在移动端可见 | 仅靠 disabled 按钮的 title 提示不适合手机和读屏，需要在卡片动作区显示缺口金额 |

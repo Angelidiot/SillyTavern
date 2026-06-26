@@ -1143,6 +1143,12 @@
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'serializes concurrent fixed price purchases by buyer wallet'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28260949879` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 88：runtime smoke 复用 demo seed
+- `scripts/smoke-marketplace-runtime.mjs` 现在直接调用 `scripts/seed-marketplace-demo.mjs --dataRoot <tmp> --creator smoke-creator`，不再手写 smoke-only market store。
+- runtime smoke 使用 `demo_character_mira` 覆盖免费角色卡领取、举报、安装和 Library，使用 `demo_world_clockwork` 覆盖固定价购买、buyer debit、creator earning、安装和 Library。
+- README、设计文档、findings 和 task_plan 已补充 demo seed 路径纳入真实 server smoke 的说明。
+- 已通过 `npm run test:marketplace:syntax`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

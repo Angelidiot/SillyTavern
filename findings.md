@@ -111,19 +111,20 @@
 - 既有 merge-conflict bot workflow 已限制为官方仓库运行，避免 fork 缺 bot 凭证导致 push checks 失败。
 - 新增 demo marketplace seed 脚本，显式指定 data root 后写入免费角色卡和付费世界书，并保持幂等 upsert。
 - demo marketplace seed CLI 现在对未知参数、缺失 `--dataRoot` 和缺失 `--creator` 值给出明确错误，避免把下一个 flag 当 handle/path。
-- runtime smoke 现在会预置一条临时 listed 市场资产，并通过真实 server 校验 `/api/wallet` 与 `/api/market/assets` JSON shape。
+- runtime smoke 现在直接调用 demo seed 脚本生成 `demo_character_mira` 与 `demo_world_clockwork`，确保 README 推荐的开箱 seed 路径能在真实 server 购买、安装、举报和 Library 闭环中跑通。
+- runtime smoke 现在通过 demo seed 预置免费角色卡和固定价世界书，并通过真实 server 校验 `/api/wallet` 与 `/api/market/assets` JSON shape。
 - Runner Chrome 真实 E2E 会暴露两层可见性：SillyTavern 外层 Extensions drawer 需要打开，Marketplace Wallet 自身的 inline drawer 也需要展开，否则 admin、Report Queue 和购买按钮都在隐藏父级下。
 - 临时 data root 首次启动会出现 onboarding persona 弹窗；浏览器 E2E 必须等待并确认 Save，避免欢迎弹窗遮挡 Extensions 面板点击。
 - E2E 中 mock `/api/users/me` 为 admin 用户能防止账号配置漂移影响前端 `isAdmin()` gate；真实后端权限仍由接口单测覆盖。
 - marketplace-wallet 新增 Wallet Activity 面板，最近流水从 `/api/wallet/ledger` 降级加载，正数用 `+` 标识，负数标为 purchase/debit。
-- runtime smoke 现在会实际 POST 免费领取和安装 demo world book，并确认 Library 里 install_count 为 1 且文件写入临时用户 worlds 目录。
+- runtime smoke 现在会实际 POST 免费领取和安装 demo character card，并确认 Library 里 install_count 为 1 且文件写入临时用户 characters 目录。
 - 新增 `scripts/export-marketplace-snapshot.mjs`，用显式 `--dataRoot` 只读导出市场与钱包快照；stdout 输出 JSON，`--out` 写文件但拒绝写入 data root 内部。
 - marketplace/wallet 快照默认只导出白名单字段：market assets 的生命周期摘要、entitlements/installs/reports 安全明细、wallet ledger 的 id/type/userHandle/actorHandle/bucket/amount/createdAt 和少量迁移 metadata；不导出 normalized payload、举报正文、本地安装路径、完整 ledger reason/metadata 或绝对 data root。
 - marketplace snapshot 对 resolved report 只导出 `resolved_at` 这类生命周期时间；不导出 report body、resolution note 或 resolver handle。
 - marketplace snapshot export CLI 现在对未知参数、缺失 `--dataRoot` 和缺失 `--out` 路径给出明确错误，避免错误参数静默变成路径值。
 - wallet snapshot 使用和 wallet endpoint 一致的 node-persist key prefix，并过滤合法 bucket 与 safe integer amount，避免损坏或非钱包记录进入余额摘要。
 - paid purchase API 响应现在只返回 entitlement、`already_owned`、purchase id 和 buyer balance；完整 ledger entries 与 creator balance 不再通过购买响应暴露，仍可由买家/创作者通过各自 Wallet API 和 Creator Center 查询。
-- runtime smoke 现在同时覆盖免费和固定价 world book：真实 server 下执行 admin grant、fixed-price purchase、buyer paid debit、creator earnings ledger、purchase response 隐私 shape、安装落盘和 Library 可见性。
+- runtime smoke 现在同时覆盖免费角色卡和固定价世界书：真实 server 下执行 admin grant、fixed-price purchase、buyer paid debit、creator earnings ledger、purchase response 隐私 shape、安装落盘和 Library 可见性。
 - 固定价购买需要按买家钱包串行化，而不仅是按资产+买家串行；否则同一买家并发购买两个不同资产时可能同时读到旧余额并透支。
 - marketplace-wallet 浏览器 E2E mock 现在维护可变 wallet/ledger/library 状态，覆盖 fixed-price Buy & Install 后余额刷新、Purchase 负流水、Library 安装数和移动布局。
 - marketplace-wallet 固定价资产只按 bonus+paid 判断购买力；余额不足时卡片显示缺口金额，避免移动端只看到 disabled 按钮。
