@@ -1351,6 +1351,17 @@
 - 已提交 `731adb394 Keep PWA cache docs in sync` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28268286676` 已确认 Marketplace Wallet Checks 全链路通过。
 
+## 2026-06-26 阶段 109：托管 Docker 容器 smoke
+- Franklin 子 agent 建议补 Docker/托管镜像 smoke：现有 runtime smoke 证明 `node server.js`，但没有证明 Docker 部署产物可用。
+- 本机执行 `docker --version` 返回 `command not found`，因此本地不能实跑容器 smoke；后续通过脚本语法、契约测试和 GitHub runner Docker 环境验证。
+- 新增 `scripts/smoke-hosted-container.mjs`：检查 Docker、构建镜像、启动临时容器，挂载临时 config/data，并验证 `/api/health`、`/manifest.json`、`/service-worker.js` 和 `/`。
+- 容器 smoke 会预创建挂载目录并传入当前进程 UID/GID 作为 `PUID/PGID`，避免 CI 清理 root-owned 临时文件失败。
+- 新增根脚本 `npm run test:hosted:docker`，并接入 `scripts/check-marketplace-syntax.mjs`。
+- README、设计文档和 `tests/marketplace-scripts.test.js` 已同步 Docker smoke 命令、验证矩阵和 CI 接线。
+- Marketplace Wallet Checks workflow 已纳入 Dockerfile/.dockerignore/docker 路径和 `scripts/smoke-hosted-container.mjs`，并在 runtime smoke 后执行 `npm run test:hosted:docker`。
+- 本地 `npm run test:hosted:docker` 失败信息已收敛为 `Docker is required for hosted container smoke tests: spawn docker ENOENT`，符合本机无 Docker 的环境限制。
+- 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`node --check scripts/smoke-hosted-container.mjs`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

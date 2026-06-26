@@ -18,6 +18,7 @@ const files = [
     'scripts/export-marketplace-api-reference.mjs',
     'scripts/export-marketplace-snapshot.mjs',
     'scripts/seed-marketplace-demo.mjs',
+    'scripts/smoke-hosted-container.mjs',
     'scripts/smoke-marketplace-runtime.mjs',
     'tests/market-wallet.test.js',
     'tests/marketplace-wallet-filters.test.js',

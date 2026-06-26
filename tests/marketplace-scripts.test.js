@@ -90,6 +90,7 @@ describe('marketplace runnable scripts', () => {
             'marketplace:seed:demo',
             'marketplace:export:snapshot',
             'marketplace:export:api',
+            'test:hosted:docker',
             'test:marketplace:syntax',
             'test:marketplace',
             'test:marketplace:smoke',
@@ -106,6 +107,19 @@ describe('marketplace runnable scripts', () => {
         }
 
         expect(readmeScriptSection).toContain('docs/marketplace-api-reference.md');
+    });
+
+    test('wires hosted Docker smoke into scripts, syntax gate, and CI', () => {
+        const { scripts } = readRootPackage();
+        const syntaxGate = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');
+        const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
+
+        expect(scripts['test:hosted:docker']).toBe('node scripts/smoke-hosted-container.mjs');
+        expect(syntaxGate).toContain('scripts/smoke-hosted-container.mjs');
+        expect(workflow).toContain('Run hosted Docker smoke');
+        expect(workflow).toContain('npm run test:hosted:docker');
+        expect(workflow).toContain('Dockerfile');
+        expect(workflow).toContain('docker/**');
     });
 
     test('documents physical mobile access and PWA secure context requirements', () => {

@@ -188,6 +188,8 @@
 - marketplace-wallet Details 弹窗还缺手机 viewport 下的可滚动/无横向溢出验证；这是 PWA 安装入口后的下一个移动端 UX 小闭环。
 - Details 弹窗在 360px 手机宽度下外层 dialog 和 Close 按钮应留在视口内；metadata/payload 不应横向溢出，纵向内容由 popup `.popup-content` 滚动承载。
 - PWA cache 名称升级后设计文档也必须同步；`tests/pwa.test.js` 应从 service worker 解析 `CACHE_NAME` 并检查文档含当前 cache 名称和 Install prompt E2E 覆盖。
+- 托管版仅有 Node runtime smoke 还不能证明部署产物可用；Docker smoke 应构建镜像、用临时 config/data volume 启动容器，并验证 health、manifest、service worker 和首页。
+- 本机当前没有 `docker` 命令，容器 smoke 需要由 CI 或有 Docker 的机器执行；脚本应在缺 Docker 时清晰失败，不能静默跳过。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

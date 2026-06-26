@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 108
+阶段 109
 
 ## 各阶段
 
@@ -990,6 +990,16 @@
 - [x] 更新 findings/progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
+
+### 阶段 109：托管 Docker 容器 smoke
+- [x] 采纳子 agent 发现：当前 smoke 证明 Node runtime，但未证明 Docker 部署产物可启动
+- [x] 确认本机缺少 Docker，不能本地实跑容器 smoke
+- [x] 新增 `scripts/smoke-hosted-container.mjs`，构建镜像、启动临时容器并验证 health/PWA shell
+- [x] 新增 `test:hosted:docker` 脚本，并纳入 syntax gate、README、脚本契约测试和 Marketplace CI
+- [x] 更新设计文档、findings 和 progress
+- [x] 运行本地可执行验证并提交推送
+- [ ] 等待 GitHub 上 Docker smoke 通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

@@ -8,6 +8,9 @@ on:
       - '.github/workflows/marketplace-wallet-checks.yml'
       - 'README.md'
       - 'docs/marketplace-currency-design.md'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'docker/**'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/check-marketplace-syntax.mjs'
@@ -15,6 +18,7 @@ on:
       - 'scripts/export-marketplace-snapshot.mjs'
       - 'scripts/run-marketplace-e2e.mjs'
       - 'scripts/seed-marketplace-demo.mjs'
+      - 'scripts/smoke-hosted-container.mjs'
       - 'scripts/smoke-marketplace-runtime.mjs'
       - 'src/endpoints/market.js'
       - 'src/endpoints/wallet.js'
@@ -46,6 +50,9 @@ on:
       - '.github/workflows/marketplace-wallet-checks.yml'
       - 'README.md'
       - 'docs/marketplace-currency-design.md'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'docker/**'
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/check-marketplace-syntax.mjs'
@@ -53,6 +60,7 @@ on:
       - 'scripts/export-marketplace-snapshot.mjs'
       - 'scripts/run-marketplace-e2e.mjs'
       - 'scripts/seed-marketplace-demo.mjs'
+      - 'scripts/smoke-hosted-container.mjs'
       - 'scripts/smoke-marketplace-runtime.mjs'
       - 'src/endpoints/market.js'
       - 'src/endpoints/wallet.js'
@@ -116,6 +124,9 @@ jobs:
 
       - name: Run marketplace runtime smoke
         run: npm run test:marketplace:smoke
+
+      - name: Run hosted Docker smoke
+        run: npm run test:hosted:docker
 
       - name: Verify runner Chrome
         run: google-chrome --version
