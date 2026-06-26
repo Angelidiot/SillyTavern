@@ -1294,6 +1294,7 @@
 - `tests/marketplace-wallet-ui.test.js` 已锁定 submit 失败 warning、保存成功提示前缀和 silent marketplace reload contract。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a saved draft when submit after upload fails" --workers=1`。
 - 已通过 `npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28266246225` 已确认 Marketplace Wallet Checks 全链路通过。
 
 ## 五问重启检查
 | 问题 | 答案 |
