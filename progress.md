@@ -1221,6 +1221,7 @@
 - `tests/marketplace-wallet.e2e.js` 新增大 payload Details 弹窗测试，确认显示截断提示且尾部哨兵字符串不进入弹窗预览。
 - `tests/marketplace-wallet-ui.test.js` 已锁定 payload preview 截断常量、函数和提示样式。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "truncates large payloads" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28263806838` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
