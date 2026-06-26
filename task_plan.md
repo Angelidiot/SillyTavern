@@ -816,6 +816,15 @@
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 
+### 阶段 89：手机真机访问文档
+- [x] README 区分本机 `127.0.0.1` 和手机真机访问
+- [x] README 说明 `npm start -- --listen=true` 与局域网 IP
+- [x] README 说明 HTTPS tunnel/hosted URL 与 PWA secure context
+- [x] 脚本契约测试锁定手机访问说明
+- [x] 更新 findings 和规划记录
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -843,6 +852,7 @@
 | `marketplace-wallet` manifest 使用版本化 JS/CSS URL | 避免浏览器复用旧 ESM 模块，保证 admin UI 修复刷新后生效 |
 | 手机版先走 PWA 安装壳 | 最少代码满足手机打开即用；原生 iOS/Android 壳等支付、推送、商店策略明确后再做 |
 | PWA service worker 不缓存 API | 钱包、市场、聊天和账号请求必须保持实时，静态壳缓存即可 |
+| 手机真机访问不能用电脑的 127.0.0.1 | 127.0.0.1 在手机上指向手机自身；本地手机测试需要 listen + LAN IP 或 HTTPS tunnel/hosted URL，PWA 还依赖安全上下文 |
 | PWA 预缓存清单必须可验证 | `cache.addAll()` 遇到任一缺失资源会让 install 失败，基础测试要覆盖文件存在性 |
 | PWA service worker 需要浏览器级验证 | 静态 Jest 只能读文件，真实 Chrome E2E 才能证明注册、激活、CacheStorage 和 API cache exclusion 同时成立 |
 | 发布前需要一条慢速全闭环命令 | 日常 `test:marketplace` 保持快速；`test:marketplace:all` 串起 contract、runtime smoke 和 browser E2E，便于交付验收 |

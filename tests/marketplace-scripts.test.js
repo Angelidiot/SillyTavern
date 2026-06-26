@@ -84,4 +84,14 @@ describe('marketplace runnable scripts', () => {
             expect(readmeScriptSection).toMatch(new RegExp(`npm run ${escapeRegex(scriptName)}(?:\\s|$)`));
         }
     });
+
+    test('documents physical mobile access and PWA secure context requirements', () => {
+        const readme = readReadme();
+
+        expect(readme).toContain('npm start -- --listen=true');
+        expect(readme).toContain('http://<your-computer-lan-ip>:8000');
+        expect(readme).toContain('HTTPS tunnel/hosted URL');
+        expect(readme).toContain('secure context');
+        expect(readme).toContain('localhost is only treated as secure on the same device');
+    });
 });

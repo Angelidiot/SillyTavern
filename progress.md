@@ -1150,6 +1150,13 @@
 - 已通过 `npm run test:marketplace:syntax`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
 - GitHub run `28261306754` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 89：手机真机访问文档
+- README 现在明确 `http://127.0.0.1:8000` 只适合同一台电脑，本地真机手机需要 `npm start -- --listen=true` 后访问 `http://<your-computer-lan-ip>:8000`。
+- README 现在说明也可使用 HTTPS tunnel/hosted URL，并注明 PWA 安装和 service worker 需要 secure context。
+- `tests/marketplace-scripts.test.js` 新增契约测试锁定手机真机访问和 PWA secure context 说明。
+- findings 和 task_plan 已补充手机真机访问边界。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
