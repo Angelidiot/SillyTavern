@@ -1348,6 +1348,8 @@
 - 设计文档的 PWA E2E 描述已同步为应用内 Install prompt、`sillytavern-shell-v3`、network-first navigation 和 `/api/health` cache exclusion。
 - `tests/pwa.test.js` 新增从 `public/service-worker.js` 解析 `CACHE_NAME` 的辅助函数，并断言设计文档包含当前 cache 名称和 Install prompt 覆盖说明。
 - 已通过 `npm --prefix tests run test:unit -- pwa.test.js marketplace-scripts.test.js`、`npm run test:marketplace`、`git diff --check`，并确认 `rg` 不再找到 `sillytavern-shell-v2`。
+- 已提交 `731adb394 Keep PWA cache docs in sync` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28268286676` 已确认 Marketplace Wallet Checks 全链路通过。
 
 ## 五问重启检查
 | 问题 | 答案 |
