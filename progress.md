@@ -1097,6 +1097,13 @@
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t 'requires review before purchase and installs approved character cards'`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js -t 'generates markdown from current MVP routes'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28259287966` 已确认 Marketplace Wallet Checks 全链路通过；仅有 GitHub Actions Node 20 runner deprecation annotation，不影响本次门禁结果。
 
+## 2026-06-26 阶段 82：API reference 读接口隐私说明
+- `npm run marketplace:export:api` 生成文档现在说明 `GET /api/market/assets` 只返回可见资产元数据摘要，不包含 `normalized_payload`。
+- 同一生成文档现在说明 `GET /api/market/creator/summary` 只返回当前创作者资产摘要和聚合统计，不暴露 raw wallet、recent earnings ledgers 或 asset payloads。
+- `marketplace-api-reference.test.js` 已锁定上述 read privacy generated Markdown notes。
+- README 和 findings 已补充 API reference list/detail/creator privacy 说明。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js -t 'generates markdown from current MVP routes'`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

@@ -25,7 +25,9 @@ const staticRoutes = [
 ];
 
 const routeNotes = new Map([
+    ['GET /api/market/assets', 'Lists visible assets as metadata summaries only; normalized_payload is never included in list responses.'],
     ['GET /api/market/assets/:id', 'Payload is returned only to the creator, admins, or entitled users; other readers receive redacted metadata.'],
+    ['GET /api/market/creator/summary', 'Returns only the current creator\'s asset summaries and aggregate stats; raw wallet objects, recent earnings ledgers, and asset payloads are excluded.'],
     ['GET /api/market/library', 'Returns only the authenticated user\'s active entitlements and install summaries.'],
     ['GET /api/market/reports/admin', 'Admin-only report queue; report bodies are visible here but asset payloads remain excluded.'],
     ['POST /api/market/assets', 'Creates a draft character_card or world_book asset; body must be a JSON object with object metadata and normalized_payload, bounded text metadata/tags, supported price_type free/fixed_price, and positive safe integer price_coins for fixed_price assets.'],

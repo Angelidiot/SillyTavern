@@ -760,6 +760,14 @@
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 
+### 阶段 82：API reference 读接口隐私说明
+- [x] API reference note 覆盖 market list 不返回 payload
+- [x] API reference note 覆盖 creator summary 不返回 wallet/recent earnings/payload
+- [x] API reference 测试锁定 read privacy notes
+- [x] 更新 README 和规划记录
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -796,6 +804,7 @@
 | 资产创建 payload shape 必须有契约测试 | 托管上传入口必须拒绝非 object、未知类型、未知价格类型和非 object payload/metadata |
 | API reference 必须记录上传边界 | 托管 API 使用者需要从生成文档看到 create/revision 的 body shape、tags/text 和 fixed_price 价格约束 |
 | API reference 必须记录交易与安装边界 | 购买响应隐私、bonus/paid 消费顺序和安装路径脱敏是托管 API 使用者必须知道的行为 |
+| API reference 必须记录读接口隐私 | 列表和 Creator summary 是高频读取接口，必须明确不返回 payload、raw wallet 或 recent earnings ledger |
 | Load JSON 应自动识别资产类型 | 角色卡和世界书 payload 形状可本地判断，自动设置类型能减少用户选错后才报错的摩擦 |
 | 粘贴 JSON 应复用文件导入识别逻辑 | 创作者可能直接粘贴角色卡/世界书 JSON；只在文件导入时自动识别会造成体验不一致 |
 | 余额不足原因应在移动端可见 | 仅靠 disabled 按钮的 title 提示不适合手机和读屏，需要在卡片动作区显示缺口金额 |
