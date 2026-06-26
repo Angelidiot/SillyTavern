@@ -1422,7 +1422,8 @@
 - Lagrange 子 agent 只读复核发现设计文档一度过度暗示 description 进入列表/搜索；已收窄为列表/搜索继续用短摘要、标签、语言和分级，详情/审核保留完整描述。
 - `tests/market-wallet.test.js` 已补充 PATCH 修订时更新和清空 `description` 的后端断言。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-api-reference.test.js marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- market-wallet.test.js -t "allows creators to revise draft and rejected assets before resubmission"`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "submits a world book upload|revises a rejected creator asset" --workers=1`、`npm run test:marketplace:smoke` 和 `git diff --check`。
-- 本阶段待提交推送并等待 GitHub Actions。
+- 已提交 `17a80cc7a Add marketplace upload descriptions` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28271087368` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
