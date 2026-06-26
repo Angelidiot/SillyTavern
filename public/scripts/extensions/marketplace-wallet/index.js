@@ -12,6 +12,7 @@ const MARKET_TYPES = {
 };
 const MAX_UPLOAD_TAGS = 20;
 const MAX_UPLOAD_TAG_LENGTH = 40;
+const MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024;
 const MAX_REPORT_REASON_LENGTH = 120;
 const MAX_REPORT_BODY_LENGTH = 2000;
 const MAX_PAYLOAD_PREVIEW_LENGTH = 20000;
@@ -1044,7 +1045,14 @@ function parsePayloadJson() {
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
         throw new Error('Payload JSON must be an object');
     }
+    if (getJsonByteLength(payload) > MAX_UPLOAD_PAYLOAD_BYTES) {
+        throw new Error(`Payload JSON must be ${formatCoins(MAX_UPLOAD_PAYLOAD_BYTES)} bytes or less`);
+    }
     return payload;
+}
+
+function getJsonByteLength(value) {
+    return new TextEncoder().encode(JSON.stringify(value)).length;
 }
 
 function looksLikeCharacterCard(payload) {

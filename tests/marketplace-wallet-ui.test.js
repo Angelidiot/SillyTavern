@@ -179,6 +179,10 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('function parseTagInput(value)');
         expect(script).toContain('MAX_UPLOAD_TAGS = 20');
         expect(script).toContain('MAX_UPLOAD_TAG_LENGTH = 40');
+        expect(script).toContain('MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024');
+        expect(script).toContain('function getJsonByteLength(value)');
+        expect(script).toContain('new TextEncoder().encode(JSON.stringify(value)).length');
+        expect(script).toContain('Payload JSON must be ${formatCoins(MAX_UPLOAD_PAYLOAD_BYTES)} bytes or less');
         expect(script).toContain("tags = parseTagInput($('#marketplace_wallet_upload_tags').val())");
         expect(script).toContain("tags,");
         expect(script).toContain("$('#marketplace_wallet_upload_tags').val(getAssetTags(asset).join(', '))");

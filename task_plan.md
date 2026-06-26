@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 99
+阶段 100
 
 ## 各阶段
 
@@ -908,6 +908,14 @@
 - [x] 购买/领取成功后自动安装失败时不再让整个动作失败
 - [x] 自动安装失败后仍刷新 marketplace、Wallet Ledger 和 My Library
 - [x] 浏览器 E2E 覆盖资产进入 Library、显示未安装并可重试安装
+- [x] 更新 UI contract、findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 100：上传 payload 大小前端预检
+- [x] marketplace-wallet 上传表单对 payload JSON 执行 1048576 字节本地预检
+- [x] 超限 payload 不发 create/patch 请求，保留表单内容供用户修改
+- [x] 浏览器 E2E 覆盖超限 payload 不创建资产
 - [x] 更新 UI contract、findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete

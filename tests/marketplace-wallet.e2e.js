@@ -1208,6 +1208,33 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
     });
 
+    test('blocks oversized upload payloads before creating an asset', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [],
+        });
+
+        await loadSillyTavern(page);
+
+        const oversizedPayload = {
+            name: 'Oversized Browser World',
+            entries: {
+                giant: {
+                    key: ['giant'],
+                    content: 'A'.repeat(1024 * 1024),
+                },
+            },
+        };
+
+        await page.locator('#marketplace_wallet_upload_type').selectOption('world_book');
+        await page.locator('#marketplace_wallet_upload_title').fill('Oversized Browser World');
+        await page.locator('#marketplace_wallet_upload_payload').fill(JSON.stringify(oversizedPayload));
+        await page.locator('[data-marketplace-wallet-upload="draft"]').click();
+
+        await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue(/Oversized Browser World/);
+        expect(apiCalls.creates).toEqual([]);
+        await expect(page.locator('#marketplace_wallet_assets')).toContainText('No marketplace assets found.');
+    });
+
     test('revises a rejected creator asset and resubmits it for review', async ({ page }) => {
         const rejectedAsset = makeSubmittedAsset({
             id: 'rejected-world',

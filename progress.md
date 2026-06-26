@@ -1252,6 +1252,15 @@
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a purchased asset in the library" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
 - GitHub run `28264844045` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 100：上传 payload 大小前端预检
+- `public/scripts/extensions/marketplace-wallet/index.js` 新增 `MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024`。
+- 上传表单解析 payload 后用 `TextEncoder` 计算 `JSON.stringify(payload)` 的 UTF-8 字节数。
+- payload 超过 1048576 字节时前端直接提示错误，不发 create/patch 请求，表单内容保留给创作者修改。
+- 后端 `metadata` 和 `normalized_payload` 字节限制仍保留为权威兜底；当前 UI 没有独立 metadata 输入。
+- `tests/marketplace-wallet.e2e.js` 新增超大 world book payload 用例，确认 create API 未被调用。
+- `tests/marketplace-wallet-ui.test.js` 已锁定前端 payload byte limit、`getJsonByteLength()` 和错误文案。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`npm run test:marketplace:syntax`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "blocks oversized upload payloads" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
