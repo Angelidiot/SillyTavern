@@ -183,6 +183,12 @@
     padding: 16px 4px;
 }
 
+.marketplace-wallet-error {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+}
+
 .marketplace-wallet-upload,
 .marketplace-wallet-creator,
 .marketplace-wallet-ledger,

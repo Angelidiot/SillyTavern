@@ -1175,6 +1175,19 @@
 - 已通过 `npm --prefix tests run test:unit -- pwa.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e` 和 `git diff --check`。
 - GitHub run `28262083653` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
+## 2026-06-26 阶段 92：marketplace PWA 弱网错误态
+- 根据并发只读复核，marketplace-wallet 初次加载失败时会因 `state.loading && !state.loaded` 留在 `Loading marketplace...`，移动/PWA 弱网下像页面挂死。
+- `public/scripts/extensions/marketplace-wallet/index.js` 新增 `state.marketplaceError`，加载失败后退出 loading、渲染错误摘要和 Retry 按钮。
+- Retry 通过资产区委托事件重新调用 `loadMarketplace()`，成功后清空错误并恢复钱包、资产、附属面板加载。
+- `public/scripts/extensions/marketplace-wallet/style.css` 为 `.marketplace-wallet-error` 增加居中 grid 布局。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和 E2E 常量已从 `0.2.13` 升到 `0.2.14`，避免真实用户继续命中旧 JS/CSS。
+- `tests/marketplace-wallet.e2e.js` 新增 asset list 首次 500 后显示错误、刷新按钮可用、Retry 恢复资产列表的浏览器测试。
+- `tests/marketplace-wallet-ui.test.js` 已锁定错误态 DOM、Retry 事件绑定和 CSS。
+- 首次目标 E2E 误用 `test:marketplace:e2e`，该命令需要已有本地 server，已改用 `scripts/run-marketplace-e2e.mjs` 临时 server wrapper。
+- 第二次 wrapper 验证漏带 `PLAYWRIGHT_BROWSER_CHANNEL=chrome`，命中本机未安装的 Playwright Chromium；已用 Chrome 通道重跑。
+- 第三次目标 E2E 暴露新用例未打开 Extensions/marketplace inline drawer，已抽出 `openMarketplaceWallet()` helper 并允许错误态跳过 loaded wallet 断言。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows a retryable marketplace error" --workers=1` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

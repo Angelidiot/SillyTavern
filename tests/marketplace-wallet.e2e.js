@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v2';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.13';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.14';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -115,9 +115,10 @@ function makeCurrentUser(overrides = {}) {
     };
 }
 
-async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubmittedAsset()], reports = [], library = [] } = {}) {
+async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubmittedAsset()], reports = [], library = [], failAssetListOnce = false } = {}) {
     let wallet = makeWallet();
     let ledger = [];
+    let shouldFailAssetList = failAssetListOnce;
     const apiCalls = {
         approve: [],
         creates: [],
@@ -162,6 +163,16 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
     await page.route('**/api/market/assets', route => {
         if (route.request().method() !== 'GET') {
             route.fallback();
+            return;
+        }
+
+        if (shouldFailAssetList) {
+            shouldFailAssetList = false;
+            route.fulfill({
+                status: 500,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Market temporarily unavailable' }),
+            });
             return;
         }
 
@@ -556,7 +567,7 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
     return apiCalls;
 }
 
-async function loadSillyTavern(page) {
+async function openMarketplaceWallet(page, { expectLoaded = true } = {}) {
     await page.goto('/');
     await page.waitForFunction('document.getElementById("preloader") === null', { timeout: 0 });
 
@@ -584,7 +595,14 @@ async function loadSillyTavern(page) {
         await walletUi.locator('.inline-drawer-toggle').click();
     }
     await expect(drawerContent).toBeVisible();
-    await expect(walletUi.locator('#marketplace_wallet_total')).toHaveText('175');
+
+    if (expectLoaded) {
+        await expect(walletUi.locator('#marketplace_wallet_total')).toHaveText('175');
+    }
+}
+
+async function loadSillyTavern(page) {
+    await openMarketplaceWallet(page);
 }
 
 async function resetPwaState(page) {
@@ -893,6 +911,35 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_sort')).toHaveValue('recent');
         await expect(assets).toContainText('Filter World');
         await expect(clearFilters).toBeHidden();
+    });
+
+    test('shows a retryable marketplace error when the asset list fails to load', async ({ page }) => {
+        await mockMarketplaceApis(page, {
+            assets: [
+                makeListedAsset({
+                    id: 'recoverable-world',
+                    title: 'Recoverable World',
+                    price_type: 'free',
+                    price_coins: 0,
+                }),
+            ],
+            failAssetListOnce: true,
+        });
+
+        await openMarketplaceWallet(page, { expectLoaded: false });
+
+        const assets = page.locator('#marketplace_wallet_assets');
+        await expect(assets).toContainText('Marketplace could not be loaded.');
+        await expect(assets).toContainText('Market temporarily unavailable');
+        await expect(assets).not.toContainText('Loading marketplace...');
+
+        const refreshButton = page.locator('#marketplace_wallet_refresh');
+        await expect(refreshButton).toBeEnabled();
+
+        await assets.locator('[data-marketplace-wallet-retry="marketplace"]').click();
+        await expect(assets).toContainText('Recoverable World');
+        await expect(assets).not.toContainText('Marketplace could not be loaded.');
+        await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
     });
 
     test('buys a fixed-price asset, refreshes wallet activity, and installs it', async ({ page }) => {

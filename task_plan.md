@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 91
+阶段 92
 
 ## 各阶段
 
@@ -839,6 +839,16 @@
 - [x] PWA 单测校验扩展资源路径存在，并跟随 manifest JS/CSS 版本
 - [x] 浏览器 PWA E2E 断言 marketplace-wallet 扩展资源进入 CacheStorage
 - [x] 更新 README、设计文档、findings 和 progress
+- [x] 运行基础验证并提交推送
+- **状态：** complete
+
+### 阶段 92：marketplace PWA 弱网错误态
+- [x] 初次市场资产列表加载失败时退出 loading 状态
+- [x] 在资产区显示可恢复错误文案和 Retry 按钮
+- [x] Retry 重新调用 marketplace refresh 并能恢复资产列表
+- [x] 扩展 manifest/cache 版本随 JS/CSS 改动升级
+- [x] 补充浏览器 E2E 和 UI contract 测试
+- [x] 更新 findings 和 progress
 - [x] 运行基础验证并提交推送
 - **状态：** complete
 

@@ -25,6 +25,7 @@ const state = {
     wallet: null,
     loaded: false,
     loading: false,
+    marketplaceError: '',
     creatorLoading: false,
     ledgerLoading: false,
     libraryLoading: false,
@@ -668,7 +669,21 @@ function renderAssets() {
     renderReportQueue();
 
     if (state.loading && !state.loaded) {
+        setClearFiltersVisibility(false);
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('Loading marketplace...'));
+        return;
+    }
+
+    if (state.marketplaceError) {
+        setClearFiltersVisibility(false);
+        const $error = $('<div class="marketplace-wallet-empty marketplace-wallet-error"></div>');
+        $error.append($('<b></b>').text('Marketplace could not be loaded.'));
+        $error.append($('<span></span>').text(state.marketplaceError));
+        $error.append($('<button class="menu_button menu_button_icon" type="button"></button>')
+            .attr('data-marketplace-wallet-retry', 'marketplace')
+            .append($('<i class="fa-solid fa-rotate" aria-hidden="true"></i>'))
+            .append($('<span></span>').text('Retry')));
+        $list.append($error);
         return;
     }
 
@@ -786,6 +801,7 @@ async function loadMarketplace({ silent = false } = {}) {
         ]);
         state.wallet = wallet;
         state.assets = Array.isArray(market.assets) ? market.assets : [];
+        state.marketplaceError = '';
         state.loaded = true;
         renderAdminVisibility();
         renderWallet();
@@ -800,10 +816,13 @@ async function loadMarketplace({ silent = false } = {}) {
         }
     } catch (error) {
         console.error('Failed to load marketplace', error);
+        state.marketplaceError = error.message || 'Check your connection and try again.';
+        state.loaded = false;
         toastr.error(error.message || 'Marketplace could not be loaded');
     } finally {
         renderAdminVisibility();
         setLoading(false);
+        renderAssets();
     }
 }
 
@@ -1271,6 +1290,7 @@ function bindEvents($root) {
     $root.find('#marketplace_wallet_refresh').on('click', () => loadMarketplace());
     $root.find('#marketplace_wallet_search, #marketplace_wallet_type_filter, #marketplace_wallet_price_filter, #marketplace_wallet_access_filter, #marketplace_wallet_sort').on('input change', renderAssets);
     $root.find('#marketplace_wallet_clear_filters').on('click', clearMarketplaceFilters);
+    $root.find('#marketplace_wallet_assets').on('click', '[data-marketplace-wallet-retry="marketplace"]', () => loadMarketplace());
     $root.find('#marketplace_wallet_assets').on('click', onAssetAction);
     $root.find('#marketplace_wallet_library_items').on('click', onAssetAction);
     $root.find('#marketplace_wallet_review_queue').on('click', onAssetAction);
