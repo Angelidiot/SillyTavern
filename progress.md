@@ -1125,6 +1125,7 @@
 - `tests/marketplace-demo-seed.test.js` 新增未知参数、缺失 dataRoot 值和缺失 creator 值覆盖。
 - findings 已补充 demo seed CLI 参数错误边界。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-demo-seed.test.js -t 'rejects unknown and incomplete arguments'`、`npm --prefix tests run test:unit -- marketplace-demo-seed.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- GitHub run `28260223957` 已确认 Marketplace Wallet Checks 全链路通过，且无 GitHub Actions Node 20 runner deprecation annotation。
 
 ## 五问重启检查
 | 问题 | 答案 |
