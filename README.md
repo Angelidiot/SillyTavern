@@ -136,7 +136,7 @@ Validation matrix:
 
 - The MVP still uses JSON/node-persist storage and is intended for local validation, not production SaaS scale.
 - `npm run marketplace:export:snapshot` creates a redacted read-only market/wallet snapshot with asset and report lifecycle timestamps for backup checks and migration rehearsals; output files must be outside the data root.
-- `npm run marketplace:export:api` generates `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including key list/detail/creator privacy, upload validation, review lifecycle, purchase/install, and report length notes, with tests locking the checked-in reference to the full MVP route set.
+- `npm run marketplace:export:api` generates `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including client CSRF request requirements, key list/detail/creator privacy, upload validation, review lifecycle, purchase/install, and report length notes, with tests locking the checked-in reference to the full MVP route set.
 - `tests/marketplace-scripts.test.js` locks the hosted marketplace/PWA command list against this README so runnable scripts and setup docs do not drift.
 - `npm run test:hosted:docker` verifies the deployable Docker image exposes the hosted health endpoint, wallet/market API routes, and PWA shell; local machines without Docker should rely on CI for this check.
 - Paid purchase responses return the entitlement summary, ownership status, purchase id, and buyer balance only; creator balances, full ledger entries, and entitlement ledger internals remain behind wallet/creator APIs.

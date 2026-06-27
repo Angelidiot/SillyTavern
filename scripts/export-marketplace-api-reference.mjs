@@ -141,6 +141,13 @@ export async function generateMarketplaceApiReference({ generatedAt = new Date()
         '',
         'This file is generated from the local MVP route implementation. Regenerate it with `npm run marketplace:export:api`.',
         '',
+        '## Client Request Requirements',
+        '',
+        '- Default deployments require CSRF protection for mutating requests. Fetch `GET /csrf-token`, keep the returned session cookie, and send the token in the `X-CSRF-Token` header on `POST`, `PATCH`, `PUT`, and `DELETE` marketplace or wallet requests.',
+        '- The CSRF token must match the same session cookie returned by `/csrf-token`; missing or mismatched write tokens are rejected before marketplace or wallet handlers run. The runtime smoke covers this with a tokenless `POST /api/market/assets` returning `403`.',
+        '- The built-in web/PWA client uses `getRequestHeaders()` to include JSON content type and the current CSRF token. Read routes and the public health route do not require this write header, though their normal login and authorization rules still apply.',
+        '- Local smoke scripts may run with `--disableCsrf`, but hosted/mobile clients should assume CSRF is enabled unless the deployment explicitly says otherwise.',
+        '',
     ];
 
     for (const section of sections) {

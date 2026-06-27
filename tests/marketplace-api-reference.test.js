@@ -21,6 +21,12 @@ describe('marketplace API reference export script', () => {
 
         expect(markdown).toContain('# Marketplace API Reference');
         expect(markdown).toContain('Generated at: 2026-06-26T00:00:00.000Z');
+        expect(markdown).toContain('## Client Request Requirements');
+        expect(markdown).toContain('Fetch `GET /csrf-token`, keep the returned session cookie, and send the token in the `X-CSRF-Token` header on `POST`, `PATCH`, `PUT`, and `DELETE` marketplace or wallet requests.');
+        expect(markdown).toContain('The CSRF token must match the same session cookie returned by `/csrf-token`; missing or mismatched write tokens are rejected before marketplace or wallet handlers run.');
+        expect(markdown).toContain('tokenless `POST /api/market/assets` returning `403`');
+        expect(markdown).toContain('The built-in web/PWA client uses `getRequestHeaders()` to include JSON content type and the current CSRF token.');
+        expect(markdown).toContain('Local smoke scripts may run with `--disableCsrf`, but hosted/mobile clients should assume CSRF is enabled unless the deployment explicitly says otherwise.');
         expect(markdown).toContain('## Market API');
         expect(markdown).toContain('GET    /api/market/assets');
         expect(markdown).toContain('GET    /api/market/assets/:id');

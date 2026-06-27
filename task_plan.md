@@ -1131,6 +1131,17 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 121：API reference 客户端 CSRF 契约
+- [x] 确认 checked-in API reference 缺少默认 CSRF 写请求要求
+- [x] 在 API reference 生成器中新增 Client Request Requirements
+- [x] 说明外部 Web/PWA/移动客户端需要 `GET /csrf-token`、session cookie 和 `X-CSRF-Token`
+- [x] 同步 README、设计文档和 API reference 测试
+- [x] 重生成 checked-in API reference
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -1243,6 +1254,7 @@
 | Runner Chrome E2E 首次启动被 onboarding 弹窗遮挡 | 1 | E2E helper 等待并点击 onboarding Save |
 | marketplace snapshot 测试未初始化 node-persist 时 `storage.clear` 不是函数 | 1 | afterEach 中先判断 `storage.clear` 是否存在，再执行清理 |
 | 阶段 117 新增测试变量名 `storedAsset` 与同作用域后续断言冲突 | 1 | 将新增 store 读取变量改名为 `detailStore/detailStoredAsset` 后重跑语法和 Jest |
+| 阶段 121 首次完整 `npm run test:marketplace` 中 `market-wallet.test.js` 两个用例 `fetch failed: other side closed` | 1 | 单独重跑 `market-wallet.test.js` 通过，随后完整 `npm run test:marketplace` 重跑通过，记录为一次性本地 test server 连接抖动 |
 
 ## 备注
 - 设计文档阶段已完成。

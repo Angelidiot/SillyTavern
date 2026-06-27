@@ -469,7 +469,7 @@ Public health API：
 GET    /api/health
 ```
 
-可用 `npm run marketplace:export:api` 从 `src/endpoints/market.js`、`src/endpoints/wallet.js` 和公开 health route 重新生成 Markdown 版 API reference，减少手写端点清单漂移：
+可用 `npm run marketplace:export:api` 从 `src/endpoints/market.js`、`src/endpoints/wallet.js` 和公开 health route 重新生成 Markdown 版 API reference，减少手写端点清单漂移；导出文档也会提示外部网页/手机版客户端在默认 CSRF 配置下需要先 `GET /csrf-token`，保留 session cookie，并在 `POST`/`PATCH`/`PUT`/`DELETE` market/wallet 请求中发送 `X-CSRF-Token`：
 
 ```bash
 npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md

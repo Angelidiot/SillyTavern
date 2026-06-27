@@ -1504,6 +1504,17 @@
 - 已提交 `ea53abc48 Cover CSRF tokenless marketplace smoke` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28273398809` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-27 阶段 121：API reference 客户端 CSRF 契约
+- 开始补齐 API reference 的客户端请求要求：runtime smoke 已验证默认 CSRF 行为，但 `docs/marketplace-api-reference.md` 仍只列 market/wallet/health 路由和业务 notes。
+- 已启动 Averroes/Heisenberg 两个只读 explorer 并行复核 API 文档措辞和前端 `getRequestHeaders()` 实际行为。
+- `scripts/export-marketplace-api-reference.mjs` 新增 `Client Request Requirements` 段落，说明外部客户端默认需要 `GET /csrf-token`、session cookie 和 `X-CSRF-Token` 写请求 header。
+- `tests/marketplace-api-reference.test.js` 已新增生成内容断言；README 和设计文档已同步 API reference 会记录客户端 CSRF 请求要求。
+- Heisenberg 子 agent 只读确认内置 Web/PWA 通过 `getRequestHeaders()` 携带 `X-CSRF-Token`，PWA service worker 跳过 `/api/*`，外部客户端必须保存 `/csrf-token` 返回的同一 session cookie。
+- Averroes 子 agent 建议保持文档窄口径：不承诺跨域、长期 token 或 `start:no-csrf` 适合托管；文案已补充 token/session 必须匹配和 runtime smoke 的 tokenless 403 覆盖。
+- 已用固定时间戳重生成 `docs/marketplace-api-reference.md`。
+- 首次 `npm run test:marketplace` 中 `market-wallet.test.js` 两个用例出现一次 `fetch failed: other side closed`；单独重跑 `npm --prefix tests run test:unit -- market-wallet.test.js` 通过，随后完整 `npm run test:marketplace` 重跑通过。
+- 已通过 `node --check scripts/export-marketplace-api-reference.mjs`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js marketplace-scripts.test.js`、`npm --prefix tests run test:unit -- market-wallet.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
