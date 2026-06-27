@@ -1453,7 +1453,8 @@
 - Marketplace Wallet Checks 的 pull_request 和 push path filter 已各自加入 `docs/marketplace-api-reference.md`。
 - `tests/marketplace-scripts.test.js` 新增契约，断言该文档路径在 workflow 中出现两次，避免 PR/push 任一侧漏配。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax` 和 `git diff --check`。
-- 本阶段待提交推送并等待 GitHub Actions。
+- 已提交 `cdb8e763d Run marketplace checks for API reference docs` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28271970369` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
