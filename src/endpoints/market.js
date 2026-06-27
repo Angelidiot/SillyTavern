@@ -858,11 +858,17 @@ router.post('/assets/:id/reject', requireAdminMiddleware, (request, response) =>
         return response.status(400).json({ error: 'asset must be submitted before rejection' });
     }
 
+    const errors = [];
+    const reason = normalizeString(request.body?.reason ?? '', 1000, 'reason', errors);
+    if (errors.length > 0) {
+        return response.status(400).json({ error: 'Invalid rejection reason', details: errors });
+    }
+
     const timestamp = nowIso();
     asset.status = 'rejected';
     asset.visibility = 'private';
     asset.reviewed_by = getUserId(request);
-    asset.review_notes = typeof request.body?.reason === 'string' ? request.body.reason.slice(0, 1000) : '';
+    asset.review_notes = reason;
     asset.updated_at = timestamp;
     writeStore(request, store);
 

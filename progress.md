@@ -1539,6 +1539,13 @@
 - 已提交 `424363667 Add PWA offline navigation fallback` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28274349542` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-27 阶段 124：审核拒绝理由长度契约
+- 开始处理 Huygens 子 agent 发现的后端契约缺口：`POST /api/market/assets/:id/reject` 文档写明 reason 最多 1000 字符，但实现会静默 `slice(0, 1000)`。
+- `src/endpoints/market.js` 已改为复用 `normalizeString()` 校验 reject reason；超长时返回 `400 { error: 'Invalid rejection reason', details: [...] }`，不修改资产状态。
+- `tests/market-wallet.test.js` 新增 reject reason 边界测试，覆盖 1001 字符失败且资产保持 submitted/review，以及 1000 字符成功保存。
+- 首次目标 Jest 失败是测试假设 submitted 资产预先带空 `review_notes`，实际字段不存在；已改为 `review_notes ?? ''`，只断言超长 reject 不污染备注。
+- 已通过 `node --check src/endpoints/market.js`、`npm --prefix tests run test:unit -- market-wallet.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

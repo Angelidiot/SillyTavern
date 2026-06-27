@@ -1768,6 +1768,48 @@ describe('market and wallet MVP endpoints', () => {
         expect(buyerSummary.body.wallet).toBeUndefined();
     });
 
+    test('validates marketplace rejection reason length without mutating review state', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const charlieApp = createApp(createUser('charlie', false));
+        const assetId = await createSubmittedAsset(charlieApp, {
+            type: 'character_card',
+            title: 'Reject Reason Boundary',
+            normalized_payload: createCharacterPayload(),
+        });
+
+        const oversizedReject = await request(aliceApp, `/api/market/assets/${assetId}/reject`, {
+            method: 'POST',
+            body: { reason: 'x'.repeat(1001) },
+        });
+        expect(oversizedReject.status).toBe(400);
+        expect(oversizedReject.body).toMatchObject({
+            error: 'Invalid rejection reason',
+            details: ['reason must be 1000 characters or less'],
+        });
+
+        let store = JSON.parse(fs.readFileSync(path.join(dataRoot, 'market-assets.json'), 'utf8'));
+        let storedAsset = store.assets.find(asset => asset.id === assetId);
+        expect(storedAsset.status).toBe('submitted');
+        expect(storedAsset.visibility).toBe('review');
+        expect(storedAsset.review_notes ?? '').toBe('');
+
+        const boundaryReason = 'a'.repeat(1000);
+        const rejectResult = await request(aliceApp, `/api/market/assets/${assetId}/reject`, {
+            method: 'POST',
+            body: { reason: boundaryReason },
+        });
+        expect(rejectResult.status).toBe(200);
+        expect(rejectResult.body.asset).toMatchObject({
+            status: 'rejected',
+            review_notes: boundaryReason,
+        });
+
+        store = JSON.parse(fs.readFileSync(path.join(dataRoot, 'market-assets.json'), 'utf8'));
+        storedAsset = store.assets.find(asset => asset.id === assetId);
+        expect(storedAsset.status).toBe('rejected');
+        expect(storedAsset.review_notes).toBe(boundaryReason);
+    });
+
     test('allows creators to revise draft and rejected assets before resubmission', async () => {
         const aliceApp = createApp(createUser('alice', true));
         const bobApp = createApp(createUser('bob', false));

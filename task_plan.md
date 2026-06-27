@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 123
+阶段 124
 
 ## 各阶段
 
@@ -1164,6 +1164,16 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 124：审核拒绝理由长度契约
+- [x] 确认 API reference 已记录 reject reason 上限为 1000 字符
+- [x] 将服务端静默截断改为超长 400 错误
+- [x] 确认超长拒绝理由不会污染 submitted 资产状态
+- [x] 补充后端契约测试覆盖 1001 字符失败和 1000 字符成功
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -1277,6 +1287,7 @@
 | marketplace snapshot 测试未初始化 node-persist 时 `storage.clear` 不是函数 | 1 | afterEach 中先判断 `storage.clear` 是否存在，再执行清理 |
 | 阶段 117 新增测试变量名 `storedAsset` 与同作用域后续断言冲突 | 1 | 将新增 store 读取变量改名为 `detailStore/detailStoredAsset` 后重跑语法和 Jest |
 | 阶段 121 首次完整 `npm run test:marketplace` 中 `market-wallet.test.js` 两个用例 `fetch failed: other side closed` | 1 | 单独重跑 `market-wallet.test.js` 通过，随后完整 `npm run test:marketplace` 重跑通过，记录为一次性本地 test server 连接抖动 |
+| 阶段 124 首次 reject reason 边界测试假设 submitted 资产已有空 `review_notes` | 1 | 改为断言 `review_notes ?? ''` 为空，表达“未污染审核备注”而不要求字段预先存在 |
 
 ## 备注
 - 设计文档阶段已完成。
