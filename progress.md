@@ -1527,6 +1527,8 @@
 - marketplace-wallet manifest、service worker 预缓存清单、UI contract 和浏览器 E2E 常量已从 `0.2.23` 升到 `0.2.24`。
 - 设计文档已同步上传表单前端本地校验与后端边界一致：title 120、summary 500、description 10000、language 16、content_rating 40。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "blocks overlong upload text fields|blocks oversized upload payloads" --workers=1`、`node --check public/scripts/extensions/marketplace-wallet/index.js && node --check public/service-worker.js`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list` 和 `git diff --check`。
+- 已提交 `860267095 Align marketplace upload text limits` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28273965217` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
