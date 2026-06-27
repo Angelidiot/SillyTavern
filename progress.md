@@ -1456,6 +1456,16 @@
 - 已提交 `cdb8e763d Run marketplace checks for API reference docs` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28271970369` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 117：资产详情响应 allowlist 脱敏
+- 开始处理 Bohr 子 agent 发现的 asset detail 黑名单式脱敏风险：当前 `toAssetDetail()` 会 `structuredClone(asset)` 后只删除未授权 payload，未来新增内部字段会默认外泄。
+- 本阶段目标是改为 allowlist 响应：详情保留列表摘要字段、完整 `description`、生命周期时间、当前用户 entitlement 和 `payload_available`；只有 creator/admin/entitled 用户才附加 `normalized_payload`。
+- 已启动 James/Boole 两个只读 agent 并行复核后端测试字段和前端依赖面；主线先实现后端与契约测试。
+- 已实现 `toAssetDetail()` allowlist 响应，并同步 API reference 生成脚本、checked-in 文档、README 和设计文档。
+- 首次目标 Jest 和 syntax gate 发现 `tests/market-wallet.test.js` 中新增 `storedAsset` 与同一大测试后续变量重名；已改为 `detailStore/detailStoredAsset`。
+- Boole 确认前端 Details/Revise 只依赖摘要字段、`description`、`created_at/listed_at/delisted_at/updated_at`、`payload_available`、权限内 `normalized_payload` 和 entitlement `source/created_at/purchase_id`。
+- James 确认 detail 应基于 `toAssetListItem()` allowlist，并建议顺手收紧 detail/purchase 返回的 entitlement；已新增 `toEntitlementSummary()`，不再返回 `ledger_entry_ids`、`revoked_at` 或 `asset_version_id`。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

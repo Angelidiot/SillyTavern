@@ -132,6 +132,29 @@ async function createSubmittedAsset(app, body) {
     return assetId;
 }
 
+const RAW_ASSET_INTERNAL_FIELDS = [
+    'metadata',
+    'visibility',
+    'submitted_at',
+    'approved_at',
+    'reviewed_by',
+    'review_notes',
+    'delisted_by',
+    'future_internal_flag',
+];
+
+function expectAssetDetailInternalsHidden(asset) {
+    for (const field of RAW_ASSET_INTERNAL_FIELDS) {
+        expect(asset).not.toHaveProperty(field);
+    }
+}
+
+function expectEntitlementInternalsHidden(entitlement) {
+    expect(entitlement).not.toHaveProperty('ledger_entry_ids');
+    expect(entitlement).not.toHaveProperty('revoked_at');
+    expect(entitlement).not.toHaveProperty('asset_version_id');
+}
+
 describe('market and wallet MVP endpoints', () => {
     beforeEach(async () => {
         dataRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'st-market-wallet-'));
@@ -158,6 +181,10 @@ describe('market and wallet MVP endpoints', () => {
         const assetId = await createSubmittedAsset(aliceApp, {
             type: 'character_card',
             title: 'Market Alice',
+            description: 'Full detail copy for public browsing.',
+            metadata: {
+                private_note: 'do not expose from detail',
+            },
             normalized_payload: createCharacterPayload(),
         });
 
@@ -197,15 +224,30 @@ describe('market and wallet MVP endpoints', () => {
         expect(approveResult.status).toBe(200);
         expect(approveResult.body.asset.status).toBe('listed');
 
+        const marketStorePath = path.join(dataRoot, 'market-assets.json');
+        const detailStore = JSON.parse(fs.readFileSync(marketStorePath, 'utf8'));
+        const detailStoredAsset = detailStore.assets.find(asset => asset.id === assetId);
+        detailStoredAsset.future_internal_flag = 'hidden by detail allowlist';
+        fs.writeFileSync(marketStorePath, JSON.stringify(detailStore, null, 4), 'utf8');
+
         const publicDetail = await request(bobApp, `/api/market/assets/${assetId}`, { method: 'GET' });
         expect(publicDetail.status).toBe(200);
+        expect(publicDetail.body.asset).toMatchObject({
+            id: assetId,
+            title: 'Market Alice',
+            description: 'Full detail copy for public browsing.',
+            delisted_at: null,
+        });
         expect(publicDetail.body.asset.payload_available).toBe(false);
         expect(publicDetail.body.asset.normalized_payload).toBeUndefined();
+        expectAssetDetailInternalsHidden(publicDetail.body.asset);
 
         const adminDetail = await request(aliceApp, `/api/market/assets/${assetId}`, { method: 'GET' });
         expect(adminDetail.status).toBe(200);
         expect(adminDetail.body.asset.payload_available).toBe(true);
         expect(adminDetail.body.asset.normalized_payload.data.name).toBe('Market Alice');
+        expect(adminDetail.body.asset.description).toBe('Full detail copy for public browsing.');
+        expectAssetDetailInternalsHidden(adminDetail.body.asset);
 
         const purchaseResult = await request(bobApp, `/api/market/assets/${assetId}/purchase`, {
             method: 'POST',
@@ -217,6 +259,8 @@ describe('market and wallet MVP endpoints', () => {
         expect(purchaseResult.body.entitlement.asset_id).toBe(assetId);
         expect(purchaseResult.body.entitlement.source).toBe('free');
         expect(purchaseResult.body.entitlement.purchase_id).toBeNull();
+        expect(purchaseResult.body.entitlement.created_at).toBeTruthy();
+        expectEntitlementInternalsHidden(purchaseResult.body.entitlement);
         expect(purchaseResult.body.purchase).toBeNull();
 
         const bobLibrary = await request(bobApp, '/api/market/library', { method: 'GET' });
@@ -238,7 +282,7 @@ describe('market and wallet MVP endpoints', () => {
             last_install: null,
         });
         expect(bobLibrary.body.items[0].asset.normalized_payload).toBeUndefined();
-        expect(bobLibrary.body.items[0].entitlement.ledger_entry_ids).toBeUndefined();
+        expectEntitlementInternalsHidden(bobLibrary.body.items[0].entitlement);
         expect(bobLibrary.body.items[0].last_install?.absolute_path).toBeUndefined();
 
         const charlieLibrary = await request(createApp(createUser('charlie', false)), '/api/market/library', { method: 'GET' });
@@ -283,7 +327,7 @@ describe('market and wallet MVP endpoints', () => {
         expect(bobLibraryAfterPaidPurchase.status).toBe(200);
         expect(bobLibraryAfterPaidPurchase.body.items.map(item => item.asset.id)).toEqual([paidAssetId, assetId]);
         expect(bobLibraryAfterPaidPurchase.body.items[0].entitlement.source).toBe('purchase');
-        expect(bobLibraryAfterPaidPurchase.body.items[0].entitlement.ledger_entry_ids).toBeUndefined();
+        expectEntitlementInternalsHidden(bobLibraryAfterPaidPurchase.body.items[0].entitlement);
 
         const reportResult = await request(bobApp, `/api/market/assets/${assetId}/report`, {
             method: 'POST',
@@ -411,7 +455,12 @@ describe('market and wallet MVP endpoints', () => {
         expect(ownedDetail.status).toBe(200);
         expect(ownedDetail.body.asset.payload_available).toBe(true);
         expect(ownedDetail.body.asset.normalized_payload.data.name).toBe('Market Alice');
+        expect(ownedDetail.body.asset.delisted_at).toBeTruthy();
+        expectAssetDetailInternalsHidden(ownedDetail.body.asset);
         expect(ownedDetail.body.entitlement.user_id).toBe('bob');
+        expect(ownedDetail.body.entitlement.source).toBe('free');
+        expect(ownedDetail.body.entitlement.created_at).toBeTruthy();
+        expectEntitlementInternalsHidden(ownedDetail.body.entitlement);
 
         const entitledReportAfterDelist = await request(bobApp, `/api/market/assets/${assetId}/report`, {
             method: 'POST',
@@ -535,6 +584,7 @@ describe('market and wallet MVP endpoints', () => {
         expect(ownerDetail.status).toBe(200);
         expect(ownerDetail.body.asset.payload_available).toBe(true);
         expect(ownerDetail.body.asset.normalized_payload.name).toBe('Private Review World');
+        expectAssetDetailInternalsHidden(ownerDetail.body.asset);
 
         const ownerApproveWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
         try {
@@ -575,6 +625,7 @@ describe('market and wallet MVP endpoints', () => {
         expect(adminDetail.status).toBe(200);
         expect(adminDetail.body.asset.payload_available).toBe(true);
         expect(adminDetail.body.asset.normalized_payload.name).toBe('Private Review World');
+        expectAssetDetailInternalsHidden(adminDetail.body.asset);
 
         const approveResult = await request(aliceApp, `/api/market/assets/${assetId}/approve`, {
             method: 'POST',
@@ -589,6 +640,7 @@ describe('market and wallet MVP endpoints', () => {
         expect(publicDetail.status).toBe(200);
         expect(publicDetail.body.asset.payload_available).toBe(false);
         expect(publicDetail.body.asset.normalized_payload).toBeUndefined();
+        expectAssetDetailInternalsHidden(publicDetail.body.asset);
 
         const publicList = await request(bobApp, '/api/market/assets', { method: 'GET' });
         expect(publicList.status).toBe(200);

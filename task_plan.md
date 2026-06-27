@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 116
+阶段 117
 
 ## 各阶段
 
@@ -1088,6 +1088,17 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 117：资产详情响应 allowlist 脱敏
+- [x] 确认 `toAssetDetail()` 黑名单式删除 payload 的泄漏风险
+- [x] 改为基于资产摘要的 allowlist 响应，补充详情需要的描述和生命周期字段
+- [x] 仅 creator/admin/entitled 用户在详情响应中获得 `normalized_payload`
+- [x] 后端契约测试锁定 public/admin/owner detail 不返回 raw metadata、review/moderation 内部字段
+- [x] 同步 API reference、README 或设计文档中的详情隐私边界
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -1184,6 +1195,7 @@
 | 购买 API 响应应只返回买家需要的信息 | 买家需要 entitlement、是否已拥有和自己的余额摘要；创作者余额和完整 ledger entries 属于更敏感的账务审计数据，应通过各自 wallet/creator 接口读取 |
 | runtime smoke 需要覆盖固定价货币闭环 | 免费领取能证明安装路径，固定价购买才能证明真实 server 下 admin grant、扣款、创作者收益和响应隐私 shape 同时可用 |
 | 固定价购买必须按买家钱包串行 | 同一买家可以同时点击两个不同付费资产；只按 asset+buyer 加锁会让两笔交易同时读旧余额并透支 |
+| 资产详情响应必须使用 allowlist | `structuredClone(asset)` 再删除 payload 是黑名单式脱敏；新增 `metadata`、`reviewed_by`、`delisted_by` 等内部字段会默认外泄，应只返回详情明确需要的摘要、描述、生命周期和权限内 payload |
 
 ## 遇到的错误
 | 错误 | 尝试次数 | 解决方案 |
@@ -1196,6 +1208,7 @@
 | Runner Chrome E2E 中 marketplace admin 和按钮不可见 | 1 | E2E helper 打开外层 Extensions drawer、展开内层 inline drawer，并 mock admin 用户 |
 | Runner Chrome E2E 首次启动被 onboarding 弹窗遮挡 | 1 | E2E helper 等待并点击 onboarding Save |
 | marketplace snapshot 测试未初始化 node-persist 时 `storage.clear` 不是函数 | 1 | afterEach 中先判断 `storage.clear` 是否存在，再执行清理 |
+| 阶段 117 新增测试变量名 `storedAsset` 与同作用域后续断言冲突 | 1 | 将新增 store 读取变量改名为 `detailStore/detailStoredAsset` 后重跑语法和 Jest |
 
 ## 备注
 - 设计文档阶段已完成。

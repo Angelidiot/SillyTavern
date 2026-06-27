@@ -414,18 +414,28 @@ function toCreatorAssetItem(asset, currentUserId) {
     };
 }
 
+function toEntitlementSummary(entitlement) {
+    if (!entitlement) {
+        return null;
+    }
+
+    return {
+        id: entitlement.id,
+        user_id: entitlement.user_id,
+        asset_id: entitlement.asset_id,
+        source: entitlement.source,
+        purchase_id: entitlement.purchase_id,
+        created_at: entitlement.created_at,
+    };
+}
+
 function toLibraryItem(entitlement, asset, store, currentUserId) {
     const userInstalls = store.installs
         .filter(install => install.asset_id === asset.id && install.user_id === currentUserId)
         .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
 
     return {
-        entitlement: {
-            id: entitlement.id,
-            source: entitlement.source,
-            purchase_id: entitlement.purchase_id,
-            created_at: entitlement.created_at,
-        },
+        entitlement: toEntitlementSummary(entitlement),
         asset: toAssetListItem(asset, currentUserId, store),
         install_count: userInstalls.length,
         last_install: userInstalls[0]
@@ -510,12 +520,16 @@ function canReadPayload(store, asset, currentUserId, isAdmin = false) {
 }
 
 function toAssetDetail(asset, store, currentUserId, isAdmin = false) {
-    const detail = structuredClone(asset);
     const payloadAvailable = canReadPayload(store, asset, currentUserId, isAdmin);
-    detail.payload_available = payloadAvailable;
+    const detail = {
+        ...toAssetListItem(asset, currentUserId, store),
+        description: asset.description ?? '',
+        delisted_at: asset.delisted_at ?? null,
+        payload_available: payloadAvailable,
+    };
 
-    if (!payloadAvailable) {
-        delete detail.normalized_payload;
+    if (payloadAvailable) {
+        detail.normalized_payload = structuredClone(asset.normalized_payload);
     }
 
     return detail;
@@ -648,7 +662,7 @@ router.get('/assets/:id', (request, response) => {
     const entitlement = store.entitlements.find(item => item.asset_id === asset.id && item.user_id === currentUserId && !item.revoked_at);
     return response.json({
         asset: toAssetDetail(asset, store, currentUserId, !!request.user.profile.admin),
-        entitlement: entitlement ?? null,
+        entitlement: toEntitlementSummary(entitlement),
     });
 });
 
@@ -926,7 +940,7 @@ router.post('/assets/:id/purchase', async (request, response) => {
 
         const existing = store.entitlements.find(item => item.asset_id === asset.id && item.user_id === currentUserId && !item.revoked_at);
         if (existing) {
-            return response.json({ entitlement: existing, already_owned: true });
+            return response.json({ entitlement: toEntitlementSummary(existing), already_owned: true });
         }
 
         let purchase = null;
@@ -971,7 +985,7 @@ router.post('/assets/:id/purchase', async (request, response) => {
         writeStore(request, store);
 
         return response.status(201).json({
-            entitlement,
+            entitlement: toEntitlementSummary(entitlement),
             already_owned: false,
             purchase: toPurchaseResult(purchase),
         });

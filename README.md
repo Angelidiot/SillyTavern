@@ -13,7 +13,7 @@ This branch adds a hosted AI tavern marketplace and wallet MVP on top of SillyTa
 - Immutable wallet ledger for grants, purchases, debits, and creator earnings.
 - Recent wallet activity in the wallet panel, including grants, purchases, debits, and creator earnings.
 - Marketplace assets for character cards and world books.
-- Asset details popup with description, tags, language, content rating, stable listed/delisted lifecycle dates, entitlement source/date, purchase reference, and payload visibility; visible type, price, access, language/rating search, sort, and clear-filter controls for marketplace browsing.
+- Asset details popup with allowlisted metadata, description, tags, language, content rating, stable listed/delisted lifecycle dates, entitlement source/date, purchase reference, and payload visibility; raw metadata and review internals stay server-side.
 - Creator upload flow for draft assets, title/summary/description/tags/language/content rating metadata, bounded metadata/payload size, payload shape validation, file/pasted JSON type auto-detect, and submit-for-review.
 - Creator revision flow for draft or rejected assets before resubmission.
 - Creator Center summary for owned assets, draft/submitted/listed/rejected status counts, audit dates, rejection reasons, claims, paid sales, installs, earned coins, and earnings balance.
@@ -138,7 +138,7 @@ Validation matrix:
 - `npm run marketplace:export:api` generates `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including key list/detail/creator privacy, upload validation, review lifecycle, purchase/install, and report length notes, with tests locking the checked-in reference to the full MVP route set.
 - `tests/marketplace-scripts.test.js` locks the hosted marketplace/PWA command list against this README so runnable scripts and setup docs do not drift.
 - `npm run test:hosted:docker` verifies the deployable Docker image exposes the hosted health endpoint, wallet/market API routes, and PWA shell; local machines without Docker should rely on CI for this check.
-- Paid purchase responses return the entitlement, ownership status, purchase id, and buyer balance only; creator balances and full ledger entries remain behind wallet/creator APIs.
+- Paid purchase responses return the entitlement summary, ownership status, purchase id, and buyer balance only; creator balances, full ledger entries, and entitlement ledger internals remain behind wallet/creator APIs.
 - Production deployment should migrate market assets, entitlements, installs, wallet accounts, and wallet ledger entries to a transactional database.
 - Real payment, refunds, creator withdrawals, search/ranking, automated abuse enforcement, object storage, and mobile app packaging remain future work.
 - The codebase is AGPL-3.0. Hosted modifications should be reviewed for license compliance before commercial launch.
