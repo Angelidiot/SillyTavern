@@ -1530,6 +1530,13 @@
 - 已提交 `860267095 Align marketplace upload text limits` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28273965217` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-27 阶段 123：PWA 离线导航首页兜底
+- Huygens/Mencius/Hooke 三个只读子 agent 已完成下一步缺口复核：后端 reject reason 长度契约、PWA 离线导航兜底、CI 等价发布门禁都是后续候选；本阶段先处理直接影响手机版安装壳可打开性的 PWA 离线导航。
+- `public/service-worker.js` 的 navigation fetch 仍保持 network-first；网络失败后先查当前 request cache，再回退预缓存的 `/` 根页面，避免安装版 PWA 离线恢复带 query URL 时 miss cache。
+- `tests/pwa.test.js` 已锁定 cached root fallback；`tests/marketplace-wallet.e2e.js` 已在真实 service worker 激活后模拟离线访问 `/?pwa-offline-query=1`，确认回退到缓存首页 shell。
+- README 和设计文档已同步说明离线带 query 导航会回退缓存根页面，业务 `/api/*` 仍不缓存。
+- 已通过 `node --check public/service-worker.js`、`npm --prefix tests run test:unit -- pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "registers the service worker shell cache" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 120
+阶段 123
 
 ## 各阶段
 
@@ -1152,6 +1152,17 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 123：PWA 离线导航首页兜底
+- [x] 确认安装版 PWA 离线恢复带 query 导航可能 miss 当前 request cache
+- [x] service worker 导航失败后先查当前 request，再回退缓存根页面
+- [x] 保持 `/api/*` 和非 GET 请求不进入 CacheStorage
+- [x] 补充 PWA contract 和浏览器 E2E 覆盖离线带 query 导航
+- [x] 更新 README、设计文档和规划记录
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

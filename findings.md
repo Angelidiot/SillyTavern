@@ -214,6 +214,7 @@
 - 默认 CSRF runtime smoke 不应只证明 token/cookie 可以写入；同一 session cookie 下缺少 `X-CSRF-Token` 的市场写入也应返回 403，才能防止 CSRF 中间件或脚本启动参数退化时被正向路径掩盖。
 - Marketplace API reference 也需要记录客户端 CSRF 契约；外部网页/PWA/移动客户端若只看 market/wallet 路由清单，可能会漏掉默认部署下写请求必须先取 `/csrf-token`、保留 session cookie 并发送 `X-CSRF-Token`。
 - 上传文本字段的前端 `maxlength`、本地 JS 校验和自动 payload title hint 必须与后端长度上限一致；否则手机创作者可能被表单允许或自动生成一个后端会拒绝的 title/summary。
+- PWA 导航的 network-first 离线回退不能只查当前 request；安装版手机壳恢复带 query 的 URL 时可能没有同 URL 缓存，需要再回退到预缓存的根页面，同时继续跳过 `/api/*`。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

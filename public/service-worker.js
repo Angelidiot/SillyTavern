@@ -45,7 +45,10 @@ self.addEventListener('fetch', event => {
     }
 
     if (request.mode === 'navigate') {
-        event.respondWith(fetch(request).catch(() => caches.match(request)));
+        event.respondWith(fetch(request).catch(async () => {
+            const cached = await caches.match(request);
+            return cached || caches.match('/');
+        }));
         return;
     }
 

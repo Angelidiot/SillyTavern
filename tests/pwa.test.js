@@ -96,11 +96,12 @@ describe('hosted tavern PWA shell', () => {
         expect(style).toContain('.pwa-install-dismiss');
     });
 
-    test('uses network-first navigation so installed shells can update', () => {
+    test('uses network-first navigation with a cached root fallback', () => {
         const serviceWorker = readPublicFile('service-worker.js');
 
         expect(serviceWorker).toContain("request.mode === 'navigate'");
-        expect(serviceWorker).toContain('fetch(request).catch(() => caches.match(request))');
+        expect(serviceWorker).toContain('const cached = await caches.match(request)');
+        expect(serviceWorker).toContain("return cached || caches.match('/')");
         expect(serviceWorker).toContain('cached || fetch(request)');
     });
 

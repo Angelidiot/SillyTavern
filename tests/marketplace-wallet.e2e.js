@@ -815,6 +815,15 @@ test.describe('hosted tavern PWA browser shell', () => {
         await page.goto('/login.html', { waitUntil: 'load' });
         await expect(page.locator('body')).not.toContainText(staleShellText);
 
+        await page.context().setOffline(true);
+        try {
+            await page.goto('/?pwa-offline-query=1', { waitUntil: 'domcontentloaded' });
+            await expect(page.locator('#preloader')).toBeAttached();
+            await expect(page).toHaveTitle(/SillyTavern/);
+        } finally {
+            await page.context().setOffline(false);
+        }
+
         const health = await page.evaluate(async () => {
             const response = await fetch('/api/health', { cache: 'no-store' });
             return {
