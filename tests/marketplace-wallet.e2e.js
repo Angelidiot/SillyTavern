@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.24';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.25';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -147,6 +147,7 @@ async function mockMarketplaceApis(page, {
         grants: [],
         installs: [],
         purchases: [],
+        rejects: [],
         reports: [],
         revisions: [],
         resolveReports: [],
@@ -409,6 +410,20 @@ async function mockMarketplaceApis(page, {
         apiCalls.approve.push(assetId);
         assets = assets.map(asset => asset.id === assetId
             ? { ...asset, status: 'listed', listed_at: '2026-06-26T12:00:00.000Z' }
+            : asset);
+        route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ asset: assets.find(asset => asset.id === assetId) }),
+        });
+    });
+
+    await page.route('**/api/market/assets/*/reject', async route => {
+        const assetId = route.request().url().split('/').at(-2);
+        const payload = route.request().postDataJSON();
+        apiCalls.rejects.push({ assetId, payload });
+        assets = assets.map(asset => asset.id === assetId
+            ? { ...asset, status: 'rejected', rejection_reason: payload.reason || '' }
             : asset);
         route.fulfill({
             status: 200,
@@ -884,6 +899,24 @@ test.describe('marketplace wallet extension', () => {
         }]);
     });
 
+    test('keeps overlong rejection reasons local without truncating submissions', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page);
+
+        await loadSillyTavern(page);
+
+        const reviewQueue = page.locator('#marketplace_wallet_review_queue');
+        await expect(reviewQueue).toContainText('Submitted Character');
+        await reviewQueue.locator('[data-marketplace-wallet-action="reject"]').click();
+
+        const reasonPopup = page.getByRole('dialog').filter({ hasText: 'Reason for rejection:' });
+        await expect(reasonPopup).toBeVisible();
+        await reasonPopup.locator('.popup-input').fill('r'.repeat(1001));
+        await reasonPopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.rejects).toEqual([]);
+        await expect(reviewQueue).toContainText('Submitted Character');
+    });
+
     test('resolves reports from the admin report queue', async ({ page }) => {
         const apiCalls = await mockMarketplaceApis(page, {
             assets: [makeListedAsset()],
@@ -956,6 +989,39 @@ test.describe('marketplace wallet extension', () => {
         await reasonPopup.locator('.popup-button-ok').click();
 
         await expect(page.getByRole('dialog').filter({ hasText: 'Add report details (optional):' })).toHaveCount(0);
+        await expect.poll(() => apiCalls.reports).toEqual([]);
+    });
+
+    test('keeps overlong report text local without truncating submissions', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [makeListedAsset()],
+            reports: [],
+        });
+
+        await loadSillyTavern(page);
+
+        const assetRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Listed World' });
+        await assetRow.locator('[data-marketplace-wallet-action="report"]').click();
+
+        let reasonPopup = page.getByRole('dialog').filter({ hasText: 'Report reason:' });
+        await expect(reasonPopup).toBeVisible();
+        await reasonPopup.locator('.popup-input').fill('r'.repeat(121));
+        await reasonPopup.locator('.popup-button-ok').click();
+
+        await expect(page.getByRole('dialog').filter({ hasText: 'Add report details (optional):' })).toHaveCount(0);
+        await expect.poll(() => apiCalls.reports).toEqual([]);
+
+        await assetRow.locator('[data-marketplace-wallet-action="report"]').click();
+        reasonPopup = page.getByRole('dialog').filter({ hasText: 'Report reason:' });
+        await expect(reasonPopup).toBeVisible();
+        await reasonPopup.locator('.popup-input').fill('unsafe_prompt');
+        await reasonPopup.locator('.popup-button-ok').click();
+
+        const detailsPopup = page.getByRole('dialog').filter({ hasText: 'Add report details (optional):' });
+        await expect(detailsPopup).toBeVisible();
+        await detailsPopup.locator('.popup-input').fill('d'.repeat(2001));
+        await detailsPopup.locator('.popup-button-ok').click();
+
         await expect.poll(() => apiCalls.reports).toEqual([]);
     });
 

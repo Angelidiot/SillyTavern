@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.24');
+        expect(manifest.version).toBe('0.2.25');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -292,11 +292,18 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("fetchJson(`/api/market/assets/${encodeURIComponent(assetId)}/report`");
         expect(script).toContain('MAX_REPORT_REASON_LENGTH = 120');
         expect(script).toContain('MAX_REPORT_BODY_LENGTH = 2000');
+        expect(script).toContain('MAX_REJECT_REASON_LENGTH = 1000');
         expect(script).toContain("const trimmedReason = String(reason || '').trim()");
         expect(script).toContain("toastr.warning('Report reason is required')");
+        expect(script).toContain('Rejection reason must be ${MAX_REJECT_REASON_LENGTH} characters or less');
+        expect(script).toContain('Report reason must be ${MAX_REPORT_REASON_LENGTH} characters or less');
+        expect(script).toContain('Report details must be ${MAX_REPORT_BODY_LENGTH} characters or less');
         expect(script).toContain("const details = await callGenericPopup('Add report details (optional):'");
-        expect(script).toContain('reason: trimmedReason.slice(0, MAX_REPORT_REASON_LENGTH)');
-        expect(script).toContain("body: String(details || '').slice(0, MAX_REPORT_BODY_LENGTH)");
+        expect(script).toContain('reason: trimmedReason');
+        expect(script).toContain('body: trimmedDetails');
+        expect(script).not.toContain('reason: trimmedReason.slice(0, MAX_REPORT_REASON_LENGTH)');
+        expect(script).not.toContain("body: String(details || '').slice(0, MAX_REPORT_BODY_LENGTH)");
+        expect(script).not.toContain("body: JSON.stringify({ reason: String(reason || '').slice(0, 1000) })");
         expect(script).toContain('void loadReportQueue();');
         expect(script).toContain("fetchJson('/api/market/reports/admin')");
         expect(script).toContain("fetchJson(`/api/market/reports/${encodeURIComponent(reportId)}/resolve`");

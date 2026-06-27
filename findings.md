@@ -222,6 +222,7 @@
 - `market-wallet.test.js` 会启动大量临时 Express server 并用真实 `fetch` 打端点；与其它 marketplace Jest 文件并行时会偶发 `SocketError: other side closed`，因此根 `test:marketplace` 应先用 `--runInBand` 单独跑该后端契约文件，再跑其它脚本/UI/PWA contract 测试。
 - marketplace approve 不能只复查 metadata/payload；管理员批准前也应复查 title、type、price_type、price_coins、metadata 字节和 normalized_payload 格式，避免 submitted 资产被外部脚本或旧数据腐化后仍公开上架。
 - PWA/移动壳的 `public/style.css` 当前属于可交付面但 Marketplace Wallet Checks path filter 未监听；后续应把它加入 push/pull_request paths，并用脚本契约测试锁住。
+- marketplace-wallet report/reject 提交不能在前端 `slice()` 后静默发送；后端已经对 report reason/body 和 reject reason 返回 400，前端也应本地提示并阻止请求，避免手机用户误以为完整审核/举报文字已保存。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

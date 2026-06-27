@@ -20,6 +20,7 @@ const MAX_UPLOAD_TAG_LENGTH = 40;
 const MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024;
 const MAX_REPORT_REASON_LENGTH = 120;
 const MAX_REPORT_BODY_LENGTH = 2000;
+const MAX_REJECT_REASON_LENGTH = 1000;
 const MAX_PAYLOAD_PREVIEW_LENGTH = 20000;
 
 const state = {
@@ -1018,10 +1019,16 @@ async function rejectAsset(assetId) {
         return;
     }
 
+    const trimmedReason = String(reason || '').trim();
+    if (trimmedReason.length > MAX_REJECT_REASON_LENGTH) {
+        toastr.warning(`Rejection reason must be ${MAX_REJECT_REASON_LENGTH} characters or less`);
+        return;
+    }
+
     await withBusyAsset(assetId, async () => {
         await fetchJson(`/api/market/assets/${encodeURIComponent(assetId)}/reject`, {
             method: 'POST',
-            body: JSON.stringify({ reason: String(reason || '').slice(0, 1000) }),
+            body: JSON.stringify({ reason: trimmedReason }),
         });
         toastr.success('Asset rejected');
         await loadMarketplace({ silent: true });
@@ -1063,6 +1070,10 @@ async function reportAsset(assetId) {
         toastr.warning('Report reason is required');
         return;
     }
+    if (trimmedReason.length > MAX_REPORT_REASON_LENGTH) {
+        toastr.warning(`Report reason must be ${MAX_REPORT_REASON_LENGTH} characters or less`);
+        return;
+    }
 
     const details = await callGenericPopup('Add report details (optional):', POPUP_TYPE.INPUT, '', {
         okButton: 'Report',
@@ -1073,13 +1084,18 @@ async function reportAsset(assetId) {
     if (details === null || details === false) {
         return;
     }
+    const trimmedDetails = String(details || '').trim();
+    if (trimmedDetails.length > MAX_REPORT_BODY_LENGTH) {
+        toastr.warning(`Report details must be ${MAX_REPORT_BODY_LENGTH} characters or less`);
+        return;
+    }
 
     await withBusyAsset(assetId, async () => {
         await fetchJson(`/api/market/assets/${encodeURIComponent(assetId)}/report`, {
             method: 'POST',
             body: JSON.stringify({
-                reason: trimmedReason.slice(0, MAX_REPORT_REASON_LENGTH),
-                body: String(details || '').slice(0, MAX_REPORT_BODY_LENGTH),
+                reason: trimmedReason,
+                body: trimmedDetails,
             }),
         });
         toastr.success('Report submitted');

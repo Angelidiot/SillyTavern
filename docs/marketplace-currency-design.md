@@ -478,7 +478,7 @@ npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
 下架只阻止新用户公开浏览和购买，不撤销既有 entitlement；已授权用户仍可查看 payload 并安装自己的副本。
 公开市场读取只把 `listed` 视为公共可见状态；draft、submitted、rejected 和历史 approved 资产仅 creator/admin/entitled 用户可读。
 举报会写入 market store 的 open report 记录，管理员可在 marketplace-wallet 的 Report Queue 中查看举报日期并 resolve；MVP 暂不做自动处罚。
-`POST /api/market/assets/:id/report` 请求体使用必填 `reason` 和可选 `body`，前端 Report 操作会先本地拦截空原因，再把短原因和详细正文一起提交给管理员队列。
+`POST /api/market/assets/:id/report` 请求体使用必填 `reason` 和可选 `body`，前端 Report 操作会先本地拦截空原因和超长文本，再把短原因和详细正文一起提交给管理员队列；管理员 Reject reason 也会在本地按 1000 字符上限提示，而不是静默截断。
 创作者可修改自己的 draft/rejected 资产，修改后回到 draft/private，再重新 submit 进入审核；submitted/listed/delisted 资产不允许原地修改，后续应改走版本化发布。
 Review Queue 展示资产类型、创作者、价格、更新时间、标签和安全摘要片段；payload 仍只在管理员点击 Inspect 后通过资产详情权限懒加载。上传和修订入口会提交 `title`/`summary`/`description`/`tags`/`language`/`content_rating` 并限制 `metadata`/`normalized_payload` 的 JSON 字节大小，submit 和 approve 都会复查完整可上架资产字段、价格、metadata 和 payload 格式，防止旧数据或手工写入的 store 绕过限制。
 Library 接口只返回当前用户 active entitlements 对应的资产摘要、授权来源和安装记录摘要，不返回 `normalized_payload`；已下架但仍授权的资产也会保留在用户库中。marketplace-wallet 的 My Library 条目展示授权日期、最近安装日期和本地引用摘要，并提供 Details 和 Install，用户可从库里查看授权资产元数据并重新安装，不需要回到公开市场列表查找。资产详情响应使用 allowlist，只返回摘要、描述、公开展示生命周期、当前用户 entitlement 摘要和权限内 payload，不返回 raw `metadata`、`visibility`、`submitted_at`、`approved_at`、`reviewed_by`、`review_notes`、`delisted_by` 或 entitlement ledger 引用等存储/审核内部字段。
