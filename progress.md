@@ -1501,6 +1501,8 @@
 - Chandrasekhar 子 agent 只读复核确认：负向 POST 放在 token 获取之后、正向 POST 之前，可以验证同 session 缺 header 的真实 CSRF 失败；状态断言即可，不应要求 marketplace JSON body。
 - Dewey 子 agent 只读复核确认：README、设计文档和脚本契约测试是需要同步的三处；已补充契约断言锁定 403 状态码和负向在正向前执行。
 - 已通过 `node --check scripts/smoke-marketplace-runtime.mjs`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+- 已提交 `ea53abc48 Cover CSRF tokenless marketplace smoke` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28273398809` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
