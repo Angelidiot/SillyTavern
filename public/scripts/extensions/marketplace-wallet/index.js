@@ -10,6 +10,11 @@ const MARKET_TYPES = {
     character_card: 'Character card',
     world_book: 'World book',
 };
+const MAX_UPLOAD_TITLE_LENGTH = 120;
+const MAX_UPLOAD_SUMMARY_LENGTH = 500;
+const MAX_UPLOAD_DESCRIPTION_LENGTH = 10000;
+const MAX_UPLOAD_LANGUAGE_LENGTH = 16;
+const MAX_UPLOAD_CONTENT_RATING_LENGTH = 40;
 const MAX_UPLOAD_TAGS = 20;
 const MAX_UPLOAD_TAG_LENGTH = 40;
 const MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024;
@@ -1134,6 +1139,20 @@ function parsePayloadJson() {
     return payload;
 }
 
+function assertTextLength(label, value, maxLength) {
+    if (String(value || '').length > maxLength) {
+        throw new Error(`${label} must be ${maxLength} characters or less`);
+    }
+}
+
+function validateUploadTextFields({ title, summary, description, language, contentRating }) {
+    assertTextLength('Title', title, MAX_UPLOAD_TITLE_LENGTH);
+    assertTextLength('Summary', summary, MAX_UPLOAD_SUMMARY_LENGTH);
+    assertTextLength('Description', description, MAX_UPLOAD_DESCRIPTION_LENGTH);
+    assertTextLength('Language', language, MAX_UPLOAD_LANGUAGE_LENGTH);
+    assertTextLength('Content rating', contentRating, MAX_UPLOAD_CONTENT_RATING_LENGTH);
+}
+
 function getJsonByteLength(value) {
     return new TextEncoder().encode(JSON.stringify(value)).length;
 }
@@ -1186,7 +1205,7 @@ function getPayloadTitleHint(payload, fallback = '') {
         return fallback;
     }
 
-    return String(payload?.data?.name || payload?.name || fallback).slice(0, 160);
+    return String(payload?.data?.name || payload?.name || fallback).slice(0, MAX_UPLOAD_TITLE_LENGTH);
 }
 
 function applyUploadPayloadHints(payload, fallbackTitle = '') {
@@ -1262,6 +1281,7 @@ async function createAsset(submitForReview) {
     let payload;
     let tags;
     try {
+        validateUploadTextFields({ title, summary, description, language, contentRating });
         tags = parseTagInput($('#marketplace_wallet_upload_tags').val());
         payload = parsePayloadJson();
         validatePayloadShape(type, payload);

@@ -1517,6 +1517,17 @@
 - 已提交 `8a1c7d5fb Document marketplace CSRF client contract` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28273649665` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-27 阶段 122：上传文本边界前端对齐
+- 开始补齐 marketplace-wallet 上传表单的本地文本边界：后端 title/summary/description/language/content_rating 已有长度限制，手机端应在本地提前拦截。
+- 已启动 Hubble/Maxwell 两个只读 explorer 并行复核字段边界和测试策略。
+- `window.html` 已把 Title `maxlength` 从 160 调整为 120，把 Summary `maxlength` 从 280 调整为 500，与后端 `normalizeMarketAssetInput()` 保持一致。
+- `index.js` 新增上传文本字段长度常量和 `validateUploadTextFields()`，在 parse tags/payload 前拦截超长 title、summary、description、language 和 content rating。
+- Hubble 子 agent 发现自动 payload title hint 仍会截到 160，已改为 `MAX_UPLOAD_TITLE_LENGTH`，避免导入 JSON 自动填出本地无法提交的标题。
+- Maxwell 子 agent 建议只补 1 个 UI contract 和 1 个浏览器 E2E；已在 UI contract 锁定 DOM maxlength、JS 常量和 title hint 截断，在 E2E 中用 `evaluate` 绕过 maxlength 验证超长文本不会发 create 请求。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和浏览器 E2E 常量已从 `0.2.23` 升到 `0.2.24`。
+- 设计文档已同步上传表单前端本地校验与后端边界一致：title 120、summary 500、description 10000、language 16、content_rating 40。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "blocks overlong upload text fields|blocks oversized upload payloads" --workers=1`、`node --check public/scripts/extensions/marketplace-wallet/index.js && node --check public/service-worker.js`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

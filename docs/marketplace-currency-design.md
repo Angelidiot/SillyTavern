@@ -91,7 +91,7 @@ listed -> suspended
   -> 上架
 ```
 
-当前本地 MVP 不做 multipart 服务端文件上传解析；内置 marketplace-wallet 扩展可读取本地 JSON 文件或粘贴的 JSON，把内容写入 `normalized_payload`，并按 payload 形状自动选择角色卡或世界书类型。上传表单会提交 `title`、`summary`、`description`、最多 20 个且每个 40 字符以内的 `tags`，以及后端同样支持的 `language` 和 `content_rating` 元数据；资产卡片和搜索继续使用短摘要、标签、语言和分级，Details/Inspect 弹窗会以安全文本展示完整描述。后端会把 `metadata` 限制在 65536 字节以内、`normalized_payload` 限制在 1048576 字节以内，避免单个超大资产拖慢本地 JSON store、审核详情和移动端 PWA。正式 SaaS 再补角色卡 PNG/JSON、世界书 JSON、预设 JSON 的解析、对象存储和安全扫描流水线。
+当前本地 MVP 不做 multipart 服务端文件上传解析；内置 marketplace-wallet 扩展可读取本地 JSON 文件或粘贴的 JSON，把内容写入 `normalized_payload`，并按 payload 形状自动选择角色卡或世界书类型。上传表单会提交 `title`、`summary`、`description`、最多 20 个且每个 40 字符以内的 `tags`，以及后端同样支持的 `language` 和 `content_rating` 元数据；前端本地校验与后端保持同一长度边界：title 120、summary 500、description 10000、language 16、content_rating 40，自动从 payload 生成的标题也会按 title 上限截断。资产卡片和搜索继续使用短摘要、标签、语言和分级，Details/Inspect 弹窗会以安全文本展示完整描述。后端会把 `metadata` 限制在 65536 字节以内、`normalized_payload` 限制在 1048576 字节以内，避免单个超大资产拖慢本地 JSON store、审核详情和移动端 PWA。正式 SaaS 再补角色卡 PNG/JSON、世界书 JSON、预设 JSON 的解析、对象存储和安全扫描流水线。
 
 ### 上传校验
 

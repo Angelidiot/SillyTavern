@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.23';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.24';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -1584,6 +1584,35 @@ test.describe('marketplace wallet extension', () => {
         await page.locator('[data-marketplace-wallet-upload="draft"]').click();
 
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue(/Oversized Browser World/);
+        expect(apiCalls.creates).toEqual([]);
+        await expect(page.locator('#marketplace_wallet_assets')).toContainText('No marketplace assets found.');
+    });
+
+    test('blocks overlong upload text fields before creating an asset', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [],
+        });
+
+        await loadSillyTavern(page);
+
+        await page.locator('#marketplace_wallet_upload_type').selectOption('world_book');
+        await page.locator('#marketplace_wallet_upload_title').evaluate((input, value) => {
+            input.value = value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        }, 'T'.repeat(121));
+        await page.locator('#marketplace_wallet_upload_summary').fill('Summary within the supported limit.');
+        await page.locator('#marketplace_wallet_upload_payload').fill(JSON.stringify({
+            name: 'Text Limit World',
+            entries: {
+                limit: {
+                    key: ['limit'],
+                    content: 'Text limit smoke entry.',
+                },
+            },
+        }));
+        await page.locator('[data-marketplace-wallet-upload="draft"]').click();
+
+        await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('T'.repeat(121));
         expect(apiCalls.creates).toEqual([]);
         await expect(page.locator('#marketplace_wallet_assets')).toContainText('No marketplace assets found.');
     });

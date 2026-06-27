@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.23');
+        expect(manifest.version).toBe('0.2.24');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -66,6 +66,10 @@ describe('marketplace wallet extension UI contract', () => {
         expect(html).toContain('id="marketplace_wallet_upload_status"');
         expect(html).toContain('id="marketplace_wallet_upload_mode"');
         expect(html).toContain('id="marketplace_wallet_upload_cancel"');
+        expect(html).toContain('id="marketplace_wallet_upload_title"');
+        expect(html).toContain('maxlength="120"');
+        expect(html).toContain('id="marketplace_wallet_upload_summary"');
+        expect(html).toContain('maxlength="500"');
         expect(html).toContain('id="marketplace_wallet_upload_description"');
         expect(html).toContain('maxlength="10000"');
         expect(html).toContain('Description');
@@ -203,6 +207,14 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('function clearUploadForm()');
         expect(script).toContain('function renderUploadMode(asset = null)');
         expect(script).toContain('function parseTagInput(value)');
+        expect(script).toContain('MAX_UPLOAD_TITLE_LENGTH = 120');
+        expect(script).toContain('MAX_UPLOAD_SUMMARY_LENGTH = 500');
+        expect(script).toContain('MAX_UPLOAD_DESCRIPTION_LENGTH = 10000');
+        expect(script).toContain('MAX_UPLOAD_LANGUAGE_LENGTH = 16');
+        expect(script).toContain('MAX_UPLOAD_CONTENT_RATING_LENGTH = 40');
+        expect(script).toContain('function validateUploadTextFields');
+        expect(script).toContain("assertTextLength('Title', title, MAX_UPLOAD_TITLE_LENGTH)");
+        expect(script).toContain('validateUploadTextFields({ title, summary, description, language, contentRating })');
         expect(script).toContain('MAX_UPLOAD_TAGS = 20');
         expect(script).toContain('MAX_UPLOAD_TAG_LENGTH = 40');
         expect(script).toContain('MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024');
@@ -227,6 +239,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("$('#marketplace_wallet_upload_content_rating').val('general')");
         expect(script).toContain('function inferPayloadType(payload)');
         expect(script).toContain('function getPayloadTitleHint(payload');
+        expect(script).toContain('slice(0, MAX_UPLOAD_TITLE_LENGTH)');
         expect(script).toContain('function applyUploadPayloadHints(payload');
         expect(script).toContain('function applyUploadPayloadTextHints(text');
         expect(script).toContain('const inferredType = inferPayloadType(payload)');

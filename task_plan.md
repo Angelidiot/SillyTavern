@@ -1142,6 +1142,17 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 122：上传文本边界前端对齐
+- [x] 确认 Title/Summary 前端 maxlength 与后端限制不一致
+- [x] 增加上传文本字段本地长度校验
+- [x] 对齐 payload 自动 title hint 截断长度
+- [x] bump marketplace-wallet manifest 和 PWA 预缓存版本
+- [x] 补充 UI contract 和浏览器 E2E
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
