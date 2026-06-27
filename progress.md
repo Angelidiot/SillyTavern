@@ -1489,6 +1489,8 @@
 - 首次运行该 E2E 发现测试错误地要求上传按钮区两列；实际 CSS 在手机宽度下让上传动作按钮 100% 宽单列且无横向溢出，因此测试改为断言按钮区和按钮都留在上传表单内。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps the upload form usable on mobile width" --workers=1`、`npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list`。
 - 已通过 `npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `b0043e6a4 Cover mobile upload form overflow` 并推送到 `fork/codex/marketplace-wallet-mvp`，等待 GitHub Marketplace Wallet Checks。
+- GitHub run `28273118431` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
