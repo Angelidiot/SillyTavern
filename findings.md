@@ -216,6 +216,10 @@
 - 上传文本字段的前端 `maxlength`、本地 JS 校验和自动 payload title hint 必须与后端长度上限一致；否则手机创作者可能被表单允许或自动生成一个后端会拒绝的 title/summary。
 - PWA 导航的 network-first 离线回退不能只查当前 request；安装版手机壳恢复带 query 的 URL 时可能没有同 URL 缓存，需要再回退到预缓存的根页面，同时继续跳过 `/api/*`。
 - 市场审核 reject reason 的 1000 字符上限应由服务端拒绝超长请求，而不是静默截断；否则外部管理客户端会误以为完整审核理由已保存。
+- 发布前需要保留两条慢速验证路径：`test:marketplace:all` 给无 Docker 本地机器跑非容器闭环，`test:marketplace:ci` 给具备 Docker/Chrome 的机器跑与 GitHub Marketplace Wallet Checks 覆盖等价的 release gate。
+- 本地 marketplace browser E2E wrapper 默认超时应与 GitHub Actions 的 10 分钟 browser E2E step 对齐；5 分钟会让全量 24 用例在本机全部显示通过后仍被 wrapper 提前杀掉。
+- 本机全量 marketplace browser E2E 并行 4 workers 时会出现所有用例通过但 Playwright worker 不自然退出的场景；发布脚本默认应走 `--workers=1` 串行模式，稳定清理优先于速度。
+- `market-wallet.test.js` 会启动大量临时 Express server 并用真实 `fetch` 打端点；与其它 marketplace Jest 文件并行时会偶发 `SocketError: other side closed`，因此根 `test:marketplace` 应先用 `--runInBand` 单独跑该后端契约文件，再跑其它脚本/UI/PWA contract 测试。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

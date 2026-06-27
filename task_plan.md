@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 124
+阶段 125
 
 ## 各阶段
 
@@ -1174,6 +1174,20 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 125：CI 等价 marketplace 发布门禁命令
+- [x] 确认现有 `test:marketplace:all` 不包含 hosted Docker smoke
+- [x] 新增 `test:marketplace:ci` 串联 syntax、contract、runtime smoke、Docker smoke 和 browser E2E
+- [x] 保留 CI workflow 分步执行，便于 GitHub 日志和 timeout 定位
+- [x] 补充脚本契约测试，锁定新命令覆盖 Marketplace Wallet Checks 的 npm run 步骤
+- [x] 将本地 E2E wrapper 默认 timeout 对齐 GitHub browser E2E 的 10 分钟预算
+- [x] 将发布脚本中的 browser E2E 默认改为 `--workers=1`，避免本机并行 worker 通过后挂起
+- [x] 将 HTTP endpoint Jest 契约测试从其它 marketplace contract 测试中隔离为 in-band 执行
+- [x] 更新 README 和设计文档说明 Docker/Chrome 依赖
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -1288,6 +1302,8 @@
 | 阶段 117 新增测试变量名 `storedAsset` 与同作用域后续断言冲突 | 1 | 将新增 store 读取变量改名为 `detailStore/detailStoredAsset` 后重跑语法和 Jest |
 | 阶段 121 首次完整 `npm run test:marketplace` 中 `market-wallet.test.js` 两个用例 `fetch failed: other side closed` | 1 | 单独重跑 `market-wallet.test.js` 通过，随后完整 `npm run test:marketplace` 重跑通过，记录为一次性本地 test server 连接抖动 |
 | 阶段 124 首次 reject reason 边界测试假设 submitted 资产已有空 `review_notes` | 1 | 改为断言 `review_notes ?? ''` 为空，表达“未污染审核备注”而不要求字段预先存在 |
+| 阶段 125 本机 `test:marketplace:all` 全量浏览器 E2E 用例已通过但 Playwright 并行 worker 不退出 | 2 | 清理遗留进程/临时目录，将 wrapper 默认 timeout 对齐 CI，并把发布脚本 browser E2E 改为 `--workers=1` 串行执行 |
+| 阶段 125 并行 Jest 总套件中 `market-wallet.test.js` 偶发 `fetch failed: other side closed` | 2 | 将 HTTP endpoint 契约文件从其它 marketplace contract 测试中隔离，先以 `--runInBand` 单独执行 |
 
 ## 备注
 - 设计文档阶段已完成。

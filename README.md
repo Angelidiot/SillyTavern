@@ -86,6 +86,10 @@ npm run test:marketplace
 # Docker image smoke runs separately with npm run test:hosted:docker.
 PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all
 
+# Run the CI-equivalent marketplace release gate: syntax, contract, runtime smoke, Docker smoke, browser E2E
+# Requires Docker plus the same Chrome/Playwright setup used by the browser E2E command.
+PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:ci
+
 # Run only the marketplace/wallet/PWA/health syntax gate
 npm run test:marketplace:syntax
 
@@ -107,7 +111,7 @@ PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e
 #   tests/node_modules/.bin/playwright install --no-shell chromium
 # Or use an installed Chrome browser:
 #   PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server
-# Starts a temporary local server automatically:
+# Starts a temporary local server automatically and runs browser E2E serially for stable cleanup:
 npm run test:marketplace:e2e:server
 
 # Or run against an already-started local app server:
@@ -125,12 +129,13 @@ Validation matrix:
 | Command | Coverage |
 |---------|----------|
 | `npm run test:marketplace:syntax` | Fast JS syntax gate plus marketplace-wallet manifest/window/style asset checks for marketplace/wallet endpoints, PWA files, scripts, and targeted tests. |
-| `npm run test:marketplace` | Syntax gate plus marketplace, wallet, PWA, health, seed, snapshot export, API reference export, filter, upload description/tags/language/rating, and UI contract tests. |
+| `npm run test:marketplace` | Syntax gate plus marketplace, wallet, PWA, health, seed, snapshot export, API reference export, filter, upload description/tags/language/rating, and UI contract tests. HTTP endpoint tests run first and in-band for stable local server cleanup. |
 | `npm run test:marketplace:smoke` | Temporary local server smoke covering the demo seed script, health, PWA shell, wallet, market assets, creator upload/submit/approve, Creator Center stats, report create/queue/resolve, free and fixed-price claim/install, buyer debit, creator earning, Library, file write, and a default-CSRF tokenless write rejection plus token/cookie draft upload POST. |
 | `npm run test:hosted:docker` | Docker image smoke that builds the hosted container, starts it with temporary config/data volumes, and verifies `/api/health`, `/api/wallet`, `/api/market/assets`, `/manifest.json`, `/service-worker.js`, and `/`; requires Docker. |
 | `npm run test:pwa:e2e` | Temporary local server plus Playwright PWA E2E for in-app install prompt handling, network-first navigation, cached offline root-shell fallback, shell and marketplace-wallet cache registration, and `/api/*` cache exclusion; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. |
-| `npm run test:marketplace:e2e:server` | Temporary local server plus Playwright marketplace browser E2E for PWA service worker, admin, report submit/resolve, asset details metadata, creator upload description/tags/language/rating/type auto-detect/submit, empty-filter reset, unaffordable fixed-price cards, rejected asset revise/resubmit, free and fixed-price buy/install, wallet activity, Library dates/install summaries/details/reinstall, and mobile layout; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. The wrapper times out the Playwright child after 5 minutes by default; override with `MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS` on slower machines. |
+| `npm run test:marketplace:e2e:server` | Temporary local server plus serial Playwright marketplace browser E2E for PWA service worker, admin, report submit/resolve, asset details metadata, creator upload description/tags/language/rating/type auto-detect/submit, empty-filter reset, unaffordable fixed-price cards, rejected asset revise/resubmit, free and fixed-price buy/install, wallet activity, Library dates/install summaries/details/reinstall, and mobile layout; use `PLAYWRIGHT_BROWSER_CHANNEL=chrome` to run with installed Chrome. The wrapper times out the Playwright child after 10 minutes by default; override with `MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS` on slower machines. |
 | `npm run test:marketplace:all` | Slow pre-release loop that runs `test:marketplace`, `test:marketplace:smoke`, and `test:marketplace:e2e:server` in sequence. Docker image smoke remains a separate `test:hosted:docker` check and runs as its own CI step. |
+| `npm run test:marketplace:ci` | CI-equivalent marketplace release gate that runs syntax, unit/contract, runtime smoke, hosted Docker smoke, and browser E2E commands in the same coverage order as the GitHub Marketplace Wallet Checks job; requires Docker and Chrome/Playwright. |
 
 ### Development Notes
 
@@ -138,7 +143,7 @@ Validation matrix:
 - `npm run marketplace:export:snapshot` creates a redacted read-only market/wallet snapshot with asset and report lifecycle timestamps for backup checks and migration rehearsals; output files must be outside the data root.
 - `npm run marketplace:export:api` generates `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including client CSRF request requirements, key list/detail/creator privacy, upload validation, review lifecycle, purchase/install, and report length notes, with tests locking the checked-in reference to the full MVP route set.
 - `tests/marketplace-scripts.test.js` locks the hosted marketplace/PWA command list against this README so runnable scripts and setup docs do not drift.
-- `npm run test:hosted:docker` verifies the deployable Docker image exposes the hosted health endpoint, wallet/market API routes, and PWA shell; local machines without Docker should rely on CI for this check.
+- `npm run test:hosted:docker` verifies the deployable Docker image exposes the hosted health endpoint, wallet/market API routes, and PWA shell; local machines without Docker should rely on CI for this check or run `test:marketplace:all` for the non-Docker slow loop.
 - Paid purchase responses return the entitlement summary, ownership status, purchase id, and buyer balance only; creator balances, full ledger entries, and entitlement ledger internals remain behind wallet/creator APIs.
 - Production deployment should migrate market assets, entitlements, installs, wallet accounts, and wallet ledger entries to a transactional database.
 - Real payment, refunds, creator withdrawals, search/ranking, automated abuse enforcement, object storage, and mobile app packaging remain future work.

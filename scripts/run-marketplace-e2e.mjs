@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const startupTimeoutMs = Number(process.env.MARKETPLACE_E2E_TIMEOUT_MS ?? 90_000);
-const playwrightTimeoutMs = Number(process.env.MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS ?? 300_000);
+const playwrightTimeoutMs = Number(process.env.MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS ?? 600_000);
 const requestTimeoutMs = Number(process.env.MARKETPLACE_E2E_REQUEST_TIMEOUT_MS ?? 5_000);
 
 function appendLog(buffer, chunk) {

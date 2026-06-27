@@ -1548,6 +1548,18 @@
 - 已提交 `cfd952ba5 Validate marketplace rejection reason length` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28274521204` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-27 阶段 125：CI 等价 marketplace 发布门禁命令
+- 开始处理 Hooke 子 agent 发现的交付脚本缺口：本地慢速 `test:marketplace:all` 不含 hosted Docker smoke，而 GitHub Marketplace Wallet Checks 会额外跑 Docker smoke。
+- `package.json` 新增 `test:marketplace:ci`，串联 `test:marketplace:syntax`、`test:marketplace`、`test:marketplace:smoke`、`test:hosted:docker` 和 `test:marketplace:e2e:server`，作为具备 Docker/Chrome 机器上的 release gate。
+- CI workflow 保持分步运行，以保留独立日志和 timeout；`tests/marketplace-scripts.test.js` 已锁定 `test:marketplace:ci` 包含 workflow 中五个 marketplace npm run 步骤，且不包含 CI 专用的 `google-chrome --version` 环境探针。
+- README 和设计文档已同步 `test:marketplace:ci` 的用途、Docker/Chrome 依赖，以及无 Docker 机器继续使用 `test:marketplace:all` 或依赖 CI 的边界。
+- 本机没有 `docker` 命令，因此无法本地完整运行 `test:marketplace:ci`；Docker 覆盖将由 GitHub Marketplace Wallet Checks 验证。
+- 首次 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all` 中 contract、runtime smoke 和 24 个 browser E2E 用例均显示通过，但 wrapper 在等待 Playwright 子进程退出时触发默认 300000ms 超时；已将默认 `MARKETPLACE_E2E_PLAYWRIGHT_TIMEOUT_MS` 对齐 CI browser E2E step 的 10 分钟预算（600000ms），并更新 README/脚本契约测试。
+- 再次运行全量 browser E2E 时 24 个用例仍全部显示通过，但 4 个 Playwright worker 留在孤儿进程状态；已清理本轮临时进程和临时目录，并将 `test:marketplace:e2e:server` 默认改为 `--workers=1`，让发布脚本稳定收尾。
+- 随后 `test:marketplace:all` 和单独 `test:marketplace` 都在并行 Jest 总套件里复现 `market-wallet.test.js` 的 `fetch failed: other side closed`；失败用例和完整 `market-wallet.test.js` 单独重跑均通过。已将根 `test:marketplace` 改为先 `--runInBand` 单独跑 `market-wallet.test.js`，再跑其它 marketplace/PWA/health contract 文件，降低临时 HTTP server 并行抖动。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`node --check scripts/run-marketplace-e2e.mjs`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server`（24 passed, 串行正常退出）、`git diff --check`。
+- 本机仍没有 `docker` 命令，无法本地执行完整 `test:marketplace:ci`；Docker smoke 将由 GitHub Marketplace Wallet Checks 验证。串行 browser E2E 后确认没有遗留 Playwright/临时 server 进程或临时 E2E 目录。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
