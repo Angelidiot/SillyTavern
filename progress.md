@@ -1590,6 +1590,8 @@
 - `tests/marketplace-wallet.e2e.js` 新增超长 rejection reason 和超长 report reason/details 浏览器用例，确认 popup 输入后不会发出对应 API 请求。
 - README 和设计文档已同步：report/reject 表单对超长文本本地提示，而不是静默截断。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps overlong rejection reasons|keeps overlong report text" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "registers the service worker shell cache" --workers=1` 和 `git diff --check`。
+- 已提交 `4616b8363 Validate marketplace moderation text lengths` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28276123729` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
