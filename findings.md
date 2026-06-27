@@ -209,6 +209,7 @@
 - `docs/marketplace-api-reference.md` 是 checked-in 生成产物，变更它应触发 Marketplace Wallet Checks；否则只改生成文档可能绕过 API reference sync 测试和 marketplace CI。
 - marketplace asset detail 不应从 store asset 克隆后删除少数字段；详情响应需要用 allowlist 返回资产摘要、`description`、公开展示生命周期、`payload_available`，并只在 creator/admin/entitled 时附加 `normalized_payload`。
 - raw `metadata`、`visibility`、`submitted_at`、`approved_at`、`reviewed_by`、`review_notes`、`delisted_by` 和 entitlement ledger 引用等字段属于存储/审核内部信息；public/admin/owner detail 都不应默认暴露它们，审核状态细节继续通过 Creator Center 或快照导出白名单暴露。
+- marketplace-wallet 降级加载的 Library、Creator Center、Wallet Activity 和 Report Queue 不应在失败时清空数组后显示空状态；错误态需要可见文案和 Retry，尤其适合手机/PWA 弱网场景。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

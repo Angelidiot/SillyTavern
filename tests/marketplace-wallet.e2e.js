@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.22';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.23';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -119,10 +119,25 @@ function makeCurrentUser(overrides = {}) {
     };
 }
 
-async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubmittedAsset()], reports = [], library = [], failAssetListOnce = false, failInstallOnceFor = '', failSubmitOnceFor = '' } = {}) {
+async function mockMarketplaceApis(page, {
+    assets = [makeListedAsset(), makeSubmittedAsset()],
+    reports = [],
+    library = [],
+    failAssetListOnce = false,
+    failCreatorOnce = false,
+    failLedgerOnce = false,
+    failLibraryOnce = false,
+    failReportsOnce = false,
+    failInstallOnceFor = '',
+    failSubmitOnceFor = '',
+} = {}) {
     let wallet = makeWallet();
     let ledger = [];
     let shouldFailAssetList = failAssetListOnce;
+    let shouldFailCreator = failCreatorOnce;
+    let shouldFailLedger = failLedgerOnce;
+    let shouldFailLibrary = failLibraryOnce;
+    let shouldFailReports = failReportsOnce;
     let failedInstall = false;
     let failedSubmit = false;
     const apiCalls = {
@@ -155,6 +170,16 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
     });
 
     await page.route('**/api/wallet/ledger', route => {
+        if (shouldFailLedger) {
+            shouldFailLedger = false;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Wallet ledger temporarily unavailable' }),
+            });
+            return;
+        }
+
         route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -190,6 +215,16 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
     });
 
     await page.route('**/api/market/creator/summary', route => {
+        if (shouldFailCreator) {
+            shouldFailCreator = false;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Creator summary temporarily unavailable' }),
+            });
+            return;
+        }
+
         const ownAssets = assets.filter(asset => asset.creator_id === 'default-user');
         const listedAssets = ownAssets.filter(asset => asset.status === 'listed');
         const statusCounts = ownAssets.reduce((counts, asset) => {
@@ -223,6 +258,16 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
     });
 
     await page.route('**/api/market/library', route => {
+        if (shouldFailLibrary) {
+            shouldFailLibrary = false;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Library temporarily unavailable' }),
+            });
+            return;
+        }
+
         route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -532,6 +577,16 @@ async function mockMarketplaceApis(page, { assets = [makeListedAsset(), makeSubm
     });
 
     await page.route('**/api/market/reports/admin', route => {
+        if (shouldFailReports) {
+            shouldFailReports = false;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Reports temporarily unavailable' }),
+            });
+            return;
+        }
+
         route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -1186,6 +1241,66 @@ test.describe('marketplace wallet extension', () => {
         await expect(assets).toContainText('Recoverable World');
         await expect(assets).not.toContainText('Marketplace could not be loaded.');
         await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
+    });
+
+    test('shows retryable side-panel errors instead of empty states', async ({ page }) => {
+        const creatorAsset = makeListedAsset({
+            id: 'creator-retry-world',
+            title: 'Creator Retry World',
+            creator_id: 'default-user',
+            owned: true,
+            sales_count: 2,
+            install_count: 1,
+        });
+        const libraryAsset = makeListedAsset({
+            id: 'library-retry-world',
+            title: 'Library Retry World',
+            entitled: true,
+        });
+        await mockMarketplaceApis(page, {
+            assets: [creatorAsset, libraryAsset],
+            library: [makeLibraryItem(libraryAsset)],
+            reports: [makeOpenReport({ id: 'report-retry-world', asset_id: libraryAsset.id })],
+            failCreatorOnce: true,
+            failLedgerOnce: true,
+            failLibraryOnce: true,
+            failReportsOnce: true,
+        });
+
+        await openMarketplaceWallet(page);
+
+        const creator = page.locator('#marketplace_wallet_creator_assets_list');
+        const ledger = page.locator('#marketplace_wallet_ledger_items');
+        const library = page.locator('#marketplace_wallet_library_items');
+        const reports = page.locator('#marketplace_wallet_report_queue');
+
+        await expect(creator).toContainText('Creator Center could not be loaded.');
+        await expect(creator).toContainText('Creator summary temporarily unavailable');
+        await expect(creator).not.toContainText('No creator assets yet.');
+        await creator.locator('[data-marketplace-wallet-retry="creator"]').click();
+        await expect(creator).toContainText('Creator Retry World');
+        await expect(creator).not.toContainText('Creator Center could not be loaded.');
+
+        await expect(ledger).toContainText('Wallet activity could not be loaded.');
+        await expect(ledger).toContainText('Wallet ledger temporarily unavailable');
+        await expect(ledger).not.toContainText('No wallet activity yet.');
+        await ledger.locator('[data-marketplace-wallet-retry="ledger"]').click();
+        await expect(ledger).toContainText('No wallet activity yet.');
+        await expect(ledger).not.toContainText('Wallet activity could not be loaded.');
+
+        await expect(library).toContainText('Library could not be loaded.');
+        await expect(library).toContainText('Library temporarily unavailable');
+        await expect(library).not.toContainText('No library assets yet.');
+        await library.locator('[data-marketplace-wallet-retry="library"]').click();
+        await expect(library).toContainText('Library Retry World');
+        await expect(library).not.toContainText('Library could not be loaded.');
+
+        await expect(reports).toContainText('Report Queue could not be loaded.');
+        await expect(reports).toContainText('Reports temporarily unavailable');
+        await expect(reports).not.toContainText('No reports queued.');
+        await reports.locator('[data-marketplace-wallet-retry="reports"]').click();
+        await expect(reports).toContainText('unsafe_prompt');
+        await expect(reports).not.toContainText('Report Queue could not be loaded.');
     });
 
     test('buys a fixed-price asset, refreshes wallet activity, and installs it', async ({ page }) => {

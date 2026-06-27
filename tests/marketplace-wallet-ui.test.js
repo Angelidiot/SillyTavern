@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.22');
+        expect(manifest.version).toBe('0.2.23');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -108,9 +108,19 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('$button.toggle(show)');
         expect(script).toContain("$root.find('#marketplace_wallet_clear_filters').on('click', clearMarketplaceFilters)");
         expect(script).toContain('marketplaceError');
+        expect(script).toContain('creatorError');
+        expect(script).toContain('ledgerError');
+        expect(script).toContain('libraryError');
+        expect(script).toContain('reportsError');
+        expect(script).toContain('function createPanelError(message, retryKey)');
         expect(script).toContain('Marketplace could not be loaded.');
         expect(script).toContain("data-marketplace-wallet-retry', 'marketplace'");
-        expect(script).toContain("$root.find('#marketplace_wallet_assets').on('click', '[data-marketplace-wallet-retry=\"marketplace\"]', () => loadMarketplace())");
+        expect(script).toContain('function retryPanel(key)');
+        expect(script).toContain("case 'ledger':");
+        expect(script).toContain("case 'creator':");
+        expect(script).toContain("case 'library':");
+        expect(script).toContain("case 'reports':");
+        expect(script).toContain("$root.on('click', '[data-marketplace-wallet-retry]', onRetryAction)");
         expect(script).toContain('async function loadCreatorSummary()');
         expect(script).toContain('async function loadLibrary()');
         expect(script).toContain("console.warn('Creator summary could not be loaded'");
@@ -124,11 +134,13 @@ describe('marketplace wallet extension UI contract', () => {
         const loadWalletLedgerBlock = script.slice(script.indexOf('async function loadWalletLedger()'), script.indexOf('async function loadMarketplace'));
         expect(loadWalletLedgerBlock).not.toContain('state.wallet.balance = result.balance');
         expect(script).toMatch(/Loading (recent )?wallet activity\.\.\./);
+        expect(script).toContain('Wallet activity could not be loaded.');
         expect(script).toContain('No wallet activity yet.');
         expect(script).toContain("amount > 0 ? '+' : ''");
         expect(script).toContain("amount < 0 ? 'negative'");
         expect(script).toContain("data-marketplace-wallet-amount");
         expect(script).toContain('libraryLoading: false');
+        expect(script).toContain('Library could not be loaded.');
         expect(script).toContain('state.library = Array.isArray(result.items) ? result.items : []');
         expect(script).toContain('No library assets yet.');
         expect(script).toContain('class="marketplace-wallet-library-actions"');
@@ -147,6 +159,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('loadMarketplace({ silent: true })');
         expect(script).toContain("$root.find('#marketplace_wallet_library_items').on('click', onAssetAction)");
         expect(script).toContain('stats.total_claims');
+        expect(script).toContain('Creator Center could not be loaded.');
         expect(script).toContain('stats.draft_assets');
         expect(script).toContain('stats.submitted_assets');
         expect(script).toContain('stats.rejected_assets');
@@ -282,6 +295,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('async function resolveReport(reportId)');
         expect(script).toContain('busyReportIds: new Set()');
         expect(script).toContain('data-marketplace-wallet-report-action');
+        expect(script).toContain('Report Queue could not be loaded.');
         expect(script).toContain('data-report-id');
         expect(script).toContain('No reports queued.');
         expect(script).toContain('POPUP_TYPE.CONFIRM');

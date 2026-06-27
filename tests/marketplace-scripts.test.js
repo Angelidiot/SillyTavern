@@ -178,6 +178,20 @@ describe('marketplace runnable scripts', () => {
         expect(script).toContain('Array.isArray(market.assets)');
     });
 
+    test('keeps runtime smoke covering the default CSRF marketplace POST path', () => {
+        const script = fs.readFileSync(path.join(rootDirectory, 'scripts/smoke-marketplace-runtime.mjs'), 'utf8');
+        const readmeScriptSection = getReadmeScriptSection(readReadme());
+
+        expect(script).toContain("'--disableCsrf'");
+        expect(script).toContain('async function runCsrfSmoke()');
+        expect(script).toContain('/csrf-token');
+        expect(script).toContain("'Cookie': csrf.cookieHeader");
+        expect(script).toContain("'X-CSRF-Token': csrf.token");
+        expect(script).toContain('runtime ok: default CSRF POST /api/market/assets draft');
+        expect(script).toContain('await run();\n    await runCsrfSmoke();');
+        expect(readmeScriptSection).toContain('default-CSRF token/cookie draft upload POST');
+    });
+
     test('keeps marketplace browser E2E wrapper bounded and cleanup-aware', () => {
         const script = fs.readFileSync(path.join(rootDirectory, 'scripts/run-marketplace-e2e.mjs'), 'utf8');
         const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');

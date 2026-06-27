@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 117
+阶段 118
 
 ## 各阶段
 
@@ -1099,6 +1099,17 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 118：侧栏子面板失败重试
+- [x] 确认 Library、Creator Center、Wallet Activity、Report Queue 加载失败时会显示成空数据
+- [x] 为每个子面板增加独立错误状态和 Retry 操作
+- [x] 保持主 Marketplace 加载不因附属子面板失败而阻断
+- [x] 补充前端契约或浏览器 E2E，锁定错误态不伪装为空列表
+- [x] 更新 README、设计文档和规划记录
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -1196,6 +1207,7 @@
 | runtime smoke 需要覆盖固定价货币闭环 | 免费领取能证明安装路径，固定价购买才能证明真实 server 下 admin grant、扣款、创作者收益和响应隐私 shape 同时可用 |
 | 固定价购买必须按买家钱包串行 | 同一买家可以同时点击两个不同付费资产；只按 asset+buyer 加锁会让两笔交易同时读旧余额并透支 |
 | 资产详情响应必须使用 allowlist | `structuredClone(asset)` 再删除 payload 是黑名单式脱敏；新增 `metadata`、`reviewed_by`、`delisted_by` 等内部字段会默认外泄，应只返回详情明确需要的摘要、描述、生命周期和权限内 payload |
+| 附属面板失败不能渲染为空数据 | Library、Creator Center、Wallet Activity 和 Report Queue 都是降级加载；失败时应显示错误和 Retry，否则用户会把网络/权限问题误认为没有资产、没有流水或没有举报 |
 
 ## 遇到的错误
 | 错误 | 尝试次数 | 解决方案 |

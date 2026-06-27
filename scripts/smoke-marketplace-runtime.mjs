@@ -97,6 +97,51 @@ async function fetchWithTimeout(url, options = {}) {
     }
 }
 
+function getSetCookieHeaders(headers) {
+    const values = headers.getSetCookie?.() ?? [];
+    if (values.length > 0) {
+        return values;
+    }
+
+    const header = headers.get('set-cookie');
+    return header ? header.split(/,(?=\s*[^;,]+=)/) : [];
+}
+
+function getCookieHeader(response) {
+    const cookies = getSetCookieHeaders(response.headers)
+        .map(cookie => cookie.split(';', 1)[0])
+        .filter(Boolean);
+
+    if (cookies.length === 0) {
+        throw new Error('GET /csrf-token did not return a session cookie');
+    }
+
+    return cookies.join('; ');
+}
+
+async function getCsrfSession(baseUrl) {
+    const { response, body } = await fetchWithTimeout(`${baseUrl}/csrf-token`);
+    if (!response.ok) {
+        throw new Error(`GET /csrf-token returned ${response.status}: ${body.slice(0, 500)}`);
+    }
+
+    let payload;
+    try {
+        payload = JSON.parse(body);
+    } catch (error) {
+        throw new Error(`GET /csrf-token did not return valid JSON: ${error.message}`);
+    }
+
+    if (typeof payload.token !== 'string' || !payload.token || payload.token === 'disabled') {
+        throw new Error(`GET /csrf-token did not return an enabled CSRF token: ${JSON.stringify(payload)}`);
+    }
+
+    return {
+        token: payload.token,
+        cookieHeader: getCookieHeader(response),
+    };
+}
+
 async function waitForHealth(baseUrl, child, getLogs) {
     const deadline = Date.now() + startupTimeoutMs;
     let lastError;
@@ -624,7 +669,111 @@ async function run() {
     }
 }
 
-run().catch(error => {
+async function runCsrfSmoke() {
+    const port = await findFreePort();
+    const tmpRoot = await mkdtemp(path.join(os.tmpdir(), 'sillytavern-marketplace-csrf-smoke-'));
+    const configPath = path.join(tmpRoot, 'config.yaml');
+    const dataRoot = path.join(tmpRoot, 'data');
+    const baseUrl = `http://127.0.0.1:${port}`;
+
+    let stdout = '';
+    let stderr = '';
+    let child;
+
+    const getLogs = () => [
+        '--- stdout ---',
+        stdout.trim(),
+        '--- stderr ---',
+        stderr.trim(),
+    ].join('\n');
+
+    try {
+        child = spawn(process.execPath, [
+            'server.js',
+            `--port=${port}`,
+            '--listen=false',
+            '--enableIPv4=true',
+            '--enableIPv6=false',
+            '--browserLaunchEnabled=false',
+            '--ssl=false',
+            '--heartbeatInterval=0',
+            '--whitelist=false',
+            '--basicAuthMode=false',
+            `--configPath=${configPath}`,
+            `--dataRoot=${dataRoot}`,
+        ], {
+            cwd: rootDirectory,
+            env: {
+                ...process.env,
+                NODE_ENV: process.env.NODE_ENV ?? 'test',
+            },
+            stdio: ['ignore', 'pipe', 'pipe'],
+        });
+
+        child.stdout.on('data', chunk => {
+            stdout = appendLog(stdout, chunk);
+        });
+        child.stderr.on('data', chunk => {
+            stderr = appendLog(stderr, chunk);
+        });
+
+        const health = await waitForHealth(baseUrl, child, getLogs);
+        if (health.ok !== true || health.status !== 'ok' || health.service !== 'sillytavern') {
+            throw new Error(`Unexpected default CSRF /api/health payload: ${JSON.stringify(health)}`);
+        }
+        console.log('runtime ok: default CSRF /api/health');
+
+        const csrf = await getCsrfSession(baseUrl);
+        console.log('runtime ok: default CSRF token');
+
+        await assertJsonEndpoint(`${baseUrl}/api/market/assets`, 'default CSRF POST /api/market/assets draft', payload => {
+            const asset = payload.asset;
+            if (!asset?.id || asset.creator_id !== 'default-user') {
+                throw new Error(`CSRF draft upload did not return a default-user asset: ${JSON.stringify(payload)}`);
+            }
+            if (asset.status !== 'draft' || asset.visibility !== 'private' || asset.type !== 'world_book') {
+                throw new Error(`CSRF draft upload did not create a private draft world book: ${JSON.stringify(payload)}`);
+            }
+            if (asset.title !== 'CSRF Runtime Draft' || asset.price_type !== 'free' || asset.price_coins !== 0) {
+                throw new Error(`CSRF draft upload did not preserve expected draft fields: ${JSON.stringify(payload)}`);
+            }
+        }, {
+            method: 'POST',
+            headers: {
+                'Cookie': csrf.cookieHeader,
+                'X-CSRF-Token': csrf.token,
+            },
+            body: JSON.stringify({
+                type: 'world_book',
+                title: 'CSRF Runtime Draft',
+                summary: 'Created through the runtime smoke upload API with CSRF enabled.',
+                normalized_payload: {
+                    entries: {
+                        csrf_entry: {
+                            key: ['csrf'],
+                            content: 'CSRF smoke uploaded world book entry.',
+                            enabled: true,
+                        },
+                    },
+                },
+            }),
+            expectedStatus: 201,
+        });
+        console.log('runtime ok: default CSRF POST /api/market/assets draft');
+    } finally {
+        if (child) {
+            await stopServer(child);
+        }
+        await rm(tmpRoot, { recursive: true, force: true });
+    }
+}
+
+async function main() {
+    await run();
+    await runCsrfSmoke();
+}
+
+main().catch(error => {
     console.error(error);
     process.exit(1);
 });

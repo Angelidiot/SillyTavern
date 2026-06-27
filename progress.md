@@ -1468,6 +1468,18 @@
 - 已提交 `3fd10283f Tighten marketplace detail privacy` 并推送到 `fork/codex/marketplace-wallet-mvp`，等待 GitHub Marketplace Wallet Checks。
 - GitHub run `28272487711` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 118：侧栏子面板失败重试
+- 开始处理 Bacon 子 agent 留下的 UI 缺口：Library、Creator Center、Wallet Activity 和 Report Queue 的降级加载失败时会清空状态并渲染 “No ... yet.”，容易把网络或权限问题伪装成空数据。
+- 本阶段目标是给这些附属面板增加独立错误状态和 Retry 操作，保持主 Marketplace 仍可加载和浏览。
+- 已启动 Locke 只读复核前端实现点；Hypatia worker 并行处理 CSRF-on smoke，写入范围和本阶段前端改动分开。
+- marketplace-wallet state 新增 `creatorError`、`ledgerError`、`libraryError`、`reportsError`，render 顺序调整为 loading -> error -> empty -> data。
+- `createPanelError()` 统一生成错误文案和 Retry 按钮，`retryPanel()` 通过 `data-marketplace-wallet-retry` 分发到对应 loader。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和浏览器 E2E 常量从 `0.2.22` 升到 `0.2.23`。
+- 浏览器 E2E 新增 “shows retryable side-panel errors instead of empty states”，覆盖 Creator Center、Wallet Activity、Library 和 Report Queue 失败一次后点击 Retry 恢复。
+- Hypatia worker 已补 `scripts/smoke-marketplace-runtime.mjs` 的默认 CSRF 最小 smoke：获取 `/csrf-token` 的 token + session cookie，再 POST 创建 draft world_book，保留原 `--disableCsrf` 完整业务闭环不变。
+- `tests/marketplace-scripts.test.js` 已锁定 runtime smoke 同时覆盖旧 full smoke 和默认 CSRF token/cookie POST 路径，README 验证矩阵已同步该边界。
+- 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows retryable side-panel errors" --workers=1`、`npm run test:marketplace`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows retryable side-panel errors|shows a retryable marketplace error" --workers=1` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

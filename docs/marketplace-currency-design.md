@@ -483,6 +483,7 @@ npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
 Review Queue 展示资产类型、创作者、价格、更新时间、标签和安全摘要片段；payload 仍只在管理员点击 Inspect 后通过资产详情权限懒加载。上传和修订入口会提交 `title`/`summary`/`description`/`tags`/`language`/`content_rating` 并限制 `metadata`/`normalized_payload` 的 JSON 字节大小，submit 和 approve 也会复查该边界，防止旧数据或手工写入的 store 绕过限制。
 Library 接口只返回当前用户 active entitlements 对应的资产摘要、授权来源和安装记录摘要，不返回 `normalized_payload`；已下架但仍授权的资产也会保留在用户库中。marketplace-wallet 的 My Library 条目展示授权日期、最近安装日期和本地引用摘要，并提供 Details 和 Install，用户可从库里查看授权资产元数据并重新安装，不需要回到公开市场列表查找。资产详情响应使用 allowlist，只返回摘要、描述、公开展示生命周期、当前用户 entitlement 摘要和权限内 payload，不返回 raw `metadata`、`visibility`、`submitted_at`、`approved_at`、`reviewed_by`、`review_notes`、`delisted_by` 或 entitlement ledger 引用等存储/审核内部字段。
 资产详情弹窗复用 `GET /api/market/assets/:id`；未授权用户只能看到元数据，创建者、管理员或已授权用户才会看到 payload。当前 marketplace-wallet 弹窗会以安全文本显示完整描述，并显示类型、状态、创建者、语言、内容分级、价格、标签、稳定的创建/上架/下架/更新时间，以及当前用户的 entitlement 来源、授权日期和购买引用摘要。
+Creator Center、My Library、Wallet Activity 和 Report Queue 都是主 Marketplace 加载后的降级子请求；失败时 marketplace-wallet 会显示对应错误和 Retry 按钮，而不是把失败渲染成空资产、空库、空流水或空举报队列。
 本地 MVP 的市场浏览先用客户端筛选和排序，支持类型、价格、访问状态、标题/摘要/创作者/标签/语言/内容分级搜索、最新、热门和价格排序；正式 SaaS 需要服务端搜索与排序索引。
 当前 marketplace-wallet 在筛选结果为空且存在激活筛选时显示 Clear filters，移动端也可以一键回到默认浏览状态。
 托管探活使用公开 `GET /api/health`，返回 `ok/status/service/version/uptime/timestamp`，不需要登录、不返回用户或账务数据。

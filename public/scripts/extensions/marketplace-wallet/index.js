@@ -28,6 +28,10 @@ const state = {
     loaded: false,
     loading: false,
     marketplaceError: '',
+    creatorError: '',
+    ledgerError: '',
+    libraryError: '',
+    reportsError: '',
     creatorLoading: false,
     ledgerLoading: false,
     libraryLoading: false,
@@ -85,6 +89,20 @@ function getSpendableBalance() {
     return Number(buckets.bonus || 0) + Number(buckets.paid || 0);
 }
 
+function getErrorMessage(error, fallback) {
+    return error?.message || fallback;
+}
+
+function createPanelError(message, retryKey) {
+    const $error = $('<div class="marketplace-wallet-empty marketplace-wallet-error"></div>');
+    $error.append($('<span></span>').text(message));
+    $error.append($('<button class="menu_button menu_button_icon" type="button"></button>')
+        .attr('data-marketplace-wallet-retry', retryKey)
+        .append($('<i class="fa-solid fa-rotate" aria-hidden="true"></i>'))
+        .append($('<span></span>').text('Retry')));
+    return $error;
+}
+
 async function fetchJson(url, options = {}) {
     const response = await fetch(url, {
         ...options,
@@ -129,6 +147,11 @@ function renderWalletLedger() {
     $list.empty();
     if (state.ledgerLoading) {
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('Loading wallet activity...'));
+        return;
+    }
+
+    if (state.ledgerError) {
+        $list.append(createPanelError(`Wallet activity could not be loaded. ${state.ledgerError}`, 'ledger'));
         return;
     }
 
@@ -185,6 +208,11 @@ function renderCreatorSummary() {
         return;
     }
 
+    if (state.creatorError) {
+        $list.append(createPanelError(`Creator Center could not be loaded. ${state.creatorError}`, 'creator'));
+        return;
+    }
+
     const assets = Array.isArray(state.creator?.assets) ? state.creator.assets.slice(0, 5) : [];
     if (assets.length === 0) {
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('No creator assets yet.'));
@@ -224,6 +252,11 @@ function renderLibrary() {
     $list.empty();
     if (state.libraryLoading) {
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('Loading library...'));
+        return;
+    }
+
+    if (state.libraryError) {
+        $list.append(createPanelError(`Library could not be loaded. ${state.libraryError}`, 'library'));
         return;
     }
 
@@ -656,6 +689,11 @@ function renderReportQueue() {
         return;
     }
 
+    if (state.reportsError) {
+        $queue.append(createPanelError(`Report Queue could not be loaded. ${state.reportsError}`, 'reports'));
+        return;
+    }
+
     if (state.reports.length === 0) {
         $queue.append($('<div class="marketplace-wallet-empty"></div>').text('No reports queued.'));
         return;
@@ -756,17 +794,20 @@ function renderAssets() {
 async function loadReportQueue() {
     if (!canUseAdminTools()) {
         state.reports = [];
+        state.reportsError = '';
         renderReportQueue();
         return;
     }
 
     state.reportsLoading = true;
+    state.reportsError = '';
     renderReportQueue();
     try {
         const result = await fetchJson('/api/market/reports/admin');
         state.reports = Array.isArray(result.reports) ? result.reports : [];
     } catch (error) {
         state.reports = [];
+        state.reportsError = getErrorMessage(error, 'Check your connection and try again.');
         console.warn('Report queue could not be loaded', error);
     } finally {
         state.reportsLoading = false;
@@ -776,12 +817,14 @@ async function loadReportQueue() {
 
 async function loadLibrary() {
     state.libraryLoading = true;
+    state.libraryError = '';
     renderLibrary();
     try {
         const result = await fetchJson('/api/market/library');
         state.library = Array.isArray(result.items) ? result.items : [];
     } catch (error) {
         state.library = [];
+        state.libraryError = getErrorMessage(error, 'Check your connection and try again.');
         console.warn('Library could not be loaded', error);
     } finally {
         state.libraryLoading = false;
@@ -791,11 +834,13 @@ async function loadLibrary() {
 
 async function loadCreatorSummary() {
     state.creatorLoading = true;
+    state.creatorError = '';
     renderCreatorSummary();
     try {
         state.creator = await fetchJson('/api/market/creator/summary');
     } catch (error) {
         state.creator = null;
+        state.creatorError = getErrorMessage(error, 'Check your connection and try again.');
         console.warn('Creator summary could not be loaded', error);
     } finally {
         state.creatorLoading = false;
@@ -805,12 +850,14 @@ async function loadCreatorSummary() {
 
 async function loadWalletLedger() {
     state.ledgerLoading = true;
+    state.ledgerError = '';
     renderWalletLedger();
     try {
         const result = await fetchJson('/api/wallet/ledger');
         state.ledger = Array.isArray(result.ledger) ? result.ledger : [];
     } catch (error) {
         state.ledger = [];
+        state.ledgerError = getErrorMessage(error, 'Check your connection and try again.');
         console.warn('Wallet ledger could not be loaded', error);
     } finally {
         state.ledgerLoading = false;
@@ -854,6 +901,26 @@ async function loadMarketplace({ silent = false } = {}) {
         renderAdminVisibility();
         setLoading(false);
         renderAssets();
+    }
+}
+
+function retryPanel(key) {
+    switch (key) {
+        case 'marketplace':
+            void loadMarketplace();
+            break;
+        case 'ledger':
+            void loadWalletLedger();
+            break;
+        case 'creator':
+            void loadCreatorSummary();
+            break;
+        case 'library':
+            void loadLibrary();
+            break;
+        case 'reports':
+            void loadReportQueue();
+            break;
     }
 }
 
@@ -1358,11 +1425,16 @@ function onReportAction(event) {
     });
 }
 
+function onRetryAction(event) {
+    const key = String($(event.currentTarget).data('marketplaceWalletRetry') || '');
+    retryPanel(key);
+}
+
 function bindEvents($root) {
     $root.find('#marketplace_wallet_refresh').on('click', () => loadMarketplace());
     $root.find('#marketplace_wallet_search, #marketplace_wallet_type_filter, #marketplace_wallet_price_filter, #marketplace_wallet_access_filter, #marketplace_wallet_sort').on('input change', renderAssets);
     $root.find('#marketplace_wallet_clear_filters').on('click', clearMarketplaceFilters);
-    $root.find('#marketplace_wallet_assets').on('click', '[data-marketplace-wallet-retry="marketplace"]', () => loadMarketplace());
+    $root.on('click', '[data-marketplace-wallet-retry]', onRetryAction);
     $root.find('#marketplace_wallet_assets').on('click', onAssetAction);
     $root.find('#marketplace_wallet_library_items').on('click', onAssetAction);
     $root.find('#marketplace_wallet_review_queue').on('click', onAssetAction);
