@@ -1479,6 +1479,8 @@
 - Hypatia worker 已补 `scripts/smoke-marketplace-runtime.mjs` 的默认 CSRF 最小 smoke：获取 `/csrf-token` 的 token + session cookie，再 POST 创建 draft world_book，保留原 `--disableCsrf` 完整业务闭环不变。
 - `tests/marketplace-scripts.test.js` 已锁定 runtime smoke 同时覆盖旧 full smoke 和默认 CSRF token/cookie POST 路径，README 验证矩阵已同步该边界。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows retryable side-panel errors" --workers=1`、`npm run test:marketplace`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows retryable side-panel errors|shows a retryable marketplace error" --workers=1` 和 `git diff --check`。
+- 已提交 `da1f756f3 Add retryable marketplace side panels` 并推送到 `fork/codex/marketplace-wallet-mvp`，等待 GitHub Marketplace Wallet Checks。
+- GitHub run `28272873816` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
