@@ -1194,9 +1194,9 @@
 - [x] 补充后端契约测试，证明腐化的 submitted 资产不会被管理员批准上架
 - [x] 更新 README、设计文档或 API reference 中的审核安全边界
 - [x] 运行本地基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

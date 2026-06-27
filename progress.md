@@ -1570,6 +1570,8 @@
 - Aquinas 子 agent 只读发现下一步小缺口：Marketplace Wallet Checks path filter 漏监听 `public/style.css`，已记录为下一阶段候选，当前阶段未改。
 - 首次目标 Jest 失败是新测试假设 approve 失败后 `approved_at/listed_at` 为 null；实际腐化 store 中字段不存在。已改为 `?? null`，断言“未被设置”而不是要求预先存在。
 - 已通过 `node --check src/endpoints/market.js`、`node --check scripts/export-marketplace-api-reference.mjs`、`npm --prefix tests run test:unit -- market-wallet.test.js marketplace-api-reference.test.js`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+- 已提交 `b57d73934 Revalidate marketplace approval assets` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28275627267` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
