@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 125
+阶段 126
 
 ## 各阶段
 
@@ -1188,6 +1188,16 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 126：审核批准前完整资产校验
+- [x] 确认 approve 当前只复核 metadata/payload，缺少 title/type/price 等核心字段校验
+- [x] 将 submit 与 approve 复用同一套可上架资产核心校验
+- [x] 补充后端契约测试，证明腐化的 submitted 资产不会被管理员批准上架
+- [x] 更新 README、设计文档或 API reference 中的审核安全边界
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -1304,6 +1314,7 @@
 | 阶段 124 首次 reject reason 边界测试假设 submitted 资产已有空 `review_notes` | 1 | 改为断言 `review_notes ?? ''` 为空，表达“未污染审核备注”而不要求字段预先存在 |
 | 阶段 125 本机 `test:marketplace:all` 全量浏览器 E2E 用例已通过但 Playwright 并行 worker 不退出 | 2 | 清理遗留进程/临时目录，将 wrapper 默认 timeout 对齐 CI，并把发布脚本 browser E2E 改为 `--workers=1` 串行执行 |
 | 阶段 125 并行 Jest 总套件中 `market-wallet.test.js` 偶发 `fetch failed: other side closed` | 2 | 将 HTTP endpoint 契约文件从其它 marketplace contract 测试中隔离，先以 `--runInBand` 单独执行 |
+| 阶段 126 首次 approve 完整校验测试假设失败路径已有 `approved_at/listed_at: null` | 1 | 改为 `approved_at ?? null` 和 `listed_at ?? null`，断言失败路径没有写入审核/上架时间 |
 
 ## 备注
 - 设计文档阶段已完成。

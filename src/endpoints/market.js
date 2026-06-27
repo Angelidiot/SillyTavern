@@ -273,11 +273,8 @@ function normalizeCreateBody(body) {
     };
 }
 
-function validateAssetForSubmit(asset) {
+function validateMarketAssetCore(asset) {
     const errors = [];
-    if (asset.status !== 'draft') {
-        errors.push('asset must be in draft status');
-    }
     if (!asset.title) {
         errors.push('title is required');
     }
@@ -302,19 +299,17 @@ function validateAssetForSubmit(asset) {
     return errors;
 }
 
-function validateAssetForApproval(asset) {
+function validateAssetForSubmit(asset) {
     const errors = [];
-    if (!isPlainObject(asset.metadata)) {
-        errors.push('metadata must be an object');
-    } else {
-        validateJsonByteLength(asset.metadata, 'metadata', MAX_MARKET_METADATA_BYTES, errors);
+    if (asset.status !== 'draft') {
+        errors.push('asset must be in draft status');
     }
-    if (!isPlainObject(asset.normalized_payload)) {
-        errors.push('normalized_payload must be an object');
-    } else if (validateJsonByteLength(asset.normalized_payload, 'normalized_payload', MAX_MARKET_NORMALIZED_PAYLOAD_BYTES, errors)) {
-        errors.push(...validateNormalizedPayload(asset));
-    }
+    errors.push(...validateMarketAssetCore(asset));
     return errors;
+}
+
+function validateAssetForApproval(asset) {
+    return validateMarketAssetCore(asset);
 }
 
 function validateNormalizedPayload(asset) {

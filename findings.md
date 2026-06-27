@@ -220,6 +220,8 @@
 - 本地 marketplace browser E2E wrapper 默认超时应与 GitHub Actions 的 10 分钟 browser E2E step 对齐；5 分钟会让全量 24 用例在本机全部显示通过后仍被 wrapper 提前杀掉。
 - 本机全量 marketplace browser E2E 并行 4 workers 时会出现所有用例通过但 Playwright worker 不自然退出的场景；发布脚本默认应走 `--workers=1` 串行模式，稳定清理优先于速度。
 - `market-wallet.test.js` 会启动大量临时 Express server 并用真实 `fetch` 打端点；与其它 marketplace Jest 文件并行时会偶发 `SocketError: other side closed`，因此根 `test:marketplace` 应先用 `--runInBand` 单独跑该后端契约文件，再跑其它脚本/UI/PWA contract 测试。
+- marketplace approve 不能只复查 metadata/payload；管理员批准前也应复查 title、type、price_type、price_coins、metadata 字节和 normalized_payload 格式，避免 submitted 资产被外部脚本或旧数据腐化后仍公开上架。
+- PWA/移动壳的 `public/style.css` 当前属于可交付面但 Marketplace Wallet Checks path filter 未监听；后续应把它加入 push/pull_request paths，并用脚本契约测试锁住。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

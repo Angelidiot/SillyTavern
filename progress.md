@@ -1562,6 +1562,15 @@
 - 已提交 `d312a353b Add marketplace CI release gate` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28275289762` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和串行 browser E2E 全部 success。
 
+## 2026-06-27 阶段 126：审核批准前完整资产校验
+- 开始处理 Tesla 子 agent 确认的审核安全缺口：`validateAssetForApproval()` 只复查 metadata/payload，缺少 title/type/price 等可上架核心字段复核。
+- 已将提交和批准共享 `validateMarketAssetCore()`，approve 前会复查 title、type、price_type、price_coins、metadata 字节和 normalized_payload 格式。
+- `tests/market-wallet.test.js` 新增 store-corruption 回归：submitted 资产被手工改成空 title、unsupported type 和无效 fixed price 后，管理员 approve 返回 400，资产仍停留在 submitted/review，且不会写入 approved/listed 时间。
+- README、设计文档、API reference 生成脚本、checked-in API reference 和 API reference 测试已同步 approve 前完整可上架资产复核边界。
+- Aquinas 子 agent 只读发现下一步小缺口：Marketplace Wallet Checks path filter 漏监听 `public/style.css`，已记录为下一阶段候选，当前阶段未改。
+- 首次目标 Jest 失败是新测试假设 approve 失败后 `approved_at/listed_at` 为 null；实际腐化 store 中字段不存在。已改为 `?? null`，断言“未被设置”而不是要求预先存在。
+- 已通过 `node --check src/endpoints/market.js`、`node --check scripts/export-marketplace-api-reference.mjs`、`npm --prefix tests run test:unit -- market-wallet.test.js marketplace-api-reference.test.js`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

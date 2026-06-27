@@ -1810,6 +1810,49 @@ describe('market and wallet MVP endpoints', () => {
         expect(storedAsset.review_notes).toBe(boundaryReason);
     });
 
+    test('revalidates submitted asset integrity before admin approval', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const charlieApp = createApp(createUser('charlie', false));
+        const assetId = await createSubmittedAsset(charlieApp, {
+            type: 'character_card',
+            title: 'Approval Integrity',
+            price_type: 'fixed_price',
+            price_coins: 5,
+            normalized_payload: createCharacterPayload(),
+        });
+
+        const storePath = path.join(dataRoot, 'market-assets.json');
+        const store = JSON.parse(fs.readFileSync(storePath, 'utf8'));
+        const storedAsset = store.assets.find(asset => asset.id === assetId);
+        storedAsset.title = '';
+        storedAsset.type = 'preset_bundle';
+        storedAsset.price_type = 'fixed_price';
+        storedAsset.price_coins = 0;
+        fs.writeFileSync(storePath, JSON.stringify(store, null, 4), 'utf8');
+
+        const blockedApproval = await request(aliceApp, `/api/market/assets/${assetId}/approve`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(blockedApproval.status).toBe(400);
+        expect(blockedApproval.body).toMatchObject({
+            error: 'Invalid market asset',
+            details: expect.arrayContaining([
+                'title is required',
+                'type must be one of: character_card, world_book',
+                'price_coins must be a positive safe integer for fixed_price assets',
+                'Unsupported asset type: preset_bundle',
+            ]),
+        });
+
+        const updatedStore = JSON.parse(fs.readFileSync(storePath, 'utf8'));
+        const updatedAsset = updatedStore.assets.find(asset => asset.id === assetId);
+        expect(updatedAsset.status).toBe('submitted');
+        expect(updatedAsset.visibility).toBe('review');
+        expect(updatedAsset.approved_at ?? null).toBeNull();
+        expect(updatedAsset.listed_at ?? null).toBeNull();
+    });
+
     test('allows creators to revise draft and rejected assets before resubmission', async () => {
         const aliceApp = createApp(createUser('alice', true));
         const bobApp = createApp(createUser('bob', false));

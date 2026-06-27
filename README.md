@@ -21,6 +21,7 @@ This branch adds a hosted AI tavern marketplace and wallet MVP on top of SillyTa
 - My Library view for claimed or purchased assets with entitlement dates, recent install summaries, details, and reinstall actions.
 - Installable PWA shell for mobile browsers using the existing web app and static shell cache.
 - Admin review queue with creator, price, tag, summary, inspect/approve/reject actions.
+- Admin approval revalidates the full publishable asset, including title, type, price, metadata, and payload, before public listing.
 - Admin delist action to remove listed assets from public purchase while preserving existing entitlements.
 - User report action with required bounded reason/details body, admin report queue with reported dates, bounded resolution notes, and resolve workflow for marketplace moderation.
 - Admin coin grants for `bonus`, `paid`, and `earnings`, with `handle`, `userHandle`, or `targetHandle` recipient aliases.
@@ -141,7 +142,7 @@ Validation matrix:
 
 - The MVP still uses JSON/node-persist storage and is intended for local validation, not production SaaS scale.
 - `npm run marketplace:export:snapshot` creates a redacted read-only market/wallet snapshot with asset and report lifecycle timestamps for backup checks and migration rehearsals; output files must be outside the data root.
-- `npm run marketplace:export:api` generates `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including client CSRF request requirements, key list/detail/creator privacy, upload validation, review lifecycle, purchase/install, and report length notes, with tests locking the checked-in reference to the full MVP route set.
+- `npm run marketplace:export:api` generates `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including client CSRF request requirements, key list/detail/creator privacy, upload validation, approval revalidation, review lifecycle, purchase/install, and report length notes, with tests locking the checked-in reference to the full MVP route set.
 - `tests/marketplace-scripts.test.js` locks the hosted marketplace/PWA command list against this README so runnable scripts and setup docs do not drift.
 - `npm run test:hosted:docker` verifies the deployable Docker image exposes the hosted health endpoint, wallet/market API routes, and PWA shell; local machines without Docker should rely on CI for this check or run `test:marketplace:all` for the non-Docker slow loop.
 - Paid purchase responses return the entitlement summary, ownership status, purchase id, and buyer balance only; creator balances, full ledger entries, and entitlement ledger internals remain behind wallet/creator APIs.

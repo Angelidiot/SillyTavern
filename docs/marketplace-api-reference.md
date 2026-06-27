@@ -42,7 +42,7 @@ Notes:
 - POST /api/market/assets: Creates a draft character_card or world_book asset; body must be a JSON object with object metadata up to 65536 bytes and normalized_payload up to 1048576 bytes, bounded title/summary/description/tags/language/content_rating metadata, supported price_type free/fixed_price, and positive safe integer price_coins for fixed_price assets.
 - PATCH /api/market/assets/:id: Creator-only revision for draft or rejected assets; uses the same asset body and byte-size validation as create and resets the asset to private draft before resubmission.
 - POST /api/market/assets/:id/submit: Creator-only transition from valid private draft to submitted review state.
-- POST /api/market/assets/:id/approve: Admin-only review action that validates payload format and lists the asset publicly.
+- POST /api/market/assets/:id/approve: Admin-only review action that revalidates the full publishable asset fields, price, metadata, and payload format before listing the asset publicly.
 - POST /api/market/assets/:id/reject: Admin-only review action that returns submitted assets to private rejected state with an optional reason up to 1000 characters.
 - POST /api/market/assets/:id/delist: Admin-only moderation action; existing entitlements are preserved.
 - POST /api/market/assets/:id/report: Creates an open report with required reason up to 120 characters and optional body up to 2000 characters.
