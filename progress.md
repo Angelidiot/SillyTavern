@@ -1536,6 +1536,8 @@
 - `tests/pwa.test.js` 已锁定 cached root fallback；`tests/marketplace-wallet.e2e.js` 已在真实 service worker 激活后模拟离线访问 `/?pwa-offline-query=1`，确认回退到缓存首页 shell。
 - README 和设计文档已同步说明离线带 query 导航会回退缓存根页面，业务 `/api/*` 仍不缓存。
 - 已通过 `node --check public/service-worker.js`、`npm --prefix tests run test:unit -- pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "registers the service worker shell cache" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:pwa:e2e` 和 `git diff --check`。
+- 已提交 `424363667 Add PWA offline navigation fallback` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28274349542` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
