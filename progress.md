@@ -1482,6 +1482,14 @@
 - 已提交 `da1f756f3 Add retryable marketplace side panels` 并推送到 `fork/codex/marketplace-wallet-mvp`，等待 GitHub Marketplace Wallet Checks。
 - GitHub run `28272873816` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-26 阶段 119：移动端上传表单长内容覆盖
+- 开始处理 Bacon 子 agent 早前发现的 mobile upload form 覆盖缺口：现有移动端验证覆盖详情、筛选、审核、库动作，但没有 360px viewport 下的上传表单长内容无横向溢出测试。
+- 本阶段先补浏览器 E2E；若测试暴露 `.marketplace-wallet-upload-grid`、tags 输入或 payload textarea 的 CSS 问题，再做最小修复。
+- `tests/marketplace-wallet.e2e.js` 新增 “keeps the upload form usable on mobile width with long content”，填入长标题、summary、description、tags 和 JSON payload。
+- 首次运行该 E2E 发现测试错误地要求上传按钮区两列；实际 CSS 在手机宽度下让上传动作按钮 100% 宽单列且无横向溢出，因此测试改为断言按钮区和按钮都留在上传表单内。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps the upload form usable on mobile width" --workers=1`、`npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-scripts.test.js` 和 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list`。
+- 已通过 `npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

@@ -1588,6 +1588,80 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_assets')).toContainText('No marketplace assets found.');
     });
 
+    test('keeps the upload form usable on mobile width with long content', async ({ page }) => {
+        await page.setViewportSize({ width: 360, height: 740 });
+        const longToken = 'UploadMobileToken'.repeat(12);
+        await mockMarketplaceApis(page, {
+            assets: [],
+        });
+
+        await loadSillyTavern(page);
+
+        await page.locator('#marketplace_wallet_upload_title').fill(`Mobile Upload ${longToken}`);
+        await page.locator('#marketplace_wallet_upload_summary').fill(`Summary ${longToken}`);
+        await page.locator('#marketplace_wallet_upload_description').fill(`Description line one\n${longToken}\n${longToken}`);
+        await page.locator('#marketplace_wallet_upload_tags').fill(`${longToken}, mobile, ${longToken}`);
+        await page.locator('#marketplace_wallet_upload_payload').fill(JSON.stringify({
+            name: `Mobile Upload ${longToken}`,
+            entries: {
+                long_mobile_entry: {
+                    key: [longToken],
+                    content: `Payload ${longToken} ${longToken}`,
+                    enabled: true,
+                },
+            },
+        }, null, 2));
+
+        const layout = await page.locator('#marketplace_wallet_ui').evaluate(element => {
+            const upload = element.querySelector('.marketplace-wallet-upload');
+            const uploadGrid = element.querySelector('.marketplace-wallet-upload-grid');
+            const title = element.querySelector('#marketplace_wallet_upload_title');
+            const tags = element.querySelector('#marketplace_wallet_upload_tags');
+            const payload = element.querySelector('#marketplace_wallet_upload_payload');
+            const actions = element.querySelector('.marketplace-wallet-upload-actions');
+            const actionButtons = [...actions.querySelectorAll('.menu_button')];
+            const viewportWidth = document.documentElement.clientWidth;
+            const rect = node => node.getBoundingClientRect();
+            const overflowing = [...upload.querySelectorAll('*')]
+                .filter(child => {
+                    const childRect = child.getBoundingClientRect();
+                    return childRect.width > 0 && (childRect.left < -1 || childRect.right > viewportWidth + 1);
+                })
+                .map(child => ({
+                    tag: child.tagName,
+                    id: child.id,
+                    className: String(child.className),
+                }));
+
+            return {
+                uploadWithinViewport: rect(upload).left >= -1 && rect(upload).right <= viewportWidth + 1,
+                gridColumns: getComputedStyle(uploadGrid).gridTemplateColumns.split(' ').filter(Boolean).length,
+                titleWithinUpload: rect(title).left >= rect(upload).left - 1 && rect(title).right <= rect(upload).right + 1,
+                tagsWithinUpload: rect(tags).left >= rect(upload).left - 1 && rect(tags).right <= rect(upload).right + 1,
+                payloadWithinUpload: rect(payload).left >= rect(upload).left - 1 && rect(payload).right <= rect(upload).right + 1,
+                payloadOverflowX: getComputedStyle(payload).overflowX,
+                actionsWithinUpload: rect(actions).left >= rect(upload).left - 1 && rect(actions).right <= rect(upload).right + 1,
+                actionButtonsWithinUpload: actionButtons.every(button => {
+                    const buttonRect = rect(button);
+                    return buttonRect.left >= rect(upload).left - 1 && buttonRect.right <= rect(upload).right + 1;
+                }),
+                overflowing,
+            };
+        });
+
+        expect(layout).toMatchObject({
+            uploadWithinViewport: true,
+            gridColumns: 1,
+            titleWithinUpload: true,
+            tagsWithinUpload: true,
+            payloadWithinUpload: true,
+            payloadOverflowX: 'auto',
+            actionsWithinUpload: true,
+            actionButtonsWithinUpload: true,
+            overflowing: [],
+        });
+    });
+
     test('revises a rejected creator asset and resubmits it for review', async ({ page }) => {
         const rejectedAsset = makeSubmittedAsset({
             id: 'rejected-world',

@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 118
+阶段 119
 
 ## 各阶段
 
@@ -1110,6 +1110,17 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 119：移动端上传表单长内容覆盖
+- [x] 确认 upload form 是手机/PWA 中输入最密集的区域
+- [x] 增加 360px viewport 浏览器 E2E，填入长标题、长标签和长 payload
+- [x] 断言上传表单控件、动作按钮和 payload textarea 不横向溢出
+- [x] 如测试暴露 CSS 问题则修复移动布局
+- [x] 更新规划记录
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
@@ -1208,6 +1219,7 @@
 | 固定价购买必须按买家钱包串行 | 同一买家可以同时点击两个不同付费资产；只按 asset+buyer 加锁会让两笔交易同时读旧余额并透支 |
 | 资产详情响应必须使用 allowlist | `structuredClone(asset)` 再删除 payload 是黑名单式脱敏；新增 `metadata`、`reviewed_by`、`delisted_by` 等内部字段会默认外泄，应只返回详情明确需要的摘要、描述、生命周期和权限内 payload |
 | 附属面板失败不能渲染为空数据 | Library、Creator Center、Wallet Activity 和 Report Queue 都是降级加载；失败时应显示错误和 Retry，否则用户会把网络/权限问题误认为没有资产、没有流水或没有举报 |
+| 上传表单需要移动端长内容回归 | 创作者上传 title/tags/payload 是手机端最容易被长文本撑宽的表单；需要 360px viewport 覆盖防止 PWA 出现横向滚动 |
 
 ## 遇到的错误
 | 错误 | 尝试次数 | 解决方案 |
