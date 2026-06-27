@@ -211,6 +211,7 @@
 - raw `metadata`、`visibility`、`submitted_at`、`approved_at`、`reviewed_by`、`review_notes`、`delisted_by` 和 entitlement ledger 引用等字段属于存储/审核内部信息；public/admin/owner detail 都不应默认暴露它们，审核状态细节继续通过 Creator Center 或快照导出白名单暴露。
 - marketplace-wallet 降级加载的 Library、Creator Center、Wallet Activity 和 Report Queue 不应在失败时清空数组后显示空状态；错误态需要可见文案和 Retry，尤其适合手机/PWA 弱网场景。
 - marketplace-wallet 上传表单是手机端输入最密集的区域；长标题、长标签和长 JSON payload 需要浏览器 E2E 覆盖，防止 360px viewport 出现横向溢出。
+- 默认 CSRF runtime smoke 不应只证明 token/cookie 可以写入；同一 session cookie 下缺少 `X-CSRF-Token` 的市场写入也应返回 403，才能防止 CSRF 中间件或脚本启动参数退化时被正向路径掩盖。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

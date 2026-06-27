@@ -1492,6 +1492,16 @@
 - 已提交 `b0043e6a4 Cover mobile upload form overflow` 并推送到 `fork/codex/marketplace-wallet-mvp`，等待 GitHub Marketplace Wallet Checks。
 - GitHub run `28273118431` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-27 阶段 120：默认 CSRF 写入负向 smoke
+- 开始补齐 runtime smoke 的默认 CSRF 负向路径：原脚本已证明 token/cookie 可以创建 draft，但没有证明同 session 缺少 `X-CSRF-Token` 时会被拒绝。
+- 已启动 Chandrasekhar/Dewey 两个只读 explorer 并行复核 CSRF 行为和文档契约；主线先实现脚本与测试文档补丁。
+- `scripts/smoke-marketplace-runtime.mjs` 新增 `assertStatusEndpoint()`，在默认 CSRF server 获取 token/cookie 后，先用相同 Cookie 但不带 `X-CSRF-Token` POST `/api/market/assets`，断言 403。
+- 默认 CSRF 正向 draft upload 复用同一 JSON body，并继续断言带 `X-CSRF-Token` 时返回 201。
+- README、设计文档和 `tests/marketplace-scripts.test.js` 已同步默认 CSRF tokenless rejection + token/cookie success 的 smoke 边界。
+- Chandrasekhar 子 agent 只读复核确认：负向 POST 放在 token 获取之后、正向 POST 之前，可以验证同 session 缺 header 的真实 CSRF 失败；状态断言即可，不应要求 marketplace JSON body。
+- Dewey 子 agent 只读复核确认：README、设计文档和脚本契约测试是需要同步的三处；已补充契约断言锁定 403 状态码和负向在正向前执行。
+- 已通过 `node --check scripts/smoke-marketplace-runtime.mjs`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

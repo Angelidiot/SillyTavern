@@ -184,12 +184,18 @@ describe('marketplace runnable scripts', () => {
 
         expect(script).toContain("'--disableCsrf'");
         expect(script).toContain('async function runCsrfSmoke()');
+        expect(script).toContain('async function assertStatusEndpoint');
         expect(script).toContain('/csrf-token');
         expect(script).toContain("'Cookie': csrf.cookieHeader");
         expect(script).toContain("'X-CSRF-Token': csrf.token");
+        expect(script).toContain('default CSRF rejects tokenless POST /api/market/assets draft');
+        expect(script).toContain("'default CSRF rejects tokenless POST /api/market/assets draft', 403");
+        expect(script).toContain('runtime ok: default CSRF rejects tokenless POST /api/market/assets draft');
         expect(script).toContain('runtime ok: default CSRF POST /api/market/assets draft');
+        expect(script.indexOf('runtime ok: default CSRF rejects tokenless POST /api/market/assets draft'))
+            .toBeLessThan(script.indexOf('runtime ok: default CSRF POST /api/market/assets draft'));
         expect(script).toContain('await run();\n    await runCsrfSmoke();');
-        expect(readmeScriptSection).toContain('default-CSRF token/cookie draft upload POST');
+        expect(readmeScriptSection).toContain('default-CSRF tokenless write rejection plus token/cookie draft upload POST');
     });
 
     test('keeps marketplace browser E2E wrapper bounded and cleanup-aware', () => {

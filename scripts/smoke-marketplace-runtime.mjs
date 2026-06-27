@@ -187,6 +187,15 @@ async function assertJsonEndpoint(url, label, assertPayload, options = {}) {
     return payload;
 }
 
+async function assertStatusEndpoint(url, label, expectedStatus, options = {}) {
+    const { response, body } = await fetchWithTimeout(url, options);
+    if (response.status !== expectedStatus) {
+        throw new Error(`${label} returned ${response.status}, expected ${expectedStatus}: ${body.slice(0, 500)}`);
+    }
+
+    return body;
+}
+
 async function assertTextEndpoint(url, label, expectedText) {
     const { response, body } = await fetchWithTimeout(url);
     if (!response.ok) {
@@ -726,6 +735,30 @@ async function runCsrfSmoke() {
         const csrf = await getCsrfSession(baseUrl);
         console.log('runtime ok: default CSRF token');
 
+        const csrfDraftBody = JSON.stringify({
+            type: 'world_book',
+            title: 'CSRF Runtime Draft',
+            summary: 'Created through the runtime smoke upload API with CSRF enabled.',
+            normalized_payload: {
+                entries: {
+                    csrf_entry: {
+                        key: ['csrf'],
+                        content: 'CSRF smoke uploaded world book entry.',
+                        enabled: true,
+                    },
+                },
+            },
+        });
+
+        await assertStatusEndpoint(`${baseUrl}/api/market/assets`, 'default CSRF rejects tokenless POST /api/market/assets draft', 403, {
+            method: 'POST',
+            headers: {
+                'Cookie': csrf.cookieHeader,
+            },
+            body: csrfDraftBody,
+        });
+        console.log('runtime ok: default CSRF rejects tokenless POST /api/market/assets draft');
+
         await assertJsonEndpoint(`${baseUrl}/api/market/assets`, 'default CSRF POST /api/market/assets draft', payload => {
             const asset = payload.asset;
             if (!asset?.id || asset.creator_id !== 'default-user') {
@@ -743,20 +776,7 @@ async function runCsrfSmoke() {
                 'Cookie': csrf.cookieHeader,
                 'X-CSRF-Token': csrf.token,
             },
-            body: JSON.stringify({
-                type: 'world_book',
-                title: 'CSRF Runtime Draft',
-                summary: 'Created through the runtime smoke upload API with CSRF enabled.',
-                normalized_payload: {
-                    entries: {
-                        csrf_entry: {
-                            key: ['csrf'],
-                            content: 'CSRF smoke uploaded world book entry.',
-                            enabled: true,
-                        },
-                    },
-                },
-            }),
+            body: csrfDraftBody,
             expectedStatus: 201,
         });
         console.log('runtime ok: default CSRF POST /api/market/assets draft');

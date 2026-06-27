@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 119
+阶段 120
 
 ## 各阶段
 
@@ -1120,6 +1120,16 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 120：默认 CSRF 写入负向 smoke
+- [x] 确认 runtime smoke 已覆盖默认 CSRF token/cookie 正向写入
+- [x] 在默认 CSRF server 中增加同 session、无 `X-CSRF-Token` 的 market 写入 403 断言
+- [x] 保留带 token/cookie 的 draft upload 成功断言
+- [x] 更新 README、设计文档和脚本契约测试
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
