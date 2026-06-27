@@ -1559,6 +1559,8 @@
 - 随后 `test:marketplace:all` 和单独 `test:marketplace` 都在并行 Jest 总套件里复现 `market-wallet.test.js` 的 `fetch failed: other side closed`；失败用例和完整 `market-wallet.test.js` 单独重跑均通过。已将根 `test:marketplace` 改为先 `--runInBand` 单独跑 `market-wallet.test.js`，再跑其它 marketplace/PWA/health contract 文件，降低临时 HTTP server 并行抖动。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`node --check scripts/run-marketplace-e2e.mjs`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --list`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server`（24 passed, 串行正常退出）、`git diff --check`。
 - 本机仍没有 `docker` 命令，无法本地执行完整 `test:marketplace:ci`；Docker smoke 将由 GitHub Marketplace Wallet Checks 验证。串行 browser E2E 后确认没有遗留 Playwright/临时 server 进程或临时 E2E 目录。
+- 已提交 `d312a353b Add marketplace CI release gate` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28275289762` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和串行 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

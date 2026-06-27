@@ -1184,9 +1184,9 @@
 - [x] 将 HTTP endpoint Jest 契约测试从其它 marketplace contract 测试中隔离为 in-band 执行
 - [x] 更新 README 和设计文档说明 Docker/Chrome 依赖
 - [x] 运行本地基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
