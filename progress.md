@@ -1465,6 +1465,8 @@
 - Boole 确认前端 Details/Revise 只依赖摘要字段、`description`、`created_at/listed_at/delisted_at/updated_at`、`payload_available`、权限内 `normalized_payload` 和 entitlement `source/created_at/purchase_id`。
 - James 确认 detail 应基于 `toAssetListItem()` allowlist，并建议顺手收紧 detail/purchase 返回的 entitlement；已新增 `toEntitlementSummary()`，不再返回 `ledger_entry_ids`、`revoked_at` 或 `asset_version_id`。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js marketplace-api-reference.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+- 已提交 `3fd10283f Tighten marketplace detail privacy` 并推送到 `fork/codex/marketplace-wallet-mvp`，等待 GitHub Marketplace Wallet Checks。
+- GitHub run `28272487711` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
