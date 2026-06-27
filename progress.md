@@ -1545,6 +1545,8 @@
 - `tests/market-wallet.test.js` 新增 reject reason 边界测试，覆盖 1001 字符失败且资产保持 submitted/review，以及 1000 字符成功保存。
 - 首次目标 Jest 失败是测试假设 submitted 资产预先带空 `review_notes`，实际字段不存在；已改为 `review_notes ?? ''`，只断言超长 reject 不污染备注。
 - 已通过 `node --check src/endpoints/market.js`、`npm --prefix tests run test:unit -- market-wallet.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`npm run test:marketplace:smoke` 和 `git diff --check`。
+- 已提交 `cfd952ba5 Validate marketplace rejection reason length` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28274521204` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

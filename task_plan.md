@@ -1170,9 +1170,9 @@
 - [x] 确认超长拒绝理由不会污染 submitted 资产状态
 - [x] 补充后端契约测试覆盖 1001 字符失败和 1000 字符成功
 - [x] 运行本地基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
