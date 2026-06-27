@@ -944,11 +944,13 @@ async function withBusyReport(reportId, callback) {
 async function withBusyAsset(assetId, callback) {
     state.busyAssetIds.add(assetId);
     renderAssets();
+    renderLibrary();
     try {
         await callback();
     } finally {
         state.busyAssetIds.delete(assetId);
         renderAssets();
+        renderLibrary();
     }
 }
 

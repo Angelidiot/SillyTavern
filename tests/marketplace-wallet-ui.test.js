@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.25');
+        expect(manifest.version).toBe('0.2.26');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -157,6 +157,8 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('void loadLibrary();');
         expect(script).toContain('void loadWalletLedger();');
         expect(script).toContain('await requestInstall(assetId);');
+        const busyAssetBlock = script.slice(script.indexOf('async function withBusyAsset'), script.indexOf('async function requestInstall'));
+        expect(busyAssetBlock.match(/renderLibrary\(\)/g)).toHaveLength(2);
         expect(script).toContain('Automatic install after purchase failed');
         expect(script).toContain("toastr.warning(error.message || 'Install failed; the asset remains in your library.')");
         expect(script).toContain('await Promise.all([');

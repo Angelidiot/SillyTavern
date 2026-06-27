@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.25';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.26';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -130,6 +130,7 @@ async function mockMarketplaceApis(page, {
     failReportsOnce = false,
     failInstallOnceFor = '',
     failSubmitOnceFor = '',
+    holdNextInstallFor = '',
 } = {}) {
     let wallet = makeWallet();
     let ledger = [];
@@ -140,6 +141,8 @@ async function mockMarketplaceApis(page, {
     let shouldFailReports = failReportsOnce;
     let failedInstall = false;
     let failedSubmit = false;
+    let didHoldInstall = false;
+    let heldInstall = null;
     const apiCalls = {
         approve: [],
         creates: [],
@@ -151,6 +154,13 @@ async function mockMarketplaceApis(page, {
         reports: [],
         revisions: [],
         resolveReports: [],
+        resolveHeldInstall: async () => {
+            if (heldInstall) {
+                const release = heldInstall;
+                heldInstall = null;
+                await release();
+            }
+        },
         submits: [],
     };
 
@@ -524,48 +534,56 @@ async function mockMarketplaceApis(page, {
         const assetId = route.request().url().split('/').at(-2);
         const asset = assets.find(item => item.id === assetId) || library.find(item => item.asset.id === assetId)?.asset;
         apiCalls.installs.push(assetId);
-        if (failInstallOnceFor === assetId && !failedInstall) {
-            failedInstall = true;
-            route.fulfill({
-                status: 400,
+        const fulfillInstall = async () => {
+            if (failInstallOnceFor === assetId && !failedInstall) {
+                failedInstall = true;
+                await route.fulfill({
+                    status: 400,
+                    contentType: 'application/json',
+                    body: JSON.stringify({ error: 'Install target is temporarily unavailable' }),
+                });
+                return;
+            }
+            library = library.map(item => item.asset.id === assetId
+                ? {
+                    ...item,
+                    install_count: Number(item.install_count || 0) + 1,
+                    last_install: {
+                        type: asset?.type || 'world_book',
+                        local_ref: `worlds/${assetId}.json`,
+                        created_at: '2026-06-26T12:46:00.000Z',
+                    },
+                }
+                : item);
+            assets = assets.map(item => item.id === assetId
+                ? { ...item, entitled: true, install_count: Number(item.install_count || 0) + 1 }
+                : item);
+            await route.fulfill({
+                status: 201,
                 contentType: 'application/json',
-                body: JSON.stringify({ error: 'Install target is temporarily unavailable' }),
+                body: JSON.stringify({
+                    installed: {
+                        type: asset?.type || 'world_book',
+                        name: asset?.title || 'Market asset',
+                        path: `worlds/${assetId}.json`,
+                    },
+                    install: {
+                        id: `install-${assetId}`,
+                        user_id: 'default-user',
+                        asset_id: assetId,
+                        installed_type: asset?.type || 'world_book',
+                        local_ref: `worlds/${assetId}.json`,
+                        created_at: '2026-06-26T12:46:00.000Z',
+                    },
+                }),
             });
+        };
+        if (holdNextInstallFor === assetId && !didHoldInstall && !heldInstall) {
+            didHoldInstall = true;
+            heldInstall = fulfillInstall;
             return;
         }
-        library = library.map(item => item.asset.id === assetId
-            ? {
-                ...item,
-                install_count: Number(item.install_count || 0) + 1,
-                last_install: {
-                    type: asset?.type || 'world_book',
-                    local_ref: `worlds/${assetId}.json`,
-                    created_at: '2026-06-26T12:46:00.000Z',
-                },
-            }
-            : item);
-        assets = assets.map(item => item.id === assetId
-            ? { ...item, entitled: true, install_count: Number(item.install_count || 0) + 1 }
-            : item);
-        route.fulfill({
-            status: 201,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                installed: {
-                    type: asset?.type || 'world_book',
-                    name: asset?.title || 'Market asset',
-                    path: `worlds/${assetId}.json`,
-                },
-                install: {
-                    id: `install-${assetId}`,
-                    user_id: 'default-user',
-                    asset_id: assetId,
-                    installed_type: asset?.type || 'world_book',
-                    local_ref: `worlds/${assetId}.json`,
-                    created_at: '2026-06-26T12:46:00.000Z',
-                },
-            }),
-        });
+        void fulfillInstall();
     });
 
     await page.route('**/api/market/assets/*/report', route => {
@@ -1453,6 +1471,36 @@ test.describe('marketplace wallet extension', () => {
         await expect.poll(() => apiCalls.installs).toEqual(['paid-install-fails-world', 'paid-install-fails-world']);
         await expect(library).toContainText('1 installs');
         await expect(library).toContainText('Last installed 2026-06-26 to worlds/paid-install-fails-world.json');
+    });
+
+    test('shows busy state while reinstalling a library asset', async ({ page }) => {
+        const libraryAsset = makeListedAsset({
+            id: 'library-busy-world',
+            title: 'Library Busy World',
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [libraryAsset],
+            library: [makeLibraryItem(libraryAsset)],
+            holdNextInstallFor: 'library-busy-world',
+        });
+
+        await loadSillyTavern(page);
+
+        const library = page.locator('#marketplace_wallet_library_items');
+        const libraryRow = library.locator('.marketplace-wallet-library-item', { hasText: 'Library Busy World' });
+        const installButton = libraryRow.locator('[data-marketplace-wallet-action="install"]');
+
+        await expect(installButton).toHaveText(/Install/);
+        await installButton.click();
+
+        await expect.poll(() => apiCalls.installs).toEqual(['library-busy-world']);
+        await expect(installButton).toBeDisabled();
+        await expect(installButton).toHaveText(/Installing/);
+
+        await apiCalls.resolveHeldInstall();
+
+        await expect(library).toContainText('1 installs');
+        await expect(library).toContainText('Last installed 2026-06-26 to worlds/library-busy-world.json');
     });
 
     test('shows the missing spendable balance for unaffordable fixed-price assets', async ({ page }) => {

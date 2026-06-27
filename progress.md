@@ -1593,14 +1593,23 @@
 - 已提交 `4616b8363 Validate marketplace moderation text lengths` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28276123729` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-27 阶段 129：Library 安装忙碌态同步
+- 开始处理 My Library 内 reinstall 操作的 UI 状态缺口：`withBusyAsset()` 只重绘 Marketplace 列表，Library 条目的 `state.busyAssetIds` 变化不会立即反映到按钮 disabled/Installing 文案。
+- `withBusyAsset()` 已在 busy 集合进入和退出时同步调用 `renderLibrary()`，让 Library install/details 入口和 Marketplace 资产卡使用同一资产级 busy 状态。
+- marketplace-wallet manifest、service worker 预缓存清单、UI contract 和浏览器 E2E 常量已从 `0.2.25` 升到 `0.2.26`。
+- `tests/marketplace-wallet-ui.test.js` 已锁定 `withBusyAsset()` 两侧都会重绘 Library；`tests/marketplace-wallet.e2e.js` 新增挂起一次 install 请求的真实浏览器用例，确认 Library Install 点击后会变成 disabled + Installing，并在释放请求后刷新安装摘要。
+- Mill 子 agent 只读复核确认 patch 覆盖风险；按建议把 E2E helper 的 held install release 改为 async/await，便于未来定位 `route.fulfill()` 失败。
+- Descartes 子 agent 只读扫描出下一阶段候选：PWA 预缓存里的 marketplace-wallet `filters.js` 仍是裸路径，可能导致安装壳 cache-first 命中过期过滤逻辑；另有 PWA shell 预缓存依赖 path filter 和根 `public/manifest.json` syntax gate 小缺口。
+- 已通过 `node --check tests/marketplace-wallet.e2e.js`、`node --check public/scripts/extensions/marketplace-wallet/index.js`、`node --check public/service-worker.js`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows busy state while reinstalling a library asset" --workers=1`、`npm run test:marketplace`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "registers the service worker shell cache" --workers=1` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
-| 我在哪里？ | 已完成市场/钱包后端、前端、管理员入口、基础脚本、Creator Center summary、PWA 安装壳、市场下架闭环、举报处理队列、审核预览、创作者修订重提、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、marketplace 语法门禁、PWA 缓存清单完整性检查、设计文档 MVP/API 边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、市场/钱包只读快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags 与 JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、托管 Docker smoke 和 E2E wrapper 清理兜底 |
+| 我在哪里？ | 已完成市场/钱包后端、前端、管理员入口、基础脚本、Creator Center summary、PWA 安装壳、市场下架闭环、举报处理队列、审核预览、创作者修订重提、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、marketplace 语法门禁、PWA 缓存清单完整性检查、设计文档 MVP/API 边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、市场/钱包只读快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags 与 JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、托管 Docker smoke、E2E wrapper 清理兜底和 Library 安装忙碌态同步 |
 | 我要去哪里？ | 下一步继续数据库迁移、真实支付、搜索审核和原生移动封装 |
 | 目标是什么？ | 让托管版 AI 酒馆支持用户上传、购买和安装角色卡/世界书等资产 |
 | 我学到了什么？ | 见 findings.md |
-| 我做了什么？ | 创建规划文件、设计文档、后端 MVP、前端 marketplace-wallet 扩展、管理员审核/赠币入口、Creator Center、PWA 安装壳、市场下架闭环、举报处理闭环、审核预览、创作者修订闭环、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、README、基础测试脚本、PWA 缓存完整性测试、文档边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、marketplace/wallet 快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags/JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、Docker 容器业务读路由 smoke 和 E2E wrapper 失败清理修正 |
+| 我做了什么？ | 创建规划文件、设计文档、后端 MVP、前端 marketplace-wallet 扩展、管理员审核/赠币入口、Creator Center、PWA 安装壳、市场下架闭环、举报处理闭环、审核预览、创作者修订闭环、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、README、基础测试脚本、PWA 缓存完整性测试、文档边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、marketplace/wallet 快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags/JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、Docker 容器业务读路由 smoke、E2E wrapper 失败清理修正和 Library 安装忙碌态同步 |
 
 ---
 *每个阶段完成后或遇到错误时更新此文件*
