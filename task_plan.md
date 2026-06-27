@@ -1203,9 +1203,9 @@
 - [x] 将 `public/style.css` 加入 pull_request 和 push paths
 - [x] 补充脚本契约测试锁定该路径在两处 filters 中存在
 - [x] 运行本地基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

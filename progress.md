@@ -1578,6 +1578,8 @@
 - `.github/workflows/marketplace-wallet-checks.yml` 已在 pull_request 和 push paths 中加入 `public/style.css`。
 - `tests/marketplace-scripts.test.js` 新增契约测试，锁定 `public/style.css` 在 workflow path filters 中出现两次，防止后续漂移。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js pwa.test.js`、`npm run test:marketplace:syntax` 和 `git diff --check`。
+- 已提交 `3ce0d3286 Trigger marketplace checks for PWA stylesheet` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28275815827` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
