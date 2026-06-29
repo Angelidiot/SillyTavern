@@ -129,7 +129,7 @@ Validation matrix:
 
 | Command | Coverage |
 |---------|----------|
-| `npm run test:marketplace:syntax` | Fast JS syntax gate plus marketplace-wallet manifest/window/style asset checks for marketplace/wallet endpoints, PWA files, scripts, and targeted tests. |
+| `npm run test:marketplace:syntax` | Fast JS syntax gate plus root PWA manifest and marketplace-wallet manifest/window/style asset checks for marketplace/wallet endpoints, PWA files, scripts, and targeted tests. |
 | `npm run test:marketplace` | Syntax gate plus marketplace, wallet, PWA, health, seed, snapshot export, API reference export, filter, upload description/tags/language/rating, and UI contract tests. HTTP endpoint tests run first and in-band for stable local server cleanup. |
 | `npm run test:marketplace:smoke` | Temporary local server smoke covering the demo seed script, health, PWA shell, wallet, market assets, creator upload/submit/approve, Creator Center stats, report create/queue/resolve, free and fixed-price claim/install, buyer debit, creator earning, Library, file write, and a default-CSRF tokenless write rejection plus token/cookie draft upload POST. |
 | `npm run test:hosted:docker` | Docker image smoke that builds the hosted container, starts it with temporary config/data volumes, and verifies `/api/health`, `/api/wallet`, `/api/market/assets`, `/manifest.json`, `/service-worker.js`, and `/`; requires Docker. |

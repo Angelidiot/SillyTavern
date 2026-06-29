@@ -164,6 +164,7 @@ describe('marketplace runnable scripts', () => {
         }
 
         expect(readmeScriptSection).toContain('docs/marketplace-api-reference.md');
+        expect(readmeScriptSection).toContain('root PWA manifest and marketplace-wallet manifest/window/style asset checks');
     });
 
     test('runs marketplace checks when the checked-in API reference changes', () => {

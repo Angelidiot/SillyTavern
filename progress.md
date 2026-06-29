@@ -1628,6 +1628,11 @@
 - 已提交 `4fbd57867 Trigger checks for PWA shell assets` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28345179813` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-06-29 阶段 133：README syntax gate 文案同步
+- 开始处理 README 验证矩阵文案漂移：`test:marketplace:syntax` 已解析 root PWA manifest，但 README 仍只提 marketplace-wallet manifest/window/style。
+- README 已更新为 root PWA manifest + marketplace-wallet manifest/window/style asset checks；`tests/marketplace-scripts.test.js` 已锁定该说明，避免 README 和脚本覆盖继续漂移。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

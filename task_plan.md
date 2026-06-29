@@ -1255,6 +1255,15 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 133：README syntax gate 文案同步
+- [x] 确认 README 验证矩阵未提及 root PWA manifest 已进入 syntax gate
+- [x] 更新 README `test:marketplace:syntax` 覆盖说明
+- [x] 更新 marketplace scripts contract 测试
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
