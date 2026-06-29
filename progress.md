@@ -1617,6 +1617,8 @@
 - 开始处理可运行脚本小缺口：`test:marketplace:syntax` 会解析 marketplace-wallet manifest，但根安装型 PWA 的 `public/manifest.json` 只在 Jest PWA contract 中解析。
 - `scripts/check-marketplace-syntax.mjs` 已把 `public/manifest.json` 加入 `staticAssets` JSON 检查；`tests/marketplace-scripts.test.js` 已锁定该路径，避免根 manifest 坏 JSON 绕过最快门禁。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js pwa.test.js` 和 `npm run test:marketplace:syntax`。
+- 已提交 `69e4bef6a Check root PWA manifest syntax` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28344928807` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
