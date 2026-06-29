@@ -1610,6 +1610,8 @@
 - `tests/marketplace-wallet-ui.test.js` 已锁定 filters import 跟随 manifest version；`tests/pwa.test.js` 和 `tests/marketplace-wallet.e2e.js` 已锁定 shell cache 里的 filters 路径同样版本化。
 - 首轮目标 Jest 失败是 UI contract 在第二个 test 中引用了第一条 test 的局部 `manifest` 变量；已在当前 test 内重新读取 manifest 后修复。
 - 已通过 `node --check public/scripts/extensions/marketplace-wallet/index.js && node --check public/scripts/extensions/marketplace-wallet/filters.js && node --check public/service-worker.js && node --check tests/marketplace-wallet.e2e.js`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js marketplace-wallet-filters.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "registers the service worker shell cache" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `0e32be88f Version marketplace filters cache asset` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28344703149` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
