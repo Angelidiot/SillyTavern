@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.26';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.27';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -11,7 +11,7 @@ const PWA_SHELL_PATHS = [
     '/scripts/extensions/marketplace-wallet/manifest.json',
     '/scripts/extensions/marketplace-wallet/window.html',
     `/scripts/extensions/marketplace-wallet/index.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`,
-    '/scripts/extensions/marketplace-wallet/filters.js',
+    `/scripts/extensions/marketplace-wallet/filters.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`,
     `/scripts/extensions/marketplace-wallet/style.css?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`,
 ];
 
@@ -833,7 +833,7 @@ test.describe('hosted tavern PWA browser shell', () => {
             '/scripts/extensions/marketplace-wallet/manifest.json': true,
             '/scripts/extensions/marketplace-wallet/window.html': true,
             [`/scripts/extensions/marketplace-wallet/index.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`]: true,
-            '/scripts/extensions/marketplace-wallet/filters.js': true,
+            [`/scripts/extensions/marketplace-wallet/filters.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`]: true,
             [`/scripts/extensions/marketplace-wallet/style.css?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}`]: true,
         });
 

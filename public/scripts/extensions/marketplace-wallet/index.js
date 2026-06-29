@@ -3,7 +3,7 @@ import { renderExtensionTemplateAsync } from '../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../popup.js';
 import { getCurrentUserHandle, isAdmin } from '../../user.js';
 import { getFileText } from '../../utils.js';
-import { filterAndSortAssets } from './filters.js';
+import { filterAndSortAssets } from './filters.js?v=0.2.27';
 
 const MODULE_NAME = 'marketplace-wallet';
 const MARKET_TYPES = {

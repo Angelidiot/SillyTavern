@@ -224,7 +224,7 @@
 - PWA/移动壳的 `public/style.css` 当前属于可交付面但 Marketplace Wallet Checks path filter 未监听；后续应把它加入 push/pull_request paths，并用脚本契约测试锁住。
 - marketplace-wallet report/reject 提交不能在前端 `slice()` 后静默发送；后端已经对 report reason/body 和 reject reason 返回 400，前端也应本地提示并阻止请求，避免手机用户误以为完整审核/举报文字已保存。
 - marketplace-wallet 的 `withBusyAsset()` 若只重绘 Marketplace 列表，My Library 中同一 asset 的 Install 按钮不会立刻反映 disabled/Installing 状态；资产级 busy 变化需要同时 `renderAssets()` 和 `renderLibrary()`。
-- PWA 预缓存里的 marketplace-wallet 脚本资源应尽量全部带 manifest version query；`index.js`/`style.css` 已版本化，但裸路径 `filters.js` 仍可能在安装壳里 cache-first 命中过期过滤逻辑，是下一阶段优先补齐项。
+- PWA 预缓存里的 marketplace-wallet 脚本资源应尽量全部带 manifest version query；`index.js`、`filters.js` 和 `style.css` 现在都随 manifest version 进入 service worker shell cache，避免安装壳 cache-first 命中过期过滤逻辑。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

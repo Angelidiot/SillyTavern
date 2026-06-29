@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.26');
+        expect(manifest.version).toBe('0.2.27');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -97,11 +97,12 @@ describe('marketplace wallet extension UI contract', () => {
 
     test('posts approve/reject actions from the review queue and validates admin grants', () => {
         const script = readExtensionFile('index.js');
+        const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
         expect(script).toContain("fetchJson('/api/market/creator/summary')");
         expect(script).toContain("fetchJson('/api/market/library')");
         expect(script).toMatch(/fetchJson\(\s*['"]\/api\/wallet\/ledger['"]/);
-        expect(script).toContain("import { filterAndSortAssets } from './filters.js';");
+        expect(script).toContain(`import { filterAndSortAssets } from './filters.js?v=${manifest.version}';`);
         expect(script).toContain('return filterAndSortAssets(state.assets');
         expect(script).toContain("priceType: $('#marketplace_wallet_price_filter').val()");
         expect(script).toContain("access: $('#marketplace_wallet_access_filter').val()");

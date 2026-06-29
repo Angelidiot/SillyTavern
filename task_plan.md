@@ -1227,6 +1227,16 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 130：PWA 预缓存 filters 版本化
+- [x] 确认 marketplace-wallet `filters.js` 仍以裸路径进入 PWA shell cache
+- [x] 将 `filters.js` import 和 service worker 预缓存路径跟随扩展版本 query
+- [x] bump marketplace-wallet manifest 和 PWA 预缓存版本
+- [x] 补充/更新 UI contract、PWA contract 和浏览器 E2E 断言
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？

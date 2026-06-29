@@ -111,7 +111,7 @@ describe('hosted tavern PWA shell', () => {
             '/scripts/extensions/marketplace-wallet/manifest.json',
             '/scripts/extensions/marketplace-wallet/window.html',
             `/scripts/extensions/marketplace-wallet/${marketplaceWalletManifest.js}`,
-            '/scripts/extensions/marketplace-wallet/filters.js',
+            `/scripts/extensions/marketplace-wallet/filters.js?v=${marketplaceWalletManifest.version}`,
             `/scripts/extensions/marketplace-wallet/${marketplaceWalletManifest.css}`,
         ];
 
