@@ -175,9 +175,21 @@ describe('marketplace runnable scripts', () => {
 
     test('runs marketplace checks when the PWA shell stylesheet changes', () => {
         const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
-        const stylePathMatches = workflow.match(/'public\/style\.css'/g) || [];
+        const shellAssetPaths = [
+            'public/style.css',
+            'public/css/st-tailwind.css',
+            'public/css/mobile-styles.css',
+            'public/css/login.css',
+            'public/favicon.ico',
+            'public/img/apple-icon-192x192.png',
+            'public/img/apple-icon-512x512.png',
+        ];
 
-        expect(stylePathMatches).toHaveLength(2);
+        for (const assetPath of shellAssetPaths) {
+            const escapedPath = assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const matches = workflow.match(new RegExp(`'${escapedPath}'`, 'g')) || [];
+            expect(matches).toHaveLength(2);
+        }
     });
 
     test('wires hosted Docker smoke into scripts, syntax gate, and CI', () => {

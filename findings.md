@@ -226,6 +226,7 @@
 - marketplace-wallet 的 `withBusyAsset()` 若只重绘 Marketplace 列表，My Library 中同一 asset 的 Install 按钮不会立刻反映 disabled/Installing 状态；资产级 busy 变化需要同时 `renderAssets()` 和 `renderLibrary()`。
 - PWA 预缓存里的 marketplace-wallet 脚本资源应尽量全部带 manifest version query；`index.js`、`filters.js` 和 `style.css` 现在都随 manifest version 进入 service worker shell cache，避免安装壳 cache-first 命中过期过滤逻辑。
 - 根安装型 PWA 的 `public/manifest.json` 也应在 `test:marketplace:syntax` 的 static JSON asset gate 中解析；这样坏 manifest JSON 不必等完整 PWA Jest 才暴露。
+- Marketplace Wallet Checks path filter 应覆盖 service worker 真实预缓存的 PWA shell CSS 和图标；否则移动/PWA 外观或安装图标变更可能绕过 Docker/PWA/browser checks。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

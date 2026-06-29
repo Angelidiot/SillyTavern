@@ -1246,6 +1246,15 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 132：PWA shell 预缓存依赖触发 CI
+- [x] 确认 service worker 预缓存的 CSS 和图标未全部进入 Marketplace Wallet Checks path filter
+- [x] 将 PWA shell CSS、favicon 和 apple icon 预缓存依赖加入 workflow push/pull_request paths
+- [x] 更新 marketplace scripts contract 测试
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？
