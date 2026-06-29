@@ -34,6 +34,7 @@ const files = [
 ];
 
 const staticAssets = [
+    { file: 'public/manifest.json', type: 'json' },
     { file: 'public/scripts/extensions/marketplace-wallet/manifest.json', type: 'json' },
     { file: 'public/scripts/extensions/marketplace-wallet/window.html', type: 'text' },
     { file: 'public/scripts/extensions/marketplace-wallet/style.css', type: 'text' },

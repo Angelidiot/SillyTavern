@@ -130,6 +130,7 @@ describe('marketplace runnable scripts', () => {
         const script = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');
 
         expect(script).toContain('staticAssets');
+        expect(script).toContain('public/manifest.json');
         expect(script).toContain('public/scripts/extensions/marketplace-wallet/manifest.json');
         expect(script).toContain('public/scripts/extensions/marketplace-wallet/window.html');
         expect(script).toContain('public/scripts/extensions/marketplace-wallet/style.css');
