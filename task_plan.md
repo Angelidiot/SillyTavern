@@ -1251,9 +1251,9 @@
 - [x] 将 PWA shell CSS、favicon 和 apple icon 预缓存依赖加入 workflow push/pull_request paths
 - [x] 更新 marketplace scripts contract 测试
 - [x] 运行本地基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

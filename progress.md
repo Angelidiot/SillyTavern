@@ -1625,6 +1625,8 @@
 - `.github/workflows/marketplace-wallet-checks.yml` 已在 pull_request 和 push paths 中加入这些 PWA shell 预缓存依赖；保持精确文件路径，不扩大到整个 `public/css/**`。
 - `tests/marketplace-scripts.test.js` 已锁定每个 PWA shell 样式/图标路径在 workflow 中出现两次，防止后续预缓存依赖改动绕过 marketplace/PWA checks。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js pwa.test.js`、`npm run test:marketplace:syntax`、`node --check tests/marketplace-scripts.test.js` 和 `git diff --check`。
+- 已提交 `4fbd57867 Trigger checks for PWA shell assets` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28345179813` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
