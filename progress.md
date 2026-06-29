@@ -1601,6 +1601,8 @@
 - Mill 子 agent 只读复核确认 patch 覆盖风险；按建议把 E2E helper 的 held install release 改为 async/await，便于未来定位 `route.fulfill()` 失败。
 - Descartes 子 agent 只读扫描出下一阶段候选：PWA 预缓存里的 marketplace-wallet `filters.js` 仍是裸路径，可能导致安装壳 cache-first 命中过期过滤逻辑；另有 PWA shell 预缓存依赖 path filter 和根 `public/manifest.json` syntax gate 小缺口。
 - 已通过 `node --check tests/marketplace-wallet.e2e.js`、`node --check public/scripts/extensions/marketplace-wallet/index.js`、`node --check public/service-worker.js`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "shows busy state while reinstalling a library asset" --workers=1`、`npm run test:marketplace`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "registers the service worker shell cache" --workers=1` 和 `git diff --check`。
+- 已提交 `23cde66a4 Sync library install busy state` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28276502225` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
