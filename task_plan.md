@@ -1264,6 +1264,16 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 134：Creator Center 直接操作入口
+- [x] 确认 Creator Center 资产条目只能展示摘要，草稿/驳回稿操作需要回市场列表寻找
+- [x] 复用现有 asset action 按钮，在 Creator Center 条目提供 Details/Revise/Submit/Install 等可用操作
+- [x] 更新移动端 Creator Center 按钮布局和 marketplace-wallet/PWA 版本化缓存
+- [x] 更新 UI contract 与浏览器 E2E，覆盖 Creator Center 直接 Submit/Revise
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？

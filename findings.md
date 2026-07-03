@@ -228,6 +228,11 @@
 - 根安装型 PWA 的 `public/manifest.json` 也应在 `test:marketplace:syntax` 的 static JSON asset gate 中解析；这样坏 manifest JSON 不必等完整 PWA Jest 才暴露。
 - Marketplace Wallet Checks path filter 应覆盖 service worker 真实预缓存的 PWA shell CSS 和图标；否则移动/PWA 外观或安装图标变更可能绕过 Docker/PWA/browser checks。
 - README 验证矩阵需要跟脚本门禁同步点名 root PWA manifest；`tests/marketplace-scripts.test.js` 负责锁住这类 README/脚本覆盖漂移。
+- Creator Center 条目应提供直接操作入口；创作者在手机端处理 draft/rejected 资产时，不应回 Marketplace 列表反找自己的资产才能 Details、Revise 或 Submit。
+- marketplace-wallet manifest 版本和 PWA shell 预缓存需要随 Creator Center 操作入口变更同步 bump，避免已安装壳保留没有操作按钮的旧入口。
+- 后续小缺口候选：Report Queue resolve 失败/忙态 E2E、Revise 后 Cancel 编辑模式重置、Library 直接安装失败恢复。
+- Marketplace Wallet Checks 后续应覆盖 market/wallet 共享依赖和 marketplace-wallet 前端共享 helper；否则 `src/users.js`、`src/util.js` 或 `public/scripts/popup.js` 等改动可能绕过 marketplace gate。
+- README 的 API reference 生成命令应说明固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT`，避免 checked-in docs 因当前时间戳漂移。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

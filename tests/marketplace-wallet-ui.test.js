@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.27');
+        expect(manifest.version).toBe('0.2.28');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -182,6 +182,8 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('const approvedDate = formatAssetDate(asset.approved_at)');
         expect(script).toContain('const rejectionReason = String(asset.rejection_reason || \'\').trim()');
         expect(script).toContain('class="marketplace-wallet-creator-audit"');
+        expect(script).toContain('class="marketplace-wallet-creator-side"');
+        expect(script).toContain('$side.append($price, createAssetAction(asset))');
         expect(script).toContain('rejected: ${rejectionReason.slice(0, 120)}');
         expect(script).toContain("action: 'details'");
         expect(script).toContain('async function viewAssetDetails(assetId)');
@@ -329,6 +331,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('Need ${formatCoins(missingCoins)} more bonus or paid coins');
         expect(script).toContain("aria-describedby', $hint.attr('id')");
         expect(script).toContain('#marketplace_wallet_price_filter, #marketplace_wallet_access_filter, #marketplace_wallet_sort');
+        expect(script).toContain("$root.find('#marketplace_wallet_creator_assets_list').on('click', onAssetAction)");
         expect(script).toContain("$root.find('#marketplace_wallet_review_queue').on('click', onAssetAction)");
         expect(script).toContain("$root.find('#marketplace_wallet_report_queue').on('click', onReportAction)");
         expect(script).toContain("await fetchJson('/api/wallet/grants/admin'");
@@ -350,6 +353,8 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('.marketplace-wallet-controls .menu_button');
         expect(css).toContain('.marketplace-wallet-library-items');
         expect(css).toContain('.marketplace-wallet-library-item');
+        expect(css).toContain('.marketplace-wallet-creator-side');
+        expect(css).toContain('.marketplace-wallet-creator-side .marketplace-wallet-asset-actions');
         expect(css).toContain('.marketplace-wallet-library-actions');
         expect(css).toContain('.marketplace-wallet-library-install');
         expect(css).toContain('overflow-wrap: anywhere;');
@@ -357,6 +362,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));');
         expect(css).toContain('.marketplace-wallet-review-actions');
         expect(css).toContain('grid-template-columns: 1fr 1fr;');
+        expect(css).toContain('.marketplace-wallet-creator-side .menu_button');
         expect(css).toContain('.marketplace-wallet-admin-grid');
         expect(css).toContain('.marketplace-wallet-creator-asset');
         expect(css).toContain('.marketplace-wallet-creator-audit');

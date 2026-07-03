@@ -44,6 +44,7 @@
 .marketplace-wallet-file-row,
 .marketplace-wallet-upload-actions,
 .marketplace-wallet-asset-actions,
+.marketplace-wallet-creator-side,
 .marketplace-wallet-creator-header,
 .marketplace-wallet-ledger-header,
 .marketplace-wallet-library-header,
@@ -323,6 +324,11 @@
     white-space: nowrap;
 }
 
+.marketplace-wallet-creator-side {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
 .marketplace-wallet-ledger-amount {
     white-space: nowrap;
 }
@@ -528,12 +534,14 @@
     }
 
     .marketplace-wallet-library-actions,
+    .marketplace-wallet-creator-side .marketplace-wallet-asset-actions,
     .marketplace-wallet-review-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
     }
 
     .marketplace-wallet-library-actions .menu_button,
+    .marketplace-wallet-creator-side .menu_button,
     .marketplace-wallet-review-actions .menu_button {
         justify-content: center;
         min-width: 0;

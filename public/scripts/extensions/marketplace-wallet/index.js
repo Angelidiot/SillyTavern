@@ -3,7 +3,7 @@ import { renderExtensionTemplateAsync } from '../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../popup.js';
 import { getCurrentUserHandle, isAdmin } from '../../user.js';
 import { getFileText } from '../../utils.js';
-import { filterAndSortAssets } from './filters.js?v=0.2.27';
+import { filterAndSortAssets } from './filters.js?v=0.2.28';
 
 const MODULE_NAME = 'marketplace-wallet';
 const MARKET_TYPES = {
@@ -239,12 +239,14 @@ function renderCreatorSummary() {
             rejectionReason ? `rejected: ${rejectionReason.slice(0, 120)}` : '',
         ].filter(Boolean).join(' · ');
         const $price = $('<b></b>').text(getPriceLabel(asset));
+        const $side = $('<div class="marketplace-wallet-creator-side"></div>');
 
         $main.append($title, $meta);
         if (auditMeta) {
             $main.append($('<small class="marketplace-wallet-creator-audit"></small>').text(auditMeta));
         }
-        $item.append($main, $price);
+        $side.append($price, createAssetAction(asset));
+        $item.append($main, $side);
         $list.append($item);
     }
 }
@@ -1474,6 +1476,7 @@ function bindEvents($root) {
     $root.find('#marketplace_wallet_clear_filters').on('click', clearMarketplaceFilters);
     $root.on('click', '[data-marketplace-wallet-retry]', onRetryAction);
     $root.find('#marketplace_wallet_assets').on('click', onAssetAction);
+    $root.find('#marketplace_wallet_creator_assets_list').on('click', onAssetAction);
     $root.find('#marketplace_wallet_library_items').on('click', onAssetAction);
     $root.find('#marketplace_wallet_review_queue').on('click', onAssetAction);
     $root.find('#marketplace_wallet_report_queue').on('click', onReportAction);

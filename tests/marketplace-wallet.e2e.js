@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.27';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.28';
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
@@ -1671,14 +1671,18 @@ test.describe('marketplace wallet extension', () => {
         const draftRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Submit Retry World' });
         await expect(draftRow).toContainText('draft');
         await expect(draftRow.locator('[data-marketplace-wallet-action="submit"]')).toHaveCount(1);
+        const creatorDraftRow = page.locator('#marketplace_wallet_creator_assets_list .marketplace-wallet-creator-asset', { hasText: 'Submit Retry World' });
+        await expect(creatorDraftRow).toContainText('draft');
+        await expect(creatorDraftRow.locator('[data-marketplace-wallet-action="submit"]')).toHaveCount(1);
         await expect(page.locator('#marketplace_wallet_creator_drafts')).toHaveText('1');
         await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('0');
         await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('');
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
 
-        await draftRow.locator('[data-marketplace-wallet-action="submit"]').click();
+        await creatorDraftRow.locator('[data-marketplace-wallet-action="submit"]').click();
         await expect.poll(() => apiCalls.submits).toEqual(['created-1', 'created-1']);
         await expect(draftRow).toContainText('submitted');
+        await expect(creatorDraftRow).toContainText('submitted');
         await expect(page.locator('#marketplace_wallet_creator_drafts')).toHaveText('0');
         await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('1');
         expect(apiCalls.creates).toHaveLength(1);
@@ -1863,7 +1867,9 @@ test.describe('marketplace wallet extension', () => {
         await expect(creatorAssetList).toContainText('rejected: Needs a stronger summary');
         await expect(creatorAssetList).toContainText('Approved Creator World');
         await expect(creatorAssetList).toContainText('submitted 2026-06-23 · approved 2026-06-24');
-        await assetRow.locator('[data-marketplace-wallet-action="revise"]').click();
+        const creatorRejectedRow = creatorAssetList.locator('.marketplace-wallet-creator-asset', { hasText: 'Rejected Browser World' });
+        await expect(creatorRejectedRow.locator('[data-marketplace-wallet-action="revise"]')).toHaveCount(1);
+        await creatorRejectedRow.locator('[data-marketplace-wallet-action="revise"]').click();
 
         await expect.poll(() => apiCalls.details).toEqual(['rejected-world']);
         await expect(page.locator('#marketplace_wallet_upload_status')).toBeVisible();
