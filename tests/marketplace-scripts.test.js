@@ -193,6 +193,29 @@ describe('marketplace runnable scripts', () => {
         }
     });
 
+    test('runs marketplace checks when shared market dependencies change', () => {
+        const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
+        const sharedDependencyPaths = [
+            'src/character-card-parser.js',
+            'src/constants.js',
+            'src/server-directory.js',
+            'src/users.js',
+            'src/util.js',
+            'src/validator/TavernCardValidator.js',
+            'public/script.js',
+            'public/scripts/extensions.js',
+            'public/scripts/popup.js',
+            'public/scripts/user.js',
+            'public/scripts/utils.js',
+        ];
+
+        for (const dependencyPath of sharedDependencyPaths) {
+            const escapedPath = dependencyPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const matches = workflow.match(new RegExp(`'${escapedPath}'`, 'g')) || [];
+            expect(matches).toHaveLength(2);
+        }
+    });
+
     test('wires hosted Docker smoke into scripts, syntax gate, and CI', () => {
         const { scripts } = readRootPackage();
         const syntaxGate = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');

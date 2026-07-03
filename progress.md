@@ -1646,14 +1646,21 @@
 - 已提交 `56f495326 Add creator center direct actions` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28655169770` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-03 阶段 135：Marketplace 共享依赖触发 CI
+- 开始处理 CI path-filter 缺口：只改 `src/users.js`、`src/util.js`、`src/constants.js`、`src/server-directory.js`、`src/character-card-parser.js`、`src/validator/TavernCardValidator.js` 或 marketplace-wallet 前端共享 helper 时，可能影响 market/wallet 权限、安装写入、角色卡校验、CSRF header 或 popup/user/helper 行为，但之前不会触发 Marketplace Wallet Checks。
+- `.github/workflows/marketplace-wallet-checks.yml` 已在 pull_request 和 push paths 中加入后端共享依赖：`src/character-card-parser.js`、`src/constants.js`、`src/server-directory.js`、`src/users.js`、`src/util.js`、`src/validator/TavernCardValidator.js`。
+- workflow 同步加入 marketplace-wallet 前端共享 helper：`public/script.js`、`public/scripts/extensions.js`、`public/scripts/popup.js`、`public/scripts/user.js`、`public/scripts/utils.js`。
+- `tests/marketplace-scripts.test.js` 新增 shared dependency path-filter 契约，锁定这些路径在 PR/push 两个 filter 中各出现一次。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
-| 我在哪里？ | 已完成市场/钱包后端、前端、管理员入口、基础脚本、Creator Center summary、PWA 安装壳、市场下架闭环、举报处理队列、审核预览、创作者修订重提、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、marketplace 语法门禁、PWA 缓存清单完整性检查、设计文档 MVP/API 边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、市场/钱包只读快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags 与 JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、托管 Docker smoke、E2E wrapper 清理兜底、Library 安装忙碌态同步、PWA filters 版本化预缓存、README syntax gate 文案同步和 Creator Center 直接操作入口 |
+| 我在哪里？ | 已完成市场/钱包后端、前端、管理员入口、基础脚本、Creator Center summary、PWA 安装壳、市场下架闭环、举报处理队列、审核预览、创作者修订重提、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、marketplace 语法门禁、PWA 缓存清单完整性检查、设计文档 MVP/API 边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、市场/钱包只读快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags 与 JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、托管 Docker smoke、E2E wrapper 清理兜底、Library 安装忙碌态同步、PWA filters 版本化预缓存、README syntax gate 文案同步、Creator Center 直接操作入口和 marketplace 共享依赖 CI path filter |
 | 我要去哪里？ | 下一步继续数据库迁移、真实支付、搜索审核和原生移动封装 |
 | 目标是什么？ | 让托管版 AI 酒馆支持用户上传、购买和安装角色卡/世界书等资产 |
 | 我学到了什么？ | 见 findings.md |
-| 我做了什么？ | 创建规划文件、设计文档、后端 MVP、前端 marketplace-wallet 扩展、管理员审核/赠币入口、Creator Center、PWA 安装壳、市场下架闭环、举报处理闭环、审核预览、创作者修订闭环、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、README、基础测试脚本、PWA 缓存完整性测试、文档边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、marketplace/wallet 快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags/JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、Docker 容器业务读路由 smoke、E2E wrapper 失败清理修正、Library 安装忙碌态同步、PWA filters 版本化预缓存和 Creator Center 直接操作入口 |
+| 我做了什么？ | 创建规划文件、设计文档、后端 MVP、前端 marketplace-wallet 扩展、管理员审核/赠币入口、Creator Center、PWA 安装壳、市场下架闭环、举报处理闭环、审核预览、创作者修订闭环、用户资产库、托管健康检查、资产详情弹窗、市场筛选排序、README、基础测试脚本、PWA 缓存完整性测试、文档边界校准、运行态 smoke 脚本、筛选排序可执行测试、Report Queue resolve 前端覆盖、GitHub Actions 门禁、fork CI 凭证噪音修复、真实 Chrome E2E UI 状态修复、marketplace/wallet 快照导出脚本、购买响应隐私收紧、固定价购买 runtime smoke 闭环、固定价购买浏览器 E2E、Creator 上传到审核队列浏览器闭环、Creator 上传审核 runtime smoke 闭环、Creator/Admin 角色隔离后端契约、Rejected 资产修订重提浏览器闭环、举报处理 runtime smoke 闭环、Marketplace API reference 导出脚本、PWA service worker 浏览器 E2E、Marketplace 慢速全闭环脚本、创作者上传 tags/JSON 类型识别、举报详情正文前端闭环、粘贴 JSON 自动识别上传类型、余额不足购买提示、市场筛选无结果清空入口、Docker 容器业务读路由 smoke、E2E wrapper 失败清理修正、Library 安装忙碌态同步、PWA filters 版本化预缓存、Creator Center 直接操作入口和 marketplace 共享依赖 CI path filter |
 
 ---
 *每个阶段完成后或遇到错误时更新此文件*

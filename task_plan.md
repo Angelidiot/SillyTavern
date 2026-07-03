@@ -1274,6 +1274,16 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 135：Marketplace 共享依赖触发 CI
+- [x] 确认 market/wallet 后端依赖 users/util/constants/server-directory/character parser/validator 等共享文件
+- [x] 确认 marketplace-wallet 前端依赖 getRequestHeaders、popup、user、utils 和 extension template helper
+- [x] 将后端共享依赖和前端共享 helper 加入 Marketplace Wallet Checks push/pull_request path filters
+- [x] 更新 marketplace scripts contract 测试，锁定每个共享依赖路径在 workflow 中出现两次
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？

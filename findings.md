@@ -232,6 +232,7 @@
 - marketplace-wallet manifest 版本和 PWA shell 预缓存需要随 Creator Center 操作入口变更同步 bump，避免已安装壳保留没有操作按钮的旧入口。
 - 后续小缺口候选：Report Queue resolve 失败/忙态 E2E、Revise 后 Cancel 编辑模式重置、Library 直接安装失败恢复。
 - Marketplace Wallet Checks 后续应覆盖 market/wallet 共享依赖和 marketplace-wallet 前端共享 helper；否则 `src/users.js`、`src/util.js` 或 `public/scripts/popup.js` 等改动可能绕过 marketplace gate。
+- Marketplace Wallet Checks path filter 应覆盖 market/wallet 后端共享依赖和 marketplace-wallet 前端共享 helper；这些文件不属于 marketplace 专属目录，但会直接影响权限、安装写入、角色卡校验、CSRF header、popup 和用户上下文。
 - README 的 API reference 生成命令应说明固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT`，避免 checked-in docs 因当前时间戳漂移。
 
 ---
