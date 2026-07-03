@@ -1643,6 +1643,8 @@
 - Hilbert 子 agent 只读扫描提出后续候选：Report Queue resolve 失败/忙态、Revise 后 Cancel 编辑模式重置、Library 直接安装失败恢复。
 - Parfit 子 agent 只读扫描提出后续候选：Marketplace CI path filter 应覆盖后端共享依赖和前端共享 helper；README API reference 生成命令应固定时间戳，避免 checked-in docs 因时间漂移产生 diff。
 - 已通过 `node --check public/scripts/extensions/marketplace-wallet/index.js && node --check public/service-worker.js && node --check tests/marketplace-wallet.e2e.js`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a saved draft|revises a rejected" --workers=1`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "registers the service worker shell cache" --workers=1` 和 `git diff --check`。
+- 已提交 `56f495326 Add creator center direct actions` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28655169770` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

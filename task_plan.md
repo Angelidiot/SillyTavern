@@ -1270,9 +1270,9 @@
 - [x] 更新移动端 Creator Center 按钮布局和 marketplace-wallet/PWA 版本化缓存
 - [x] 更新 UI contract 与浏览器 E2E，覆盖 Creator Center 直接 Submit/Revise
 - [x] 运行本地基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
