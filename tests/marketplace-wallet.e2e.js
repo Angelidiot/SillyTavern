@@ -643,12 +643,13 @@ async function mockMarketplaceApis(page, {
 
     await page.route('**/api/market/reports/*/resolve', route => {
         const reportId = route.request().url().split('/').at(-2);
-        apiCalls.resolveReports.push(reportId);
+        const payload = JSON.parse(route.request().postData() || '{}');
+        apiCalls.resolveReports.push({ reportId, payload });
         reports = reports.filter(report => report.id !== reportId);
         route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify({ report: { id: reportId, status: 'resolved' } }),
+            body: JSON.stringify({ report: { id: reportId, status: 'resolved', resolution_note: payload.note || '' } }),
         });
     });
 
@@ -1028,7 +1029,7 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_review_queue')).toContainText('No assets awaiting review.');
     });
 
-    test('resolves reports from the admin report queue', async ({ page }) => {
+    test('resolves reports from the admin report queue with a reviewer note', async ({ page }) => {
         const apiCalls = await mockMarketplaceApis(page, {
             assets: [makeListedAsset()],
             reports: [makeOpenReport()],
@@ -1043,7 +1044,17 @@ test.describe('marketplace wallet extension', () => {
 
         await reportQueue.locator('[data-marketplace-wallet-report-action="resolve"]').click();
 
-        await expect.poll(() => apiCalls.resolveReports).toEqual(['report-listed-world']);
+        const notePopup = page.getByRole('dialog').filter({ hasText: 'Resolution note (optional):' });
+        await expect(notePopup).toBeVisible();
+        await notePopup.locator('.popup-input').fill('Reviewed and cleared by moderation.');
+        await notePopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.resolveReports).toEqual([{
+            reportId: 'report-listed-world',
+            payload: {
+                note: 'Reviewed and cleared by moderation.',
+            },
+        }]);
         await expect(reportQueue).toContainText('No reports queued.');
     });
 

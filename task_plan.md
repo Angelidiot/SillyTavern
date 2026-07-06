@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 140
+阶段 141
 
 ## 各阶段
 
@@ -1332,6 +1332,16 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 141：Report Resolve Note 前端闭环
+- [x] 确认后端和 API reference 支持 report resolution `note`，但前端 Resolve 仍发送空 body
+- [x] 前端 Resolve 增加可选备注输入、本地 1000 字边界和 `{ note }` POST body
+- [x] 更新 UI contract，锁定备注弹窗、长度警告和非截断提交
+- [x] 更新浏览器 E2E，断言 reviewer note 进入 resolve POST payload
+- [x] 运行目标浏览器 E2E 与 marketplace 基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

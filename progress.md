@@ -1698,6 +1698,13 @@
 - 已提交 `507495086 Cover admin delist review flow` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28765379272` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 141：Report Resolve Note 前端闭环
+- 开始处理 Report Queue 处理备注闭环：后端 `POST /api/market/reports/:id/resolve` 和 API reference 已支持可选 `note`，但前端 Resolve 之前直接空 body，管理员无法记录处理说明。
+- `public/scripts/extensions/marketplace-wallet/index.js` 新增 `MAX_REPORT_RESOLUTION_NOTE_LENGTH = 1000`，Resolve 会弹出 `Resolution note (optional):` 输入框，取消则不处理，超长时本地 warning，不做静默截断。
+- Resolve 成功请求现在发送 `body: JSON.stringify({ note: trimmedNote })`，继续用 `withBusyReport()` 和本地队列过滤刷新。
+- `tests/marketplace-wallet-ui.test.js` 已锁定备注弹窗、长度警告、POST body 和不 slice 的本地校验策略；`tests/marketplace-wallet.e2e.js` 已将 resolve mock 记录为 `{ reportId, payload }` 并断言 reviewer note。
+- 已通过 `node --check public/scripts/extensions/marketplace-wallet/index.js`、`node --check tests/marketplace-wallet.e2e.js`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "resolves reports from the admin report queue with a reviewer note" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

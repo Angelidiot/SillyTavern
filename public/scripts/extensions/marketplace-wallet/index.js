@@ -20,6 +20,7 @@ const MAX_UPLOAD_TAG_LENGTH = 40;
 const MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024;
 const MAX_REPORT_REASON_LENGTH = 120;
 const MAX_REPORT_BODY_LENGTH = 2000;
+const MAX_REPORT_RESOLUTION_NOTE_LENGTH = 1000;
 const MAX_REJECT_REASON_LENGTH = 1000;
 const MAX_PAYLOAD_PREVIEW_LENGTH = 20000;
 
@@ -1135,9 +1136,26 @@ async function reviseAsset(assetId) {
 }
 
 async function resolveReport(reportId) {
+    const note = await callGenericPopup('Resolution note (optional):', POPUP_TYPE.INPUT, '', {
+        okButton: 'Resolve',
+        cancelButton: 'Cancel',
+        rows: 4,
+    });
+
+    if (note === null || note === false) {
+        return;
+    }
+
+    const trimmedNote = String(note || '').trim();
+    if (trimmedNote.length > MAX_REPORT_RESOLUTION_NOTE_LENGTH) {
+        toastr.warning(`Resolution note must be ${MAX_REPORT_RESOLUTION_NOTE_LENGTH} characters or less`);
+        return;
+    }
+
     await withBusyReport(reportId, async () => {
         await fetchJson(`/api/market/reports/${encodeURIComponent(reportId)}/resolve`, {
             method: 'POST',
+            body: JSON.stringify({ note: trimmedNote }),
         });
         state.reports = state.reports.filter(report => report.id !== reportId);
         toastr.success('Report resolved');
