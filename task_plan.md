@@ -1329,9 +1329,9 @@
 - [x] 新增 E2E 覆盖管理员从 Marketplace 卡片确认 Delist listed 资产
 - [x] 断言 Delist POST、状态 badge 变为 delisted、Delist 按钮消失
 - [x] 运行目标浏览器 E2E 与 marketplace 基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

@@ -1695,6 +1695,8 @@
 - `tests/marketplace-wallet.e2e.js` 的 mock API 已新增 `apiCalls.delists` 和 `/api/market/assets/:id/delist` route，成功后把资产状态更新为 `delisted` 并写入 `delisted_at`。
 - 新增 `delists a listed asset from the marketplace`，覆盖管理员从 Marketplace 卡片点击 Delist、确认弹窗、POST 调用、状态 badge 变为 `delisted`、Delist 按钮消失。
 - 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "delists a listed asset from the marketplace" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `507495086 Cover admin delist review flow` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28765379272` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
