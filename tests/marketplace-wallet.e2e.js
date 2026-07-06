@@ -850,6 +850,32 @@ test.describe('hosted tavern PWA browser shell', () => {
         await expect(page.locator('#pwa_install_prompt')).toHaveCount(0);
     });
 
+    test('dismisses the browser install action', async ({ page }) => {
+        await page.goto('/login.html', { waitUntil: 'load' });
+
+        await page.evaluate(() => {
+            window.__pwaInstallPrompted = false;
+            const event = new Event('beforeinstallprompt', { cancelable: true });
+            Object.defineProperties(event, {
+                prompt: {
+                    value: async () => {
+                        window.__pwaInstallPrompted = true;
+                    },
+                },
+                userChoice: {
+                    value: Promise.resolve({ outcome: 'dismissed' }),
+                },
+            });
+            window.dispatchEvent(event);
+        });
+
+        await expect(page.locator('#pwa_install_prompt')).toBeVisible();
+        await page.getByLabel('Dismiss install prompt').click();
+
+        await expect(page.locator('#pwa_install_prompt')).toHaveCount(0);
+        await expect.poll(() => page.evaluate(() => Boolean(window.__pwaInstallPrompted))).toBe(false);
+    });
+
     test('registers the service worker shell cache and leaves API responses uncached', async ({ page }) => {
         await page.goto('/login.html', { waitUntil: 'load' });
         await resetPwaState(page);

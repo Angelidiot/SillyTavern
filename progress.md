@@ -1849,6 +1849,13 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `refreshes marketplace from the toolbar after a failed load`，使用 `failAssetListOnce` 让首个资产列表请求返回 500。
 - 用例断言初始错误文案和后端错误摘要可见，点击 toolbar refresh 后 `Toolbar Recoverable World` 出现、错误文案消失、钱包总额仍为 `175`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "refreshes marketplace from the toolbar" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `1dea45060 Cover marketplace toolbar refresh recovery` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28773905694` 已触发并处于执行中。
+
+## 2026-07-06 阶段 160：PWA 安装提示关闭浏览器覆盖
+- 开始处理 PWA install prompt dismiss 覆盖缺口：已有浏览器测试覆盖 install click 和 `appinstalled` 移除提示，但没有验证关闭按钮不会触发原生安装 prompt。
+- `tests/marketplace-wallet.e2e.js` 新增 `dismisses the browser install action`，在 `/login.html` 模拟 `beforeinstallprompt` 后点击 `aria-label="Dismiss install prompt"`。
+- 用例断言 `#pwa_install_prompt` 从 DOM 移除，且 mock 的 `prompt()` 没有被调用。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "dismisses the browser install action" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |
