@@ -294,9 +294,9 @@ export async function purchaseWithWallet({ buyerHandle, creatorHandle, actorHand
 /**
  * Resolves a wallet handle that the current user may access.
  * @param {import('express').Request} request Express request
- * @returns {{ handle?: string, error?: { status: number, message: string } }}
+ * @returns {Promise<{ handle?: string, error?: { status: number, message: string } }>}
  */
-function resolveReadableHandle(request) {
+async function resolveReadableHandle(request) {
     const currentHandle = getCurrentHandle(request);
     const requestedHandle = typeof request.query.handle === 'string' && request.query.handle.trim()
         ? request.query.handle.trim()
@@ -308,6 +308,10 @@ function resolveReadableHandle(request) {
 
     if (requestedHandle !== currentHandle && !isAdmin(request)) {
         return { error: { status: 403, message: 'Unauthorized' } };
+    }
+
+    if (!await userExists(requestedHandle, request)) {
+        return { error: { status: 404, message: 'User not found' } };
     }
 
     return { handle: requestedHandle };
@@ -330,7 +334,7 @@ async function userExists(handle, request) {
 
 router.get('/', async (request, response) => {
     try {
-        const { handle, error } = resolveReadableHandle(request);
+        const { handle, error } = await resolveReadableHandle(request);
         if (error) {
             return response.status(error.status).json({ error: error.message });
         }
@@ -348,7 +352,7 @@ router.get('/', async (request, response) => {
 
 router.get('/ledger', async (request, response) => {
     try {
-        const { handle, error } = resolveReadableHandle(request);
+        const { handle, error } = await resolveReadableHandle(request);
         if (error) {
             return response.status(error.status).json({ error: error.message });
         }

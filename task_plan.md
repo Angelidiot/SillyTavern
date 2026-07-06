@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 156
+阶段 157
 
 ## 各阶段
 
@@ -1478,6 +1478,16 @@
 - [x] 拒绝真实目标落入 dataRoot 的输出路径，保持导出脚本对用户数据根只读
 - [x] 补充 symlink 输出路径单测，确认不会在 dataRoot 下创建缺失子目录
 - [x] 运行 snapshot 目标测试、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 157：管理员读取未知钱包 handle 返回 404
+- [x] 确认管理员 `GET /api/wallet?handle=missing` 和 `/ledger` 旧行为会返回空钱包
+- [x] 将 wallet/ledger 读取 handle 解析改为异步存在性校验
+- [x] 保留非管理员读别人钱包的 403 权限边界
+- [x] 补充后端契约测试和 API reference 文档说明
+- [x] 运行目标后端/API 文档测试、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress

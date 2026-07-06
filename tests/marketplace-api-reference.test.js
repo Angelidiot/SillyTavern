@@ -93,8 +93,8 @@ describe('marketplace API reference export script', () => {
         expect(markdown).toContain('- POST /api/market/assets/:id/delist: Admin-only moderation action; existing entitlements are preserved.');
         expect(markdown).toContain('- POST /api/market/assets/:id/purchase: Claims free assets or buys fixed-price listed assets with wallet bonus then paid coins; purchase responses omit full ledger entries and creator balances.');
         expect(markdown).toContain('- POST /api/market/assets/:id/install: Installs creator-owned or entitled assets into the user data directory and returns a redacted local reference without absolute paths.');
-        expect(markdown).toContain('- GET /api/wallet: Authenticated users can read their own wallet; admins may pass handle to inspect another wallet.');
-        expect(markdown).toContain('- GET /api/wallet/ledger: Authenticated users can read their own ledger; admins may pass handle to inspect another ledger.');
+        expect(markdown).toContain('- GET /api/wallet: Authenticated users can read their own wallet; admins may pass handle to inspect another wallet; unknown handles return 404.');
+        expect(markdown).toContain('- GET /api/wallet/ledger: Authenticated users can read their own ledger; admins may pass handle to inspect another ledger; unknown handles return 404.');
         expect(markdown).toContain('- POST /api/wallet/grants/admin: Admin-only grant endpoint; target can be handle, userHandle, or targetHandle; optional string reason defaults to Admin grant and must be 200 characters or less.');
     });
 

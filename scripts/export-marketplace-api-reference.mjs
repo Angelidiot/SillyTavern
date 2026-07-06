@@ -40,8 +40,8 @@ const routeNotes = new Map([
     ['POST /api/market/assets/:id/delist', 'Admin-only moderation action; existing entitlements are preserved.'],
     ['POST /api/market/assets/:id/purchase', 'Claims free assets or buys fixed-price listed assets with wallet bonus then paid coins; purchase responses omit full ledger entries and creator balances.'],
     ['POST /api/market/assets/:id/install', 'Installs creator-owned or entitled assets into the user data directory and returns a redacted local reference without absolute paths.'],
-    ['GET /api/wallet', 'Authenticated users can read their own wallet; admins may pass handle to inspect another wallet.'],
-    ['GET /api/wallet/ledger', 'Authenticated users can read their own ledger; admins may pass handle to inspect another ledger.'],
+    ['GET /api/wallet', 'Authenticated users can read their own wallet; admins may pass handle to inspect another wallet; unknown handles return 404.'],
+    ['GET /api/wallet/ledger', 'Authenticated users can read their own ledger; admins may pass handle to inspect another ledger; unknown handles return 404.'],
     ['POST /api/wallet/grants/admin', 'Admin-only grant endpoint; target can be handle, userHandle, or targetHandle; optional string reason defaults to Admin grant and must be 200 characters or less.'],
 ]);
 

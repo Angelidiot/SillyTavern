@@ -59,8 +59,8 @@ POST   /api/wallet/grants/admin
 
 Notes:
 
-- GET /api/wallet: Authenticated users can read their own wallet; admins may pass handle to inspect another wallet.
-- GET /api/wallet/ledger: Authenticated users can read their own ledger; admins may pass handle to inspect another ledger.
+- GET /api/wallet: Authenticated users can read their own wallet; admins may pass handle to inspect another wallet; unknown handles return 404.
+- GET /api/wallet/ledger: Authenticated users can read their own ledger; admins may pass handle to inspect another ledger; unknown handles return 404.
 - POST /api/wallet/grants/admin: Admin-only grant endpoint; target can be handle, userHandle, or targetHandle; optional string reason defaults to Admin grant and must be 200 characters or less.
 
 ## Public health API

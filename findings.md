@@ -256,6 +256,7 @@
 - Admin grant reason 的前端边界需要浏览器行为覆盖；`maxlength` 是输入防线，但脚本注入超长值时仍应由 JS 拦截并避免 POST。
 - Admin grant reason 必须保持字符串契约；对象或数组等非字符串值不应被 `String()` 成 `[object Object]` 写入不可变 ledger，避免审计文本被客户端类型错误污染。
 - Snapshot `--out` 需要解析 symlink 后再判断 dataRoot 边界；外部目录里的 symlink 可以把看似安全的输出路径导回用户数据根，且检查必须发生在 `mkdir -p` 之前。
+- 管理员读取指定 wallet handle 时应区分未知用户和零余额用户；不存在的 handle 返回 404，已存在但无 ledger 的用户才返回空余额。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*
