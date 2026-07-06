@@ -137,6 +137,7 @@ async function mockMarketplaceApis(page, {
     failAssetListOnce = false,
     failApproveOnceFor = '',
     failCreatorOnce = false,
+    failDelistOnceFor = '',
     failLedgerOnce = false,
     failLibraryOnce = false,
     failGrantOnce = false,
@@ -154,6 +155,7 @@ async function mockMarketplaceApis(page, {
     let shouldFailAssetList = failAssetListOnce;
     let failedApprove = false;
     let shouldFailCreator = failCreatorOnce;
+    let failedDelist = false;
     let shouldFailLedger = failLedgerOnce;
     let shouldFailLibrary = failLibraryOnce;
     let shouldFailGrant = failGrantOnce;
@@ -509,6 +511,15 @@ async function mockMarketplaceApis(page, {
     await page.route('**/api/market/assets/*/delist', route => {
         const assetId = route.request().url().split('/').at(-2);
         apiCalls.delists.push(assetId);
+        if (failDelistOnceFor === assetId && !failedDelist) {
+            failedDelist = true;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Delist temporarily unavailable' }),
+            });
+            return;
+        }
         assets = assets.map(asset => asset.id === assetId
             ? { ...asset, status: 'delisted', delisted_at: '2026-06-26T14:30:00.000Z' }
             : asset);
@@ -1493,6 +1504,51 @@ test.describe('marketplace wallet extension', () => {
         await expect(assetCard.locator('[data-marketplace-wallet-status="delisted"]')).toHaveCount(1);
         await expect(assetCard.locator('[data-marketplace-wallet-action="delist"]')).toHaveCount(0);
         await expect(page.locator('#marketplace_wallet_review_queue')).toContainText('No assets awaiting review.');
+    });
+
+    test('keeps an admin delist retryable when the delist request fails', async ({ page }) => {
+        const listedAsset = makeListedAsset({
+            id: 'delist-retry-world',
+            title: 'Delist Retry World',
+            summary: 'Visible until retry delists it.',
+            price_type: 'free',
+            price_coins: 0,
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [listedAsset],
+            failDelistOnceFor: 'delist-retry-world',
+        });
+
+        await loadSillyTavern(page);
+
+        const assetCard = page.locator('#marketplace_wallet_assets .marketplace-wallet-asset', { hasText: 'Delist Retry World' });
+        const delistButton = assetCard.locator('[data-marketplace-wallet-action="delist"]');
+        await expect(assetCard.locator('[data-marketplace-wallet-status="listed"]')).toHaveCount(1);
+        await expect(delistButton).toHaveCount(1);
+
+        await delistButton.click();
+        const firstConfirmPopup = page.getByRole('dialog').filter({ hasText: 'Delist this marketplace asset?' });
+        await expect(firstConfirmPopup).toBeVisible();
+        await firstConfirmPopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.delists).toEqual(['delist-retry-world']);
+        await expect(assetCard.locator('[data-marketplace-wallet-status="listed"]')).toHaveCount(1);
+        await expect(assetCard).not.toContainText('delisted');
+        await expect(delistButton).toBeEnabled();
+        await expect(delistButton).toHaveText(/Delist/);
+
+        await delistButton.click();
+        const retryConfirmPopup = page.getByRole('dialog').filter({ hasText: 'Delist this marketplace asset?' });
+        await expect(retryConfirmPopup).toBeVisible();
+        await retryConfirmPopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.delists).toEqual([
+            'delist-retry-world',
+            'delist-retry-world',
+        ]);
+        await expect(assetCard).toContainText('delisted');
+        await expect(assetCard.locator('[data-marketplace-wallet-status="delisted"]')).toHaveCount(1);
+        await expect(assetCard.locator('[data-marketplace-wallet-action="delist"]')).toHaveCount(0);
     });
 
     test('resolves reports from the admin report queue with a reviewer note', async ({ page }) => {

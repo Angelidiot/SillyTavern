@@ -1943,6 +1943,14 @@
 - 新增 `keeps an admin rejection retryable when the rejection request fails`，第一次输入原因后断言 reject 调用发生但资产仍在 Review Queue，Reject 按钮恢复 enabled，Creator Center submitted/rejected 计数仍为 `1/0`，且不显示第一次失败原因。
 - 同一用例二次打开弹窗输入新原因并成功 reject 后，断言队列为空、Creator Center 显示最终 `rejected: Rejected after retry.`，submitted/rejected 计数变为 `0/1`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin rejection retryable when the rejection request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `836346d04 Cover admin rejection retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28776461216` 已触发并处于执行中。
+
+## 2026-07-06 阶段 171：admin delist 失败恢复 E2E
+- 开始处理 Kuhn 子 agent 建议的 Delist POST 失败恢复缺口：已有下架成功路径，但没有证明服务临时失败时 listed 状态和按钮仍可重试。
+- `tests/marketplace-wallet.e2e.js` 的 `mockMarketplaceApis()` 新增 `failDelistOnceFor`，在 delist route 修改 status/delisted_at 前返回一次 `503 Delist temporarily unavailable`。
+- 新增 `keeps an admin delist retryable when the delist request fails`，第一次确认下架失败后断言卡片仍有 listed badge、没有 delisted 文案，Delist 按钮恢复 enabled。
+- 同一用例二次确认成功后断言 delist 调用两次，卡片显示 delisted badge 且 Delist 按钮消失。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin delist retryable when the delist request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |
