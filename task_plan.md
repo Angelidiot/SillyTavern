@@ -1290,9 +1290,9 @@
 - [x] 更新 marketplace scripts contract 测试，锁定 README 中的固定时间戳生成命令
 - [x] 用 README 等价命令生成临时 API reference 并与 checked-in 文档比对
 - [x] 运行本地基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

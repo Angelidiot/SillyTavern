@@ -1660,6 +1660,9 @@
 - README 示例命令和 Development Notes 已改为 `MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md`。
 - `tests/marketplace-scripts.test.js` 已锁定 README 中的固定时间戳 API reference 生成命令，避免 checked-in 文档再因时间戳漂移。
 - 已通过 `env MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z npm run marketplace:export:api -- --out /private/tmp/st-marketplace-api-reference.md`、`cmp -s /private/tmp/st-marketplace-api-reference.md docs/marketplace-api-reference.md`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js marketplace-api-reference.test.js` 和 `git diff --check`。
+- 已通过完整 `npm run test:marketplace`。
+- 已提交 `c5c083c92 Document fixed API reference timestamp` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28763820723` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
