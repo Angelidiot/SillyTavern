@@ -143,6 +143,7 @@ async function mockMarketplaceApis(page, {
     failReportsOnce = false,
     failInstallOnceFor = '',
     failPurchaseOnceFor = '',
+    failRejectOnceFor = '',
     failResolveOnceFor = '',
     failSubmitOnceFor = '',
     holdNextInstallFor = '',
@@ -159,6 +160,7 @@ async function mockMarketplaceApis(page, {
     let shouldFailReports = failReportsOnce;
     let failedInstall = false;
     let failedPurchase = false;
+    let failedReject = false;
     let failedResolve = false;
     let failedSubmit = false;
     let didHoldInstall = false;
@@ -485,6 +487,15 @@ async function mockMarketplaceApis(page, {
         const assetId = route.request().url().split('/').at(-2);
         const payload = route.request().postDataJSON();
         apiCalls.rejects.push({ assetId, payload });
+        if (failRejectOnceFor === assetId && !failedReject) {
+            failedReject = true;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Review rejection temporarily unavailable' }),
+            });
+            return;
+        }
         assets = assets.map(asset => asset.id === assetId
             ? { ...asset, status: 'rejected', rejection_reason: payload.reason || '' }
             : asset);
@@ -1374,6 +1385,80 @@ test.describe('marketplace wallet extension', () => {
         await expect(reviewQueue).toContainText('No assets awaiting review.');
         await expect(creatorList).toContainText('Rejectable Creator World');
         await expect(creatorList).toContainText('rejected: Needs clearer lore safety tags');
+        await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('0');
+        await expect(page.locator('#marketplace_wallet_creator_rejected')).toHaveText('1');
+    });
+
+    test('keeps an admin rejection retryable when the rejection request fails', async ({ page }) => {
+        const submittedAsset = makeSubmittedAsset({
+            id: 'reject-retry-world',
+            type: 'world_book',
+            title: 'Reject Retry World',
+            summary: 'Needs a retryable rejection.',
+            creator_id: 'default-user',
+            owned: true,
+            price_type: 'free',
+            price_coins: 0,
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [submittedAsset],
+            failRejectOnceFor: 'reject-retry-world',
+        });
+
+        await loadSillyTavern(page);
+
+        const reviewQueue = page.locator('#marketplace_wallet_review_queue');
+        const creatorList = page.locator('#marketplace_wallet_creator_assets_list');
+        const reviewItem = reviewQueue.locator('.marketplace-wallet-review-item', { hasText: 'Reject Retry World' });
+        const rejectButton = reviewItem.locator('[data-marketplace-wallet-action="reject"]');
+
+        await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('1');
+        await expect(page.locator('#marketplace_wallet_creator_rejected')).toHaveText('0');
+        await rejectButton.click();
+
+        const firstReasonPopup = page.getByRole('dialog').filter({ hasText: 'Reason for rejection:' });
+        await expect(firstReasonPopup).toBeVisible();
+        await firstReasonPopup.locator('.popup-input').fill('First rejection attempt.');
+        await firstReasonPopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.rejects).toEqual([{
+            assetId: 'reject-retry-world',
+            payload: {
+                reason: 'First rejection attempt.',
+            },
+        }]);
+        await expect(reviewItem).toContainText('Reject Retry World');
+        await expect(reviewQueue).not.toContainText('No assets awaiting review.');
+        await expect(rejectButton).toBeEnabled();
+        await expect(rejectButton).toHaveText(/Reject/);
+        await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('1');
+        await expect(page.locator('#marketplace_wallet_creator_rejected')).toHaveText('0');
+        await expect(creatorList).not.toContainText('rejected: First rejection attempt.');
+
+        await rejectButton.click();
+
+        const retryReasonPopup = page.getByRole('dialog').filter({ hasText: 'Reason for rejection:' });
+        await expect(retryReasonPopup).toBeVisible();
+        await retryReasonPopup.locator('.popup-input').fill('Rejected after retry.');
+        await retryReasonPopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.rejects).toEqual([
+            {
+                assetId: 'reject-retry-world',
+                payload: {
+                    reason: 'First rejection attempt.',
+                },
+            },
+            {
+                assetId: 'reject-retry-world',
+                payload: {
+                    reason: 'Rejected after retry.',
+                },
+            },
+        ]);
+        await expect(reviewQueue).toContainText('No assets awaiting review.');
+        await expect(creatorList).toContainText('Reject Retry World');
+        await expect(creatorList).toContainText('rejected: Rejected after retry.');
         await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('0');
         await expect(page.locator('#marketplace_wallet_creator_rejected')).toHaveText('1');
     });

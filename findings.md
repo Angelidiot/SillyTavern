@@ -270,6 +270,7 @@
 - Library 手动重装失败必须保留旧 install_count 和 last_install；弱网下失败不应覆盖用户可追溯的最后安装路径，按钮也必须恢复可重试。
 - Admin grant 是高敏感写操作；POST 失败时前端必须恢复提交按钮并保持钱包和 ledger 不变，重试成功后才刷新当前用户余额与活动。
 - Review Queue approve 失败不能把 submitted 资产从队列中移除或卡住按钮；审核员应能在同一队列项上直接重试。
+- Review Queue reject 失败同样不能提前改变 Creator Center 计数或驳回理由；只有成功 POST 后才应从 submitted 转为 rejected。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

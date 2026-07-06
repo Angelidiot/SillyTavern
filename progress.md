@@ -1935,6 +1935,14 @@
 - 新增 `keeps an admin approval retryable when the approval request fails`，第一次点击 Approve 失败后断言 Review Queue 仍显示 `Approve Retry Character`、不是空队列、Approve 按钮恢复 enabled。
 - 同一用例二次点击成功后断言 approve 调用两次、Review Queue 显示空状态，Marketplace 卡片变为 `listed` 且不再显示 Approve 操作。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin approval retryable when the approval request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `83a20786b Cover admin approval retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28776302934` 已触发并处于执行中。
+
+## 2026-07-06 阶段 170：admin reject 失败恢复 E2E
+- 开始处理 Kuhn 子 agent 建议的 Review Queue reject POST 失败恢复缺口：已有 reject 成功路径和超长 reason 本地拦截，但没有证明 reject POST 失败后队列、计数和按钮都保持可重试。
+- `tests/marketplace-wallet.e2e.js` 的 `mockMarketplaceApis()` 新增 `failRejectOnceFor`，在 reject route 修改 status/rejection_reason 前返回一次 `503 Review rejection temporarily unavailable`。
+- 新增 `keeps an admin rejection retryable when the rejection request fails`，第一次输入原因后断言 reject 调用发生但资产仍在 Review Queue，Reject 按钮恢复 enabled，Creator Center submitted/rejected 计数仍为 `1/0`，且不显示第一次失败原因。
+- 同一用例二次打开弹窗输入新原因并成功 reject 后，断言队列为空、Creator Center 显示最终 `rejected: Rejected after retry.`，submitted/rejected 计数变为 `0/1`。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin rejection retryable when the rejection request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |
