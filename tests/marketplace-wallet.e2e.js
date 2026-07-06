@@ -1937,6 +1937,62 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
     });
 
+    test('saves a fixed-price upload draft with coin pricing', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [],
+        });
+
+        await loadSillyTavern(page);
+
+        const payload = {
+            name: 'Paid Creator World',
+            entries: {
+                paid: {
+                    key: ['paid lore'],
+                    content: 'Paid lore entry from browser upload.',
+                },
+            },
+        };
+
+        await page.locator('#marketplace_wallet_upload_type').selectOption('world_book');
+        await page.locator('#marketplace_wallet_upload_title').fill('Paid Creator World');
+        await page.locator('#marketplace_wallet_upload_summary').fill('Paid draft from the browser E2E flow.');
+        await page.locator('#marketplace_wallet_upload_description').fill('A paid creator upload draft.');
+        await page.locator('#marketplace_wallet_upload_tags').fill('paid, lore');
+        await page.locator('#marketplace_wallet_upload_language').fill('en');
+        await page.locator('#marketplace_wallet_upload_content_rating').fill('general');
+        await page.locator('#marketplace_wallet_upload_price_type').selectOption('fixed_price');
+        await page.locator('#marketplace_wallet_upload_price').fill('75');
+        await page.locator('#marketplace_wallet_upload_payload').fill(JSON.stringify(payload, null, 2));
+        await page.locator('[data-marketplace-wallet-upload="draft"]').click();
+
+        await expect.poll(() => apiCalls.creates).toHaveLength(1);
+        expect(apiCalls.creates[0]).toMatchObject({
+            type: 'world_book',
+            title: 'Paid Creator World',
+            summary: 'Paid draft from the browser E2E flow.',
+            description: 'A paid creator upload draft.',
+            tags: ['paid', 'lore'],
+            language: 'en',
+            content_rating: 'general',
+            price_type: 'fixed_price',
+            price_coins: 75,
+            normalized_payload: {
+                name: 'Paid Creator World',
+            },
+        });
+        expect(apiCalls.submits).toEqual([]);
+
+        const createdAssetRow = page.locator('#marketplace_wallet_assets article', { hasText: 'Paid Creator World' });
+        await expect(createdAssetRow).toContainText('75 coins');
+        await expect(page.locator('#marketplace_wallet_creator_assets')).toHaveText('1');
+        await expect(page.locator('#marketplace_wallet_creator_drafts')).toHaveText('1');
+        await expect(page.locator('#marketplace_wallet_creator_assets_list')).toContainText('Paid Creator World');
+        await expect(page.locator('#marketplace_wallet_creator_assets_list')).toContainText('75 coins');
+        await expect(page.locator('#marketplace_wallet_upload_price_type')).toHaveValue('free');
+        await expect(page.locator('#marketplace_wallet_upload_price')).toHaveValue('0');
+    });
+
     test('keeps a saved draft when submit after upload fails', async ({ page }) => {
         const apiCalls = await mockMarketplaceApis(page, {
             assets: [],

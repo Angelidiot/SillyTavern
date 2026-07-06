@@ -248,6 +248,7 @@
 - Marketplace draft 创建也必须做 type-specific payload 校验；坏 `world_book` 或坏 `character_card` 不应先进私有 draft store，再等 submit/approve/install 才失败。
 - marketplace-wallet 非管理员 UI 回归必须启用账号系统；账号系统关闭时 `isAdmin()` 会默认 true，这符合本地免账号模式但不能证明真实非 admin 门禁。
 - Review Queue 的 Inspect 入口需要真实浏览器覆盖；审核员批准/拒绝前必须能从队列拉取详情并查看 payload 预览，而不只依赖按钮字符串契约。
+- Fixed-price 创作者上传需要浏览器闭环；购买路径验证不了上传表单是否真实提交 `price_type`/`price_coins`，也验证不了草稿保存后付费标签展示。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*
