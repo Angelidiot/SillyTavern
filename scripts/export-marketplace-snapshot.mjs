@@ -287,6 +287,13 @@ async function createSnapshot(options) {
     }
 
     const dataRoot = path.resolve(options.dataRoot);
+    if (!fs.existsSync(dataRoot)) {
+        throw new Error(`Data root does not exist: ${dataRoot}`);
+    }
+    if (!fs.statSync(dataRoot).isDirectory()) {
+        throw new Error(`Data root is not a directory: ${dataRoot}`);
+    }
+
     const market = readMarketStore(dataRoot);
     const walletLedger = await readWalletLedger(dataRoot);
 

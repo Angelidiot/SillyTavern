@@ -241,6 +241,7 @@
 - Marketplace smoke/E2E 的可运行性依赖 `server.js`、CLI、config init 和 healthcheck helper；这些启动入口应同时进入 syntax gate 和 workflow path filters，否则启动链语法错误或入口变更可能绕过 marketplace CI。
 - Admin Delist 应有真实浏览器回归；确认框、POST、刷新后的 `delisted` badge 和 Delist 按钮消失共同证明前端下架闭环仍然可用。
 - Report resolve note 不应只停留在 API；管理员前端需要可选备注输入、1000 字本地边界和真实 POST body，才能形成可审计的举报处理说明。
+- Snapshot export 必须拒绝不存在的 dataRoot；目录存在但 store/storage 未初始化可以导出空快照，路径拼错则应失败，避免备份/迁移演练误判成功。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

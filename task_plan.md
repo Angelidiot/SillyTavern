@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 141
+阶段 142
 
 ## 各阶段
 
@@ -1342,6 +1342,16 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 142：Snapshot 导出拒绝缺失 dataRoot
+- [x] 确认 snapshot export 对不存在的 dataRoot 会导出空快照，容易掩盖拼写错误
+- [x] 在 snapshot 创建入口校验 dataRoot 必须存在且是目录
+- [x] 保留“目录存在但 store/storage 不存在”时导出空 market/wallet 的只读行为
+- [x] 新增 Jest 回归，确认缺失 dataRoot 不导出空快照且不创建目录
+- [x] 运行目标脚本测试和 marketplace 基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

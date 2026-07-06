@@ -213,6 +213,14 @@ describe('marketplace snapshot export script', () => {
         expect(() => runExport(dataRoot, ['--out='])).toThrow('Missing value for --out');
     });
 
+    test('rejects a missing data root instead of exporting an empty snapshot', () => {
+        const missingRoot = path.join(os.tmpdir(), `st-market-snapshot-missing-${Date.now()}`);
+        fs.rmSync(missingRoot, { recursive: true, force: true });
+
+        expect(() => runExport(missingRoot)).toThrow('Data root does not exist:');
+        expect(fs.existsSync(missingRoot)).toBe(false);
+    });
+
     test('exports redacted market and wallet summaries to stdout', async () => {
         const dataRoot = makeTempRoot();
         writeMarketStore(dataRoot);
