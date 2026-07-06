@@ -1027,6 +1027,39 @@ describe('market and wallet MVP endpoints', () => {
                 'normalized_payload must be an object',
             ],
         });
+
+        const invalidWorldPayload = await request(aliceApp, '/api/market/assets', {
+            method: 'POST',
+            body: {
+                type: 'world_book',
+                title: 'Bad World',
+                normalized_payload: {},
+            },
+        });
+        expect(invalidWorldPayload.status).toBe(400);
+        expect(invalidWorldPayload.body).toMatchObject({
+            error: 'Invalid market asset',
+            details: ['normalized_payload.entries must be an object for world books'],
+        });
+
+        const invalidCharacterPayload = await request(aliceApp, '/api/market/assets', {
+            method: 'POST',
+            body: {
+                type: 'character_card',
+                title: 'Bad Character',
+                normalized_payload: {
+                    name: 'Bad Character',
+                },
+            },
+        });
+        expect(invalidCharacterPayload.status).toBe(400);
+        expect(invalidCharacterPayload.body).toMatchObject({
+            error: 'Invalid market asset',
+            details: [
+                expect.stringMatching(/^normalized_payload is not a valid character card:/),
+            ],
+        });
+        expect(fs.existsSync(path.join(dataRoot, 'market-assets.json'))).toBe(false);
     });
 
     test('rejects oversized marketplace asset metadata and normalized payload', async () => {

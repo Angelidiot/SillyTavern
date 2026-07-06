@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 145
+阶段 146
 
 ## 各阶段
 
@@ -1380,6 +1380,15 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 146：创建 draft 提前校验 payload 类型
+- [x] 确认创建资产只校验 normalized_payload 是 object 和字节大小，type-specific 校验要到 PATCH/submit/approve 才触发
+- [x] 让 `POST /api/market/assets` 在写入 draft 前复用 `validateNormalizedPayload`
+- [x] 新增后端契约，覆盖坏 world_book 和坏 character_card 创建请求直接 400 且不写 market store
+- [x] 运行目标后端测试、marketplace 基础验证和空白检查
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

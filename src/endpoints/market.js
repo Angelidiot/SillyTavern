@@ -735,6 +735,11 @@ router.post('/assets', (request, response) => withMarketStoreLock(request, async
         return response.status(400).json({ error: 'Invalid market asset', details: normalized.errors });
     }
 
+    const payloadErrors = validateNormalizedPayload(normalized.value);
+    if (payloadErrors.length > 0) {
+        return response.status(400).json({ error: 'Invalid market asset', details: payloadErrors });
+    }
+
     const currentUserId = getUserId(request);
     const timestamp = nowIso();
     const asset = {
