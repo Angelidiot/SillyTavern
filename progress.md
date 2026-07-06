@@ -1762,6 +1762,8 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `inspects a submitted asset from the review queue`，使用 submitted world_book 资产和 payload lore 内容。
 - 用例断言点击 Inspect 后 `apiCalls.details` 收到资产 id，详情弹窗显示 `submitted` 状态、语言和 payload 预览中的 `Review queue payload lore.`。
 - 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "inspects a submitted asset" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `804de6c30 Cover review queue inspect flow` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28770300651` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

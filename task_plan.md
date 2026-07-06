@@ -1404,9 +1404,9 @@
 - [x] 新增 submitted world_book 审核资产，带 payload 和审核元数据
 - [x] 新增浏览器用例，从 Review Queue 点击 Inspect，断言 detail API 调用、详情弹窗、状态/语言和 payload 预览
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
