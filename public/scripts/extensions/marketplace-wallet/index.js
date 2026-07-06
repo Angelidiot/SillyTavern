@@ -1,11 +1,12 @@
-import { getRequestHeaders } from '../../../script.js';
+import { doNavbarIconClick, getRequestHeaders } from '../../../script.js';
 import { renderExtensionTemplateAsync } from '../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../popup.js';
 import { getCurrentUserHandle, isAdmin } from '../../user.js';
-import { getFileText } from '../../utils.js';
-import { filterAndSortAssets } from './filters.js?v=0.2.29';
+import { getFileText, toggleDrawer } from '../../utils.js';
+import { filterAndSortAssets } from './filters.js?v=0.2.31';
 
 const MODULE_NAME = 'marketplace-wallet';
+const LAUNCHER_ID = 'marketplace_wallet_launcher';
 const MARKET_TYPES = {
     character_card: 'Character card',
     world_book: 'World book',
@@ -1493,6 +1494,36 @@ function onRetryAction(event) {
     retryPanel(key);
 }
 
+async function openMarketplacePanel() {
+    const extensionsBlock = document.getElementById('rm_extensions_block');
+    if (extensionsBlock && !extensionsBlock.classList.contains('openDrawer')) {
+        const toggle = document.querySelector('#extensions-settings-button > .drawer-toggle');
+        if (toggle) {
+            await doNavbarIconClick.call(toggle);
+        }
+    }
+
+    const drawer = document.querySelector('#marketplace_wallet_ui .inline-drawer');
+    if (drawer) {
+        toggleDrawer(drawer, true);
+        drawer.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+}
+
+function ensureMarketplaceLauncher() {
+    if (document.getElementById(LAUNCHER_ID)) {
+        return;
+    }
+
+    const $button = $('<button id="marketplace_wallet_launcher" class="menu_button interactable" type="button" title="Open Marketplace & Wallet"></button>');
+    $button.append($('<i class="fa-solid fa-store" aria-hidden="true"></i>'));
+    $button.append($('<span></span>').text('市场 / 钱包'));
+    $button.on('click', () => {
+        void openMarketplacePanel();
+    });
+    $('body').append($button);
+}
+
 function bindEvents($root) {
     $root.find('#marketplace_wallet_refresh').on('click', () => loadMarketplace());
     $root.find('#marketplace_wallet_search, #marketplace_wallet_type_filter, #marketplace_wallet_price_filter, #marketplace_wallet_access_filter, #marketplace_wallet_sort').on('input change', renderAssets);
@@ -1535,6 +1566,7 @@ function bindEvents($root) {
 
 export async function init() {
     if ($('#marketplace_wallet_ui').length) {
+        ensureMarketplaceLauncher();
         return;
     }
 
@@ -1543,6 +1575,7 @@ export async function init() {
     $html.find('#marketplace_wallet_grant_handle').val(getCurrentUserHandle());
     bindEvents($html);
     $('#marketplace_wallet_container').append($html);
+    ensureMarketplaceLauncher();
     renderAdminVisibility();
     await loadMarketplace({ silent: true });
 }

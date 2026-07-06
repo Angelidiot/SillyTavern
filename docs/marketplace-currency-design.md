@@ -487,7 +487,7 @@ Creator Center、My Library、Wallet Activity 和 Report Queue 都是主 Marketp
 本地 MVP 的市场浏览先用客户端筛选和排序，支持类型、价格、访问状态、标题/摘要/创作者/标签/语言/内容分级搜索、最新、热门和价格排序；正式 SaaS 需要服务端搜索与排序索引。
 当前 marketplace-wallet 在筛选结果为空且存在激活筛选时显示 Clear filters，移动端也可以一键回到默认浏览状态。
 托管探活使用公开 `GET /api/health`，返回 `ok/status/service/version/uptime/timestamp`，不需要登录、不返回用户或账务数据。
-`npm run test:pwa:e2e` 会用临时 server 和真实浏览器验证应用内 Install prompt、`/login.html` 注册并受 `/service-worker.js` 控制、`sillytavern-shell-v3` 缓存包含静态 shell 与 marketplace-wallet 扩展资源、导航请求优先使用网络版本、离线带 query 导航能回退缓存根页面，并确认 `/api/health` 不会进入 CacheStorage。
+`npm run test:pwa:e2e` 会用临时 server 和真实浏览器验证应用内 Install prompt、`/login.html` 注册并受 `/service-worker.js` 控制、`sillytavern-shell-v4` 缓存包含静态 shell 与 marketplace-wallet 扩展资源、导航请求优先使用网络版本、离线带 query 导航能回退缓存根页面，并确认 `/api/health` 不会进入 CacheStorage。
 `npm run test:hosted:docker` 会构建 Docker 镜像、使用临时 config/data volume 启动容器，并验证 `/api/health`、`/api/wallet`、`/api/market/assets`、`/manifest.json`、`/service-worker.js` 和首页可访问，证明托管部署产物能暴露钱包/市场业务路由和 PWA shell。
 发布前慢速验证可运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`，它会顺序执行 marketplace contract/Jest、runtime smoke 和串行浏览器 E2E。Docker 镜像 smoke 保持为独立的 `npm run test:hosted:docker` 检查，并在 CI 中作为单独步骤运行；具备 Docker 的机器可运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:ci` 执行与 GitHub Marketplace Wallet Checks 覆盖等价的 release gate。
 

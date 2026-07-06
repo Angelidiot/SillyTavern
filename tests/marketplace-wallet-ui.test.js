@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.29');
+        expect(manifest.version).toBe('0.2.31');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -104,6 +104,16 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("fetchJson('/api/market/library')");
         expect(script).toMatch(/fetchJson\(\s*['"]\/api\/wallet\/ledger['"]/);
         expect(script).toContain(`import { filterAndSortAssets } from './filters.js?v=${manifest.version}';`);
+        expect(script).toContain('const LAUNCHER_ID = \'marketplace_wallet_launcher\'');
+        expect(script).toContain('async function openMarketplacePanel()');
+        expect(script).toContain("document.getElementById('rm_extensions_block')");
+        expect(script).toContain("document.querySelector('#extensions-settings-button > .drawer-toggle')");
+        expect(script).toContain('await doNavbarIconClick.call(toggle)');
+        expect(script).toContain('toggleDrawer(drawer, true)');
+        expect(script).toContain('function ensureMarketplaceLauncher()');
+        expect(script).toContain("id=\"marketplace_wallet_launcher\"");
+        expect(script).toContain("fa-solid fa-store");
+        expect(script).toContain("市场 / 钱包");
         expect(script).toContain('return filterAndSortAssets(state.assets');
         expect(script).toContain("priceType: $('#marketplace_wallet_price_filter').val()");
         expect(script).toContain("access: $('#marketplace_wallet_access_filter').val()");
@@ -351,6 +361,10 @@ describe('marketplace wallet extension UI contract', () => {
         const css = readExtensionFile('style.css');
 
         expect(css).toContain('@media screen and (max-width: 700px)');
+        expect(css).toContain('#marketplace_wallet_launcher');
+        expect(css).toContain('position: fixed;');
+        expect(css).toContain('var(--topBarBlockSize, 0px)');
+        expect(css).toContain('env(safe-area-inset-right)');
         expect(css).toContain('.marketplace-wallet-creator-stats');
         expect(css).toContain('.marketplace-wallet-controls {');
         expect(css).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
