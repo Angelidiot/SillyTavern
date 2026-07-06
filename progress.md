@@ -1779,25 +1779,27 @@
 - marketplace-wallet 管理员赠币表单新增 `maxlength="200"` 和本地超长 warning，并将扩展/PWA 预缓存版本同步到 `0.2.29`。
 - README、设计文档、API reference 生成脚本和 checked-in API reference 已同步记录 admin grant reason 200 字符边界。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js marketplace-api-reference.test.js pwa.test.js`、`npm --prefix tests run test:unit -- market-wallet.test.js -t "enforces wallet read scope and validates admin grant input" --runInBand`、`npm run test:marketplace` 和 `git diff --check`。
-- 已提交 `26ea7928d Validate wallet grant reasons` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28771332053` 正在执行 Marketplace Wallet Checks。
+- 已提交 `26ea7928d Validate wallet grant reasons` 并推送到 `fork/codex/marketplace-wallet-mvp`；后续 GitHub run `28772039253` 已在阶段 153 修复 PWA E2E 版本漂移后确认全链路通过。
 
 ## 2026-07-06 阶段 151：Demo seed 拒绝文件 dataRoot
 - 开始处理 demo seed 防呆缺口：`--dataRoot` 指向普通文件时此前会到 `fs.mkdirSync()` 抛 Node 原生 `EEXIST`，没有明确说明 dataRoot 必须是目录。
 - `scripts/seed-marketplace-demo.mjs` 现在在 seed 入口检查已存在路径，普通文件会抛出 `Data root is not a directory:`；不存在的 dataRoot 仍保持自动创建，方便 README 开箱命令。
 - `tests/marketplace-demo-seed.test.js` 新增 `rejects a file data root with a clear error`，确认普通文件内容不被改写且不会创建 `market-assets.json`。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-demo-seed.test.js`、`npm run test:marketplace` 和 `git diff --check`。
-- 已提交 `5f0791d7b Clarify demo seed data root errors` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28771479086` 正在执行 Marketplace Wallet Checks。
+- 已提交 `5f0791d7b Clarify demo seed data root errors` 并推送到 `fork/codex/marketplace-wallet-mvp`；后续 GitHub run `28772039253` 已在阶段 153 修复 PWA E2E 版本漂移后确认全链路通过。
 
 ## 2026-07-06 阶段 152：赠币 reason 前端浏览器拦截
 - 开始处理 admin grant reason 的浏览器覆盖缺口：已有 UI contract 锁定 `maxlength`/warning 字符串，但没有真实浏览器证明超长 reason 不会发 POST。
 - `tests/marketplace-wallet.e2e.js` 新增 `blocks overlong admin grant reasons before posting`，断言 reason input `maxlength=200`，脚本注入 201 字符 reason 后点击 Grant 不会调用 `/api/wallet/grants/admin`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "overlong admin grant" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
-- 已提交 `d895c4563 Cover grant reason browser validation` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28771674420` 正在执行 Marketplace Wallet Checks。
+- 已提交 `d895c4563 Cover grant reason browser validation` 并推送到 `fork/codex/marketplace-wallet-mvp`；后续 GitHub run `28772039253` 已在阶段 153 修复 PWA E2E 版本漂移后确认全链路通过。
 
 ## 2026-07-06 阶段 153：PWA E2E 读取 manifest 版本
 - GitHub run `28771332053` 暴露 PWA 浏览器 E2E 漂移：service worker 已缓存 marketplace-wallet `0.2.29` 资源，但 `tests/marketplace-wallet.e2e.js` 仍检查硬编码 `0.2.28` 路径，导致缓存断言失败。
 - `tests/marketplace-wallet.e2e.js` 现在从 `public/scripts/extensions/marketplace-wallet/manifest.json` 动态读取版本，PWA shell cache 断言会跟随 manifest/service worker 版本。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "service worker shell cache" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --workers=1` 和 `git diff --check`。
+- 已提交 `d599c4144 Sync PWA E2E shell asset versions` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28772039253` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

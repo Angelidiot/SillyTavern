@@ -1425,8 +1425,8 @@
 - [x] 更新 API reference、README、设计文档和发现记录
 - [x] 运行目标后端/UI/API/PWA 验证和 marketplace 基础验证
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 151：Demo seed 拒绝文件 dataRoot
 - [x] 确认 `--dataRoot` 指向普通文件时会落到 Node 原生 mkdir `EEXIST`，错误不够明确
@@ -1434,8 +1434,8 @@
 - [x] 新增 Jest 回归，确认普通文件 dataRoot 抛出清晰错误且不会写 store
 - [x] 运行目标 seed 测试、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 152：赠币 reason 前端浏览器拦截
 - [x] 确认 admin grant reason 边界已有 UI contract，但缺少真实浏览器点击覆盖
@@ -1443,16 +1443,16 @@
 - [x] 用脚本注入 201 字符 reason 后点击 Grant，断言不会发起 grant POST
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 153：PWA E2E 读取 manifest 版本
 - [x] 调查 GitHub run `28771332053` 失败：PWA 浏览器 E2E 仍硬编码 marketplace-wallet `0.2.28` 预缓存路径
 - [x] 将 Playwright E2E 的 marketplace-wallet 版本改为从 manifest 读取
 - [x] 运行 PWA 目标浏览器 E2E、全量 browser E2E、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
