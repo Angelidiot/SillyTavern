@@ -876,6 +876,52 @@ test.describe('hosted tavern PWA browser shell', () => {
         await expect.poll(() => page.evaluate(() => Boolean(window.__pwaInstallPrompted))).toBe(false);
     });
 
+    test('hides the browser install action in standalone display mode', async ({ page }) => {
+        await page.addInitScript(() => {
+            const fallbackMediaQuery = query => ({
+                matches: false,
+                media: query,
+                onchange: null,
+                addListener: () => {},
+                removeListener: () => {},
+                addEventListener: () => {},
+                removeEventListener: () => {},
+                dispatchEvent: () => false,
+            });
+            const originalMatchMedia = window.matchMedia?.bind(window);
+            window.matchMedia = query => {
+                if (query === '(display-mode: standalone)') {
+                    return {
+                        ...fallbackMediaQuery(query),
+                        matches: true,
+                    };
+                }
+                return originalMatchMedia?.(query) ?? fallbackMediaQuery(query);
+            };
+        });
+
+        await page.goto('/login.html', { waitUntil: 'load' });
+
+        await page.evaluate(() => {
+            window.__pwaInstallPrompted = false;
+            const event = new Event('beforeinstallprompt', { cancelable: true });
+            Object.defineProperties(event, {
+                prompt: {
+                    value: async () => {
+                        window.__pwaInstallPrompted = true;
+                    },
+                },
+                userChoice: {
+                    value: Promise.resolve({ outcome: 'accepted' }),
+                },
+            });
+            window.dispatchEvent(event);
+        });
+
+        await expect(page.locator('#pwa_install_prompt')).toHaveCount(0);
+        await expect.poll(() => page.evaluate(() => Boolean(window.__pwaInstallPrompted))).toBe(false);
+    });
+
     test('registers the service worker shell cache and leaves API responses uncached', async ({ page }) => {
         await page.goto('/login.html', { waitUntil: 'load' });
         await resetPwaState(page);

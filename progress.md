@@ -1844,6 +1844,7 @@
 - `tests/market-wallet.test.js` 的 world book 安装用例改为上传无 `name` 的 payload，并读取落盘 JSON 断言 `name` 为资产标题 `Market World`。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "installs approved world books" --runInBand`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
 - 已提交 `c64e3dec1 Write fallback world book names on install` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28773776733` 已触发并处于执行中。
+- GitHub run `28773776733` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 159：工具栏刷新失败恢复 E2E
 - 开始处理前端只读 agent 建议的 toolbar refresh 覆盖缺口：已有错误面板 Retry 浏览器测试，但顶部 `#marketplace_wallet_refresh` 的失败后恢复路径没有真实点击覆盖。
@@ -1851,6 +1852,7 @@
 - 用例断言初始错误文案和后端错误摘要可见，点击 toolbar refresh 后 `Toolbar Recoverable World` 出现、错误文案消失、钱包总额仍为 `175`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "refreshes marketplace from the toolbar" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 - 已提交 `1dea45060 Cover marketplace toolbar refresh recovery` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28773905694` 已触发并处于执行中。
+- GitHub run `28773905694` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 160：PWA 安装提示关闭浏览器覆盖
 - 开始处理 PWA install prompt dismiss 覆盖缺口：已有浏览器测试覆盖 install click 和 `appinstalled` 移除提示，但没有验证关闭按钮不会触发原生安装 prompt。
@@ -1863,6 +1865,12 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `applies marketplace access filters and sort controls in the DOM`，构造 available、library、mine 三类资产。
 - 用例依次断言 available 只显示未拥有/未授权 listed 资产、`price_desc` 下高价卡片在前、library 只显示已授权资产、mine 只显示当前用户资产。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "access filters and sort" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+
+## 2026-07-06 阶段 162：PWA standalone 模式隐藏安装提示
+- 开始处理 PWA standalone 浏览器覆盖缺口：单元测试已检查 `matchMedia('(display-mode: standalone)')` 和 `navigator.standalone` 字符串，但没有真实页面证明 standalone 模式会压制 install prompt。
+- `tests/marketplace-wallet.e2e.js` 新增 `hides the browser install action in standalone display mode`，在 page init 阶段 mock standalone media query 为 true。
+- 用例在 `/login.html` 派发 `beforeinstallprompt` 后断言 `#pwa_install_prompt` 不出现，并确认 mock `prompt()` 未被调用。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "standalone display mode" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

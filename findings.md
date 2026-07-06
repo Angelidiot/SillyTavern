@@ -262,6 +262,7 @@
 - Marketplace 错误态恢复要同时覆盖错误面板 Retry 和工具栏 Refresh；两者都调用加载路径，但 DOM 绑定不同，移动端用户更容易直接点顶部刷新。
 - PWA install prompt 的 dismiss 是独立用户路径；点击关闭应只移除提示和清空 deferred event，不应触发原生 install prompt。
 - Marketplace access/sort 不能只靠纯函数测试；真实 DOM 下 select change 事件、列表重绘和卡片顺序也需要浏览器覆盖。
+- PWA standalone 模式必须压制安装提示；已安装手机壳或 standalone 浏览器窗口收到 `beforeinstallprompt` 时不应再显示应用内 Install 动作。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

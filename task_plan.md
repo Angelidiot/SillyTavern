@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 161
+阶段 162
 
 ## 各阶段
 
@@ -1499,8 +1499,8 @@
 - [x] 补充后端契约测试，使用无 name 的 world_book payload 并读取落盘 JSON
 - [x] 运行 world book 目标测试、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 159：工具栏刷新失败恢复 E2E
 - [x] 确认 Marketplace 错误面板 Retry 已覆盖，但顶部刷新按钮只断言可用、未覆盖真实恢复
@@ -1508,8 +1508,8 @@
 - [x] 断言错误文案消失、资产列表恢复、钱包余额仍渲染
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 160：PWA 安装提示关闭浏览器覆盖
 - [x] 确认 PWA install prompt 已覆盖安装按钮和 `appinstalled`，但 dismiss 按钮缺少浏览器行为测试
@@ -1524,6 +1524,15 @@
 - [x] 确认筛选排序纯函数已有测试，但真实 DOM 下 access 和 sort 下拉接线缺少浏览器覆盖
 - [x] 新增浏览器 E2E，覆盖 available/library/mine access filter
 - [x] 在 available 结果里切换 `price_desc` 并断言卡片顺序
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 162：PWA standalone 模式隐藏安装提示
+- [x] 确认 PWA 安装入口有单元契约检查 standalone gate，但缺少浏览器行为覆盖
+- [x] 新增浏览器 E2E，mock `(display-mode: standalone)` 为 true 后派发 `beforeinstallprompt`
+- [x] 断言安装提示不会出现，原生 prompt 不会被调用
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
