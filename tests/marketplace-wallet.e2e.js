@@ -1659,6 +1659,34 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
     });
 
+    test('refreshes marketplace from the toolbar after a failed load', async ({ page }) => {
+        await mockMarketplaceApis(page, {
+            assets: [
+                makeListedAsset({
+                    id: 'toolbar-recoverable-world',
+                    title: 'Toolbar Recoverable World',
+                    price_type: 'free',
+                    price_coins: 0,
+                }),
+            ],
+            failAssetListOnce: true,
+        });
+
+        await openMarketplaceWallet(page, { expectLoaded: false });
+
+        const assets = page.locator('#marketplace_wallet_assets');
+        await expect(assets).toContainText('Marketplace could not be loaded.');
+        await expect(assets).toContainText('Market temporarily unavailable');
+
+        const refreshButton = page.locator('#marketplace_wallet_refresh');
+        await expect(refreshButton).toBeEnabled();
+        await refreshButton.click();
+
+        await expect(assets).toContainText('Toolbar Recoverable World');
+        await expect(assets).not.toContainText('Marketplace could not be loaded.');
+        await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
+    });
+
     test('shows retryable side-panel errors instead of empty states', async ({ page }) => {
         const creatorAsset = makeListedAsset({
             id: 'creator-retry-world',

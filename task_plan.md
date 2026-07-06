@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 158
+阶段 159
 
 ## 各阶段
 
@@ -1498,6 +1498,15 @@
 - [x] 安装 world_book 时将 fallback name 写回 `world.name`
 - [x] 补充后端契约测试，使用无 name 的 world_book payload 并读取落盘 JSON
 - [x] 运行 world book 目标测试、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 159：工具栏刷新失败恢复 E2E
+- [x] 确认 Marketplace 错误面板 Retry 已覆盖，但顶部刷新按钮只断言可用、未覆盖真实恢复
+- [x] 新增浏览器 E2E，首个资产列表请求失败后点击 `#marketplace_wallet_refresh` 恢复
+- [x] 断言错误文案消失、资产列表恢复、钱包余额仍渲染
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress

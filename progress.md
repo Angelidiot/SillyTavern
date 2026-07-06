@@ -1842,6 +1842,13 @@
 - `src/endpoints/market.js` 的 `installWorldBookAsset()` 现在在计算 fallback 安装名后写回 `world.name`，保持文件名和 JSON 显示名称一致。
 - `tests/market-wallet.test.js` 的 world book 安装用例改为上传无 `name` 的 payload，并读取落盘 JSON 断言 `name` 为资产标题 `Market World`。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "installs approved world books" --runInBand`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
+- 已提交 `c64e3dec1 Write fallback world book names on install` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28773776733` 已触发并处于执行中。
+
+## 2026-07-06 阶段 159：工具栏刷新失败恢复 E2E
+- 开始处理前端只读 agent 建议的 toolbar refresh 覆盖缺口：已有错误面板 Retry 浏览器测试，但顶部 `#marketplace_wallet_refresh` 的失败后恢复路径没有真实点击覆盖。
+- `tests/marketplace-wallet.e2e.js` 新增 `refreshes marketplace from the toolbar after a failed load`，使用 `failAssetListOnce` 让首个资产列表请求返回 500。
+- 用例断言初始错误文案和后端错误摘要可见，点击 toolbar refresh 后 `Toolbar Recoverable World` 出现、错误文案消失、钱包总额仍为 `175`。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "refreshes marketplace from the toolbar" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

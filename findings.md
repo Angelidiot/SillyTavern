@@ -259,6 +259,7 @@
 - 管理员读取指定 wallet handle 时应区分未知用户和零余额用户；不存在的 handle 返回 404，已存在但无 ledger 的用户才返回空余额。
 - Runtime smoke 若要管理员读取 creator ledger，demo creator 必须是真实账号记录；否则 wallet handle 404 会正确暴露测试数据不完整，而不是 API 问题。
 - World book 安装的文件名 fallback 也应写回 payload `name`；否则无 name 的合法 world book 虽能生成可读文件名，导入后的 JSON 本体仍缺显示名称。
+- Marketplace 错误态恢复要同时覆盖错误面板 Retry 和工具栏 Refresh；两者都调用加载路径，但 DOM 绑定不同，移动端用户更容易直接点顶部刷新。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*
