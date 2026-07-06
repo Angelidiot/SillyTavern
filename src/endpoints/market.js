@@ -13,7 +13,7 @@ import { serverDirectory } from '../server-directory.js';
 import { getUniqueName, sanitizeSafeCharacterReplacements } from '../util.js';
 import { TavernCardValidator } from '../validator/TavernCardValidator.js';
 import { requireAdminMiddleware } from '../users.js';
-import { getWalletBalance, getWalletLedger, purchaseWithWallet } from './wallet.js';
+import { getWalletBalance, getWalletLedger, purchaseWithWallet, rollbackWalletLedgerEntries } from './wallet.js';
 
 const MARKET_STORE_FILE = 'market-assets.json';
 const DEFAULT_MARKET_AVATAR_PATH = path.resolve(serverDirectory, DEFAULT_AVATAR_PATH);
@@ -989,7 +989,19 @@ router.post('/assets/:id/purchase', async (request, response) => {
         store.entitlements.push(entitlement);
         asset.sales_count = Number(asset.sales_count || 0) + 1;
         asset.updated_at = timestamp;
-        writeStore(request, store);
+        try {
+            writeStore(request, store);
+        } catch (error) {
+            if (purchase?.ledger_entries?.length && !purchase.already_settled) {
+                try {
+                    await rollbackWalletLedgerEntries(purchase.ledger_entries);
+                } catch (rollbackError) {
+                    console.error('Market purchase ledger rollback failed:', rollbackError);
+                }
+            }
+            console.error('Market purchase store write failed:', error);
+            return response.status(500).json({ error: 'Marketplace purchase could not be completed' });
+        }
 
         return response.status(201).json({
             entitlement: toEntitlementSummary(entitlement),

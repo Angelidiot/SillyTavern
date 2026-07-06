@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 165
+阶段 166
 
 ## 各阶段
 
@@ -1563,6 +1563,16 @@
 - [x] 新增浏览器 E2E，断言 checkout 失败后余额不变、Library 不新增、Install 不触发且按钮恢复可点
 - [x] 同一用例二次点击成功购买并安装，覆盖 retryable 用户路径
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 166：市场写入失败回滚固定价 ledger
+- [x] 确认 fixed-price purchase 先写 wallet ledger，再写 market entitlement/store，存在后半段失败后账本残留风险
+- [x] wallet 模块新增按 ledger entry id 回滚本次写入的 helper，不再用后台定时读取 marketplace store
+- [x] market purchase route 在 store 写入失败时同步回滚本次新 ledger，并返回明确 500 错误
+- [x] 补充后端路由级测试，mock store 写入失败后确认买家余额恢复、创作者收益不增加、sales/entitlement 不落盘，随后重试购买成功
+- [x] 运行目标后端测试、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress

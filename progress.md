@@ -1900,6 +1900,15 @@
 - 新增 `keeps a fixed-price purchase retryable when checkout fails`，断言第一次 checkout 失败后 wallet total/buckets 不变、Library 不出现资产、install 未触发、Buy & Install 按钮恢复可点。
 - 同一用例二次点击确认 purchase/install 成功，余额变为 `50`，资产进入 Library 并显示 `Purchased` 和 `1 installs`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a fixed-price purchase retryable when checkout fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `f814b5b72 Cover checkout retry after purchase failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28774995213` 已触发并处于执行中。
+
+## 2026-07-06 阶段 166：市场写入失败回滚固定价 ledger
+- 开始处理 Fermat 子 agent 指出的 wallet ledger 与 market store 双写失败窗口：固定价购买成功写入账本后，如果 entitlement/sales 写 store 失败，会留下买家扣款和创作者收益但市场没有授权。
+- 主线调整 worker 初稿：移除钱包模块中基于 `setImmediate` 读取 `market-assets.json` 的后台清理，改为导出 `rollbackWalletLedgerEntries()`，只按本次新写入的 ledger entry id 删除。
+- `src/endpoints/market.js` 的 purchase route 现在在 `writeStore()` 失败时同步回滚本次 purchase ledger；若回滚自身失败会记录错误，但接口仍明确返回 `500 Marketplace purchase could not be completed`。
+- `tests/market-wallet.test.js` 新增 `rolls back fixed-price wallet ledger when market store write fails`，通过 mock `fs.mkdirSync` 触发 purchase 阶段 store 写入失败。
+- 用例确认失败后 bob 的 paid 余额仍为 `30`、无 purchase debit，charlie earnings 仍为 `0`、无 creator earning，market store 中 `sales_count` 仍为 `0` 且无 bob entitlement；恢复写入后重试购买成功。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js --runInBand -t "rolls back fixed-price wallet ledger when market store write fails"`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a library reinstall retryable when install fails" --workers=1`、相关 `node --check` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

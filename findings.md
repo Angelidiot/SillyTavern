@@ -266,6 +266,7 @@
 - PWA shell cache 需要覆盖离线直接打开 `/login.html`；安装版手机用户可能从登录页恢复，而不是只从根路径恢复。
 - 付费购买 ledger 幂等恢复不能只看同 `purchase_id` 是否存在；必须确认买家扣款总额和创作者收益总额完整，否则 partial ledger 会被误当成已结算并创建无收益 entitlement。
 - 固定价 checkout 失败必须发生在前端可重试状态；purchase POST 失败不应扣币、写入 Library、触发 install 或把按钮卡在 busy，否则手机弱网用户会误以为已购买或无法重试。
+- 固定价购买的 wallet ledger 与 market entitlement/store 写入必须有明确失败补偿；当前 JSON store MVP 用同步回滚本次 ledger entry，后续数据库版应改为同事务提交。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

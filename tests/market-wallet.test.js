@@ -1579,6 +1579,92 @@ describe('market and wallet MVP endpoints', () => {
         expect(store.entitlements.filter(entitlement => entitlement.asset_id === assetId && entitlement.user_id === 'bob')).toHaveLength(1);
     });
 
+    test('rolls back fixed-price wallet ledger when market store write fails', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const bobApp = createApp(createUser('bob', false));
+        const charlieApp = createApp(createUser('charlie', false));
+        const assetId = await createSubmittedAsset(charlieApp, {
+            type: 'character_card',
+            title: 'Unsettled Paid Charlie',
+            price_type: 'fixed_price',
+            price_coins: 30,
+            normalized_payload: createCharacterPayload(),
+        });
+
+        const approveResult = await request(aliceApp, `/api/market/assets/${assetId}/approve`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(approveResult.status).toBe(200);
+
+        const grantResult = await request(aliceApp, '/api/wallet/grants/admin', {
+            method: 'POST',
+            body: {
+                targetHandle: 'bob',
+                amount: 30,
+                bucket: 'paid',
+            },
+        });
+        expect(grantResult.status).toBe(201);
+
+        const realMkdirSync = fs.mkdirSync;
+        const mkdirSpy = jest.spyOn(fs, 'mkdirSync').mockImplementation((target, options) => {
+            if (path.resolve(String(target)) === dataRoot) {
+                throw new Error('simulated market store write failure');
+            }
+            return realMkdirSync.call(fs, target, options);
+        });
+        const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        try {
+            const failedPurchase = await request(bobApp, `/api/market/assets/${assetId}/purchase`, {
+                method: 'POST',
+                body: {},
+            });
+            expect(failedPurchase.status).toBe(500);
+            expect(failedPurchase.body.error).toBe('Marketplace purchase could not be completed');
+        } finally {
+            mkdirSpy.mockRestore();
+            errorSpy.mockRestore();
+        }
+
+        const bobLedger = await request(bobApp, '/api/wallet/ledger', { method: 'GET' });
+        expect(bobLedger.status).toBe(200);
+        expect(bobLedger.body.balance.buckets.paid).toBe(30);
+        expect(bobLedger.body.ledger.filter(entry => entry.type === 'market_purchase_debit')).toHaveLength(0);
+
+        const charlieLedger = await request(charlieApp, '/api/wallet/ledger', { method: 'GET' });
+        expect(charlieLedger.status).toBe(200);
+        expect(charlieLedger.body.balance.buckets.earnings).toBe(0);
+        expect(charlieLedger.body.ledger.filter(entry => entry.type === 'market_creator_earning')).toHaveLength(0);
+
+        let store = JSON.parse(fs.readFileSync(path.join(dataRoot, 'market-assets.json'), 'utf8'));
+        let storedAsset = store.assets.find(asset => asset.id === assetId);
+        expect(storedAsset.sales_count).toBe(0);
+        expect(store.entitlements.filter(entitlement => entitlement.asset_id === assetId && entitlement.user_id === 'bob')).toHaveLength(0);
+
+        const retriedPurchase = await request(bobApp, `/api/market/assets/${assetId}/purchase`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(retriedPurchase.status).toBe(201);
+        expect(retriedPurchase.body.already_owned).toBe(false);
+
+        const retriedBobLedger = await request(bobApp, '/api/wallet/ledger', { method: 'GET' });
+        expect(retriedBobLedger.status).toBe(200);
+        expect(retriedBobLedger.body.balance.buckets.paid).toBe(0);
+        expect(retriedBobLedger.body.ledger.filter(entry => entry.type === 'market_purchase_debit')).toHaveLength(1);
+
+        const retriedCharlieLedger = await request(charlieApp, '/api/wallet/ledger', { method: 'GET' });
+        expect(retriedCharlieLedger.status).toBe(200);
+        expect(retriedCharlieLedger.body.balance.buckets.earnings).toBe(30);
+        expect(retriedCharlieLedger.body.ledger.filter(entry => entry.type === 'market_creator_earning')).toHaveLength(1);
+
+        store = JSON.parse(fs.readFileSync(path.join(dataRoot, 'market-assets.json'), 'utf8'));
+        storedAsset = store.assets.find(asset => asset.id === assetId);
+        expect(storedAsset.sales_count).toBe(1);
+        expect(store.entitlements.filter(entitlement => entitlement.asset_id === assetId && entitlement.user_id === 'bob')).toHaveLength(1);
+    });
+
     test('rejects partial fixed-price purchase ledger before creating entitlement', async () => {
         const aliceApp = createApp(createUser('alice', true));
         const bobApp = createApp(createUser('bob', false));

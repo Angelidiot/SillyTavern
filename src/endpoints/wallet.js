@@ -109,7 +109,7 @@ function createEmptyBalance() {
  */
 async function getLedgerEntries() {
     /** @type {WalletLedgerEntry[]} */
-    const entries = await storage.values(x => x.key.startsWith(LEDGER_KEY_PREFIX));
+    const entries = await storage.values(x => typeof x?.key === 'string' && x.key.startsWith(LEDGER_KEY_PREFIX));
     return entries
         .filter(entry => entry && WALLET_BUCKETS.includes(entry.bucket) && Number.isSafeInteger(entry.amount))
         .sort((a, b) => a.createdAt - b.createdAt || a.id.localeCompare(b.id));
@@ -161,6 +161,13 @@ async function persistLedgerEntries(entries) {
     for (const entry of entries) {
         await storage.setItem(`${LEDGER_KEY_PREFIX}${entry.id}`, entry);
     }
+}
+
+export async function rollbackWalletLedgerEntries(entries = []) {
+    const ledgerEntryIds = entries
+        .map(entry => entry?.id)
+        .filter(id => typeof id === 'string' && id.length > 0);
+    await Promise.all(ledgerEntryIds.map(id => storage.removeItem(`${LEDGER_KEY_PREFIX}${id}`)));
 }
 
 export async function getWalletBalance(handle) {
@@ -298,13 +305,15 @@ export async function purchaseWithWallet({ buyerHandle, creatorHandle, actorHand
     }
 
     await persistLedgerEntries(entries);
+    const buyerBalanceAfterPurchase = await getWalletBalance(buyerHandle);
+    const creatorBalanceAfterPurchase = creatorHandle ? await getWalletBalance(creatorHandle) : null;
 
     return {
         ok: true,
         purchase_id: purchaseId,
         ledger_entries: entries,
-        buyer_balance: await getWalletBalance(buyerHandle),
-        creator_balance: creatorHandle ? await getWalletBalance(creatorHandle) : null,
+        buyer_balance: buyerBalanceAfterPurchase,
+        creator_balance: creatorBalanceAfterPurchase,
     };
 }
 
