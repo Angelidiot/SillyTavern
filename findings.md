@@ -235,6 +235,8 @@
 - Marketplace Wallet Checks path filter 应覆盖 market/wallet 后端共享依赖和 marketplace-wallet 前端共享 helper；这些文件不属于 marketplace 专属目录，但会直接影响权限、安装写入、角色卡校验、CSRF header、popup 和用户上下文。
 - README 的 API reference 生成命令应说明固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT`，避免 checked-in docs 因当前时间戳漂移。
 - checked-in API reference 再生成命令必须固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z`；否则文档内容未变也会因为 `Generated at` 当前时间产生 diff。
+- marketplace-wallet upload status 的 `[hidden]` 需要显式 `display: none`；组件自身 `display: flex` 会让 Revise 后 Cancel 的编辑状态在浏览器里仍被视为可见。
+- Revise 后 Cancel 必须清空编辑资产上下文；浏览器 E2E 应断言下一次 Save Draft 走 create POST 而不是旧资产 revision PATCH。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

@@ -371,6 +371,8 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('.marketplace-wallet-review-summary');
         expect(css).toContain('.marketplace-wallet-report-title');
         expect(css).toContain('.marketplace-wallet-upload-status');
+        expect(css).toContain('.marketplace-wallet-upload-status[hidden]');
+        expect(css).toContain('display: none;');
         expect(css).toContain('.marketplace-wallet-asset-preview h3');
         expect(css).toContain('.marketplace-wallet-asset-preview');
         expect(css).toContain('.marketplace-wallet-preview-description');

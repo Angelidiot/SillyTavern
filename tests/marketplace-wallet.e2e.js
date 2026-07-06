@@ -1933,6 +1933,81 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
     });
 
+    test('cancels a rejected asset revision before saving a new draft', async ({ page }) => {
+        const rejectedAsset = makeSubmittedAsset({
+            id: 'cancel-rejected-world',
+            type: 'world_book',
+            title: 'Cancel Rejected World',
+            summary: 'Loaded into edit mode.',
+            description: 'Draft cancel description.',
+            creator_id: 'default-user',
+            status: 'rejected',
+            owned: true,
+            price_type: 'free',
+            price_coins: 0,
+            rejection_reason: 'Needs cleanup',
+            normalized_payload: {
+                name: 'Cancel Rejected World',
+                entries: {
+                    old: {
+                        key: ['old'],
+                        content: 'Old lore entry.',
+                    },
+                },
+            },
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [rejectedAsset],
+        });
+
+        await loadSillyTavern(page);
+
+        const creatorAssetList = page.locator('#marketplace_wallet_creator_assets_list');
+        await creatorAssetList
+            .locator('.marketplace-wallet-creator-asset', { hasText: 'Cancel Rejected World' })
+            .locator('[data-marketplace-wallet-action="revise"]')
+            .click();
+
+        await expect.poll(() => apiCalls.details).toEqual(['cancel-rejected-world']);
+        await expect(page.locator('#marketplace_wallet_upload_status')).toBeVisible();
+        await expect(page.locator('#marketplace_wallet_upload_mode')).toHaveText('Editing Cancel Rejected World');
+        await expect(page.locator('[data-marketplace-wallet-upload="draft"]')).toContainText('Save Changes');
+        await expect(page.locator('[data-marketplace-wallet-upload="review"]')).toContainText('Save & Submit');
+
+        await page.locator('#marketplace_wallet_upload_cancel').click();
+
+        await expect(page.locator('#marketplace_wallet_upload_status')).toBeHidden();
+        await expect(page.locator('#marketplace_wallet_upload_mode')).toHaveText('');
+        await expect(page.locator('[data-marketplace-wallet-upload="draft"]')).toContainText('Save Draft');
+        await expect(page.locator('[data-marketplace-wallet-upload="review"]')).toContainText('Submit');
+        await expect(page.locator('#marketplace_wallet_upload_title')).toHaveValue('');
+        await expect(page.locator('#marketplace_wallet_upload_payload')).toHaveValue('');
+
+        await page.locator('#marketplace_wallet_upload_type').selectOption('world_book');
+        await page.locator('#marketplace_wallet_upload_title').fill('Fresh Draft After Cancel');
+        await page.locator('#marketplace_wallet_upload_summary').fill('Created after canceling edit mode.');
+        await page.locator('#marketplace_wallet_upload_payload').fill(JSON.stringify({
+            name: 'Fresh Draft After Cancel',
+            entries: {
+                fresh: {
+                    key: ['fresh'],
+                    content: 'Fresh draft should be created with POST.',
+                },
+            },
+        }, null, 2));
+        await page.locator('[data-marketplace-wallet-upload="draft"]').click();
+
+        await expect.poll(() => apiCalls.creates).toHaveLength(1);
+        expect(apiCalls.creates[0]).toMatchObject({
+            title: 'Fresh Draft After Cancel',
+            summary: 'Created after canceling edit mode.',
+            normalized_payload: {
+                name: 'Fresh Draft After Cancel',
+            },
+        });
+        expect(apiCalls.revisions).toEqual([]);
+    });
+
     test('keeps review controls compact on mobile width', async ({ page }) => {
         await page.setViewportSize({ width: 390, height: 844 });
         await mockMarketplaceApis(page, {

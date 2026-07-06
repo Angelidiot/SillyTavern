@@ -1664,6 +1664,13 @@
 - 已提交 `c5c083c92 Document fixed API reference timestamp` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28763820723` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 137：Revise Cancel 退出编辑模式回归
+- 开始处理 Creator Center 直接 Revise 后的取消回归缺口：用户点击 rejected 资产的 Revise 后，如果再 Cancel，下一次 Save Draft 必须创建新资产而不是继续 PATCH 旧资产。
+- `tests/marketplace-wallet.e2e.js` 新增浏览器用例，覆盖 Revise -> Cancel -> 填写新 world_book -> Save Draft，断言调用 create API 且没有 revision API 调用。
+- 首次目标 E2E 暴露真实 UI 问题：`#marketplace_wallet_upload_status` 带有 `hidden` 属性，但 `.marketplace-wallet-upload-status { display: flex; }` 让元素仍被浏览器认为可见。
+- `public/scripts/extensions/marketplace-wallet/style.css` 已给 `.marketplace-wallet-upload-status[hidden]` 明确设置 `display: none;`；`tests/marketplace-wallet-ui.test.js` 已锁定该 hidden 样式契约。
+- 已通过 `node --check tests/marketplace-wallet.e2e.js`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "cancels a rejected asset revision" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
