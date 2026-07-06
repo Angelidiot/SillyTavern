@@ -1712,6 +1712,8 @@
 - `scripts/export-marketplace-snapshot.mjs` 已在 `createSnapshot()` 入口校验 resolved dataRoot 必须存在且是目录；目录存在但没有 `market-assets.json` 或 `_storage` 时仍按空 market/wallet 只读导出。
 - `tests/marketplace-snapshot-export.test.js` 新增缺失 dataRoot 回归，断言命令抛出 `Data root does not exist:`，且不会创建该目录。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-snapshot-export.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `f2bca54e5 Reject missing snapshot data roots` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28766137193` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

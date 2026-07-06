@@ -1349,9 +1349,9 @@
 - [x] 保留“目录存在但 store/storage 不存在”时导出空 market/wallet 的只读行为
 - [x] 新增 Jest 回归，确认缺失 dataRoot 不导出空快照且不创建目录
 - [x] 运行目标脚本测试和 marketplace 基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
