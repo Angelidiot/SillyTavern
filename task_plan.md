@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 166
+阶段 167
 
 ## 各阶段
 
@@ -1564,8 +1564,8 @@
 - [x] 同一用例二次点击成功购买并安装，覆盖 retryable 用户路径
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 166：市场写入失败回滚固定价 ledger
 - [x] 确认 fixed-price purchase 先写 wallet ledger，再写 market entitlement/store，存在后半段失败后账本残留风险
@@ -1573,6 +1573,16 @@
 - [x] market purchase route 在 store 写入失败时同步回滚本次新 ledger，并返回明确 500 错误
 - [x] 补充后端路由级测试，mock store 写入失败后确认买家余额恢复、创作者收益不增加、sales/entitlement 不落盘，随后重试购买成功
 - [x] 运行目标后端测试、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 167：Library 重装失败恢复 E2E
+- [x] 使用 Erdos 子 agent 只读结论，确认现有 `failInstallOnceFor` mock 能覆盖手动 reinstall 失败
+- [x] 新增浏览器 E2E，seed 已安装 Library 资产和旧 `last_install`
+- [x] 断言第一次 install 失败后按钮恢复可点、安装次数仍为 1、旧 last installed 摘要保留，且不会显示成功路径
+- [x] 同一用例二次点击成功，安装次数变为 2 并更新 last installed path
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress

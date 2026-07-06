@@ -2042,6 +2042,54 @@ test.describe('marketplace wallet extension', () => {
         await expect(library).toContainText('Last installed 2026-06-26 to worlds/paid-install-fails-world.json');
     });
 
+    test('keeps a library reinstall retryable when install fails', async ({ page }) => {
+        const libraryAsset = makeListedAsset({
+            id: 'library-retry-install-world',
+            title: 'Library Retry Install World',
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [libraryAsset],
+            library: [makeLibraryItem(libraryAsset, {
+                install_count: 1,
+                last_install: {
+                    type: 'world_book',
+                    local_ref: 'worlds/old-library-retry-install-world.json',
+                    created_at: '2026-06-25T12:46:00.000Z',
+                },
+            })],
+            failInstallOnceFor: 'library-retry-install-world',
+        });
+
+        await loadSillyTavern(page);
+
+        const library = page.locator('#marketplace_wallet_library_items');
+        const libraryRow = library.locator('.marketplace-wallet-library-item', { hasText: 'Library Retry Install World' });
+        const installButton = libraryRow.locator('[data-marketplace-wallet-action="install"]');
+        const installSummary = libraryRow.locator('.marketplace-wallet-library-install');
+
+        await expect(libraryRow).toContainText('1 installs');
+        await expect(installSummary).toHaveText(/Last installed 2026-06-25 to worlds\/old-library-retry-install-world\.json/);
+        await expect(installButton).toHaveText(/Install/);
+        await installButton.click();
+
+        await expect.poll(() => apiCalls.installs).toEqual(['library-retry-install-world']);
+        await expect(installButton).toBeEnabled();
+        await expect(installButton).toHaveText(/Install/);
+        await expect(libraryRow).toContainText('1 installs');
+        await expect(installSummary).toHaveText(/Last installed 2026-06-25 to worlds\/old-library-retry-install-world\.json/);
+        await expect(libraryRow).not.toContainText('2 installs');
+        await expect(libraryRow).not.toContainText('worlds/library-retry-install-world.json');
+
+        await installButton.click();
+
+        await expect.poll(() => apiCalls.installs).toEqual([
+            'library-retry-install-world',
+            'library-retry-install-world',
+        ]);
+        await expect(libraryRow).toContainText('2 installs');
+        await expect(installSummary).toHaveText(/Last installed 2026-06-26 to worlds\/library-retry-install-world\.json/);
+    });
+
     test('shows busy state while reinstalling a library asset', async ({ page }) => {
         const libraryAsset = makeListedAsset({
             id: 'library-busy-world',
