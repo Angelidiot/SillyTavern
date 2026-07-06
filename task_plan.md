@@ -1469,8 +1469,8 @@
 - [x] 同步 API reference 生成脚本、checked-in API reference 和货币设计说明
 - [x] 运行目标后端/API 文档测试、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 156：Snapshot 导出 symlink 输出防护
 - [x] 确认 snapshot `--out` 通过外部 symlink 指回 dataRoot 时会绕过字符串路径判断
@@ -1479,8 +1479,8 @@
 - [x] 补充 symlink 输出路径单测，确认不会在 dataRoot 下创建缺失子目录
 - [x] 运行 snapshot 目标测试、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 157：管理员读取未知钱包 handle 返回 404
 - [x] 确认管理员 `GET /api/wallet?handle=missing` 和 `/ledger` 旧行为会返回空钱包
@@ -1488,7 +1488,8 @@
 - [x] 保留非管理员读别人钱包的 403 权限边界
 - [x] 补充后端契约测试和 API reference 文档说明
 - [x] 运行目标后端/API 文档测试、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
+- [x] 提交并推送到 GitHub fork
+- [x] 修复 runtime smoke demo creator 账号 seed
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress
 

@@ -5,6 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import storage from 'node-persist';
+
 const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const startupTimeoutMs = Number(process.env.MARKETPLACE_SMOKE_TIMEOUT_MS ?? 90_000);
 const requestTimeoutMs = Number(process.env.MARKETPLACE_SMOKE_REQUEST_TIMEOUT_MS ?? 5_000);
@@ -250,6 +252,30 @@ async function seedDemoMarketplace(dataRoot) {
     }
 }
 
+async function seedSmokeUserAccounts(dataRoot) {
+    await storage.init({
+        dir: path.join(dataRoot, '_storage'),
+        ttl: false,
+        expiredInterval: 0,
+    });
+
+    const created = Date.now();
+    for (const user of [
+        { handle: 'default-user', admin: true },
+        { handle: demoCreatorHandle, admin: false },
+    ]) {
+        await storage.setItem(`user:${user.handle}`, {
+            handle: user.handle,
+            name: user.handle,
+            admin: user.admin,
+            enabled: true,
+            created,
+            password: '',
+            salt: '',
+        });
+    }
+}
+
 async function run() {
     const port = await findFreePort();
     const tmpRoot = await mkdtemp(path.join(os.tmpdir(), 'sillytavern-marketplace-smoke-'));
@@ -270,6 +296,7 @@ async function run() {
 
     try {
         await seedDemoMarketplace(dataRoot);
+        await seedSmokeUserAccounts(dataRoot);
         console.log('runtime ok: marketplace demo seed');
 
         child = spawn(process.execPath, [
