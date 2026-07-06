@@ -1746,6 +1746,8 @@
 - `src/endpoints/market.js` 的创建路由现在在写 store 前复用 `validateNormalizedPayload(normalized.value)`，与 revision/submit/approve 的 type-specific 校验保持一致。
 - `tests/market-wallet.test.js` 在 create payload shape 契约中新增坏 `world_book` `{}` 和坏 `character_card` payload 的 400 断言，并确认无效创建不会写出 `market-assets.json`。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js --runInBand`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `24d9384ce Validate created marketplace payloads` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28767541664` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

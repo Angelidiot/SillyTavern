@@ -1386,9 +1386,9 @@
 - [x] 让 `POST /api/market/assets` 在写入 draft 前复用 `validateNormalizedPayload`
 - [x] 新增后端契约，覆盖坏 world_book 和坏 character_card 创建请求直接 400 且不写 market store
 - [x] 运行目标后端测试、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
