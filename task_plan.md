@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 138
+阶段 139
 
 ## 各阶段
 
@@ -1312,6 +1312,16 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 139：启动入口 CI 与 syntax 覆盖
+- [x] 确认 marketplace smoke/E2E 依赖 `server.js`、CLI、config init 和 healthcheck 启动链
+- [x] 将 `server.js`、`src/command-line.js`、`src/config-init.js`、`src/healthcheck.js` 加入 marketplace syntax gate
+- [x] 将同一组启动入口加入 Marketplace Wallet Checks pull_request/push path filters
+- [x] 更新 marketplace scripts contract 测试，锁定 syntax gate 和 workflow 双重覆盖
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

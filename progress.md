@@ -1681,6 +1681,13 @@
 - 已提交 `85db8ec6e Cover admin reject review flow` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28764628823` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 139：启动入口 CI 与 syntax 覆盖
+- 开始处理可运行脚本/CI 闭环缺口：marketplace runtime smoke、Docker smoke 和 browser E2E 实际都通过 `server.js` 启动，并依赖 CLI、config init 和 healthcheck helper，但这些入口之前没有进入 marketplace syntax gate。
+- `scripts/check-marketplace-syntax.mjs` 已加入 `server.js`、`src/command-line.js`、`src/config-init.js`、`src/healthcheck.js`，快速门禁会先解析这些启动入口。
+- `.github/workflows/marketplace-wallet-checks.yml` 已在 pull_request 和 push path filters 中加入同一组启动入口，避免启动链变更绕过 Marketplace Wallet Checks。
+- `tests/marketplace-scripts.test.js` 新增契约，锁定这些路径在 workflow 中出现两次，并且出现在 syntax gate 文件清单中。
+- 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

@@ -217,6 +217,24 @@ describe('marketplace runnable scripts', () => {
         }
     });
 
+    test('checks marketplace startup entries in syntax gate and CI paths', () => {
+        const syntaxGate = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');
+        const workflow = fs.readFileSync(path.join(rootDirectory, '.github/workflows/marketplace-wallet-checks.yml'), 'utf8');
+        const startupPaths = [
+            'server.js',
+            'src/command-line.js',
+            'src/config-init.js',
+            'src/healthcheck.js',
+        ];
+
+        for (const startupPath of startupPaths) {
+            const escapedPath = startupPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const matches = workflow.match(new RegExp(`'${escapedPath}'`, 'g')) || [];
+            expect(matches).toHaveLength(2);
+            expect(syntaxGate).toContain(`'${startupPath}'`);
+        }
+    });
+
     test('wires hosted Docker smoke into scripts, syntax gate, and CI', () => {
         const { scripts } = readRootPackage();
         const syntaxGate = fs.readFileSync(path.join(rootDirectory, 'scripts/check-marketplace-syntax.mjs'), 'utf8');

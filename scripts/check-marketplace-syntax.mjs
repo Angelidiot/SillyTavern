@@ -6,8 +6,12 @@ import { fileURLToPath } from 'node:url';
 const rootDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const files = [
+    'server.js',
+    'src/command-line.js',
+    'src/config-init.js',
     'src/endpoints/market.js',
     'src/endpoints/wallet.js',
+    'src/healthcheck.js',
     'src/server-main.js',
     'src/server-startup.js',
     'public/scripts/pwa.js',
