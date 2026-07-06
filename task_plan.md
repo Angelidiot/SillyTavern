@@ -1339,9 +1339,9 @@
 - [x] 更新 UI contract，锁定备注弹窗、长度警告和非截断提交
 - [x] 更新浏览器 E2E，断言 reviewer note 进入 resolve POST payload
 - [x] 运行目标浏览器 E2E 与 marketplace 基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
