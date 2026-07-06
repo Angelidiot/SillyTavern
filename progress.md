@@ -1673,6 +1673,12 @@
 - 已提交 `58ca6080f Fix upload cancel hidden state` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28764253876` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 138：Admin Reject 成功闭环 E2E
+- 开始处理审核主路径浏览器缺口：现有 E2E 已覆盖超长 rejection reason 的本地拦截，但没有覆盖正常 Reject 的 POST、队列刷新和创作者可见驳回理由。
+- `tests/marketplace-wallet.e2e.js` 新增 `rejects a submitted asset from the review queue`，使用 owned submitted world_book 资产，模拟管理员输入驳回原因并点击 Reject。
+- 用例断言 `apiCalls.rejects` 收到 `{ assetId, payload.reason }`，Review Queue 变为 `No assets awaiting review.`，Creator Center 显示 `rejected: Needs clearer lore safety tags`，submitted/rejected 计数从 `1/0` 刷新为 `0/1`。
+- 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "rejects a submitted asset from the review queue" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

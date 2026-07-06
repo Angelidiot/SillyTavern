@@ -237,6 +237,7 @@
 - checked-in API reference 再生成命令必须固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z`；否则文档内容未变也会因为 `Generated at` 当前时间产生 diff。
 - marketplace-wallet upload status 的 `[hidden]` 需要显式 `display: none`；组件自身 `display: flex` 会让 Revise 后 Cancel 的编辑状态在浏览器里仍被视为可见。
 - Revise 后 Cancel 必须清空编辑资产上下文；浏览器 E2E 应断言下一次 Save Draft 走 create POST 而不是旧资产 revision PATCH。
+- Admin Reject 成功路径需要真实浏览器覆盖；只测超长 reason 本地拦截无法证明 POST payload、Review Queue 刷新和 Creator Center 驳回原因展示仍然连通。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

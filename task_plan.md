@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 137
+阶段 138
 
 ## 各阶段
 
@@ -1303,6 +1303,15 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 138：Admin Reject 成功闭环 E2E
+- [x] 确认浏览器 E2E 只覆盖超长 rejection reason 本地拦截，缺少正常 Reject 成功路径
+- [x] 新增 E2E 覆盖管理员从 Review Queue 输入 reason 并 Reject submitted 资产
+- [x] 断言 Reject POST payload、Review Queue 清空、Creator Center 显示 rejected reason 和状态计数刷新
+- [x] 运行目标浏览器 E2E 与 marketplace 基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

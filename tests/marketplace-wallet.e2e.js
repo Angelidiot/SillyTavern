@@ -935,6 +935,53 @@ test.describe('marketplace wallet extension', () => {
         await expect(reviewQueue).toContainText('Submitted Character');
     });
 
+    test('rejects a submitted asset from the review queue', async ({ page }) => {
+        const submittedAsset = makeSubmittedAsset({
+            id: 'rejectable-world',
+            type: 'world_book',
+            title: 'Rejectable Creator World',
+            summary: 'Needs moderation before listing.',
+            creator_id: 'default-user',
+            owned: true,
+            price_type: 'free',
+            price_coins: 0,
+            updated_at: '2026-06-26T14:00:00.000Z',
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [submittedAsset],
+        });
+
+        await loadSillyTavern(page);
+
+        const reviewQueue = page.locator('#marketplace_wallet_review_queue');
+        const creatorList = page.locator('#marketplace_wallet_creator_assets_list');
+        await expect(reviewQueue).toContainText('Rejectable Creator World');
+        await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('1');
+        await expect(page.locator('#marketplace_wallet_creator_rejected')).toHaveText('0');
+
+        await reviewQueue
+            .locator('.marketplace-wallet-review-item', { hasText: 'Rejectable Creator World' })
+            .locator('[data-marketplace-wallet-action="reject"]')
+            .click();
+
+        const reasonPopup = page.getByRole('dialog').filter({ hasText: 'Reason for rejection:' });
+        await expect(reasonPopup).toBeVisible();
+        await reasonPopup.locator('.popup-input').fill('Needs clearer lore safety tags');
+        await reasonPopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.rejects).toEqual([{
+            assetId: 'rejectable-world',
+            payload: {
+                reason: 'Needs clearer lore safety tags',
+            },
+        }]);
+        await expect(reviewQueue).toContainText('No assets awaiting review.');
+        await expect(creatorList).toContainText('Rejectable Creator World');
+        await expect(creatorList).toContainText('rejected: Needs clearer lore safety tags');
+        await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('0');
+        await expect(page.locator('#marketplace_wallet_creator_rejected')).toHaveText('1');
+    });
+
     test('resolves reports from the admin report queue', async ({ page }) => {
         const apiCalls = await mockMarketplaceApis(page, {
             assets: [makeListedAsset()],
