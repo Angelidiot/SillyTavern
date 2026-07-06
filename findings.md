@@ -258,6 +258,7 @@
 - Snapshot `--out` 需要解析 symlink 后再判断 dataRoot 边界；外部目录里的 symlink 可以把看似安全的输出路径导回用户数据根，且检查必须发生在 `mkdir -p` 之前。
 - 管理员读取指定 wallet handle 时应区分未知用户和零余额用户；不存在的 handle 返回 404，已存在但无 ledger 的用户才返回空余额。
 - Runtime smoke 若要管理员读取 creator ledger，demo creator 必须是真实账号记录；否则 wallet handle 404 会正确暴露测试数据不完整，而不是 API 问题。
+- World book 安装的文件名 fallback 也应写回 payload `name`；否则无 name 的合法 world book 虽能生成可读文件名，导入后的 JSON 本体仍缺显示名称。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

@@ -1835,6 +1835,13 @@
 - 已提交 `d911d5924 Return 404 for unknown wallet handles` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28773505441` 在 runtime smoke 的 `/api/wallet/ledger creator earnings` 失败，因为 demo creator `smoke-creator` 有 marketplace 资产和 earnings ledger，但没有临时账号记录，新的 wallet handle 404 正确暴露了 smoke fixture 不完整。
 - `scripts/smoke-marketplace-runtime.mjs` 现在在临时 data root 的 `_storage` 中 seed `default-user` 和 `smoke-creator` 账号，再启动 server；已通过 `npm run test:marketplace:smoke` 和 `npm run test:marketplace:syntax`。
+- 已提交 `cc4c9622d Seed smoke creator wallet account` 并推送到 `fork/codex/marketplace-wallet-mvp`，用于恢复 Stage 157 的 runtime smoke。
+
+## 2026-07-06 阶段 158：World book 安装写回 fallback name
+- 开始处理 world book 安装细节缺口：合法 world book payload 只要求 `entries`，旧安装逻辑会用资产标题生成文件名，但落盘 JSON 仍可能没有 `name`。
+- `src/endpoints/market.js` 的 `installWorldBookAsset()` 现在在计算 fallback 安装名后写回 `world.name`，保持文件名和 JSON 显示名称一致。
+- `tests/market-wallet.test.js` 的 world book 安装用例改为上传无 `name` 的 payload，并读取落盘 JSON 断言 `name` 为资产标题 `Market World`。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "installs approved world books" --runInBand`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

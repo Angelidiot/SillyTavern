@@ -603,6 +603,7 @@ function installWorldBookAsset(request, asset) {
     }
 
     const name = getInstallName(world.name, asset.title);
+    world.name = world.name || name;
     const fileName = getUniqueFileName(request.user.directories.worlds, name, '.json');
     if (!fileName) {
         throw new Error('Could not create a unique world book file name');

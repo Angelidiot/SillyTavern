@@ -516,7 +516,6 @@ describe('market and wallet MVP endpoints', () => {
             type: 'world_book',
             title: 'Market World',
             normalized_payload: {
-                name: 'Market World',
                 entries: {},
             },
         });
@@ -539,7 +538,10 @@ describe('market and wallet MVP endpoints', () => {
         });
         expect(installResult.status).toBe(201);
         expect(installResult.body.installed.type).toBe('world_book');
-        expect(fs.existsSync(path.join(dataRoot, 'bob', 'worlds', `${installResult.body.installed.name}.json`))).toBe(true);
+        const installedWorldPath = path.join(dataRoot, 'bob', 'worlds', `${installResult.body.installed.name}.json`);
+        expect(fs.existsSync(installedWorldPath)).toBe(true);
+        const installedWorld = JSON.parse(fs.readFileSync(installedWorldPath, 'utf8'));
+        expect(installedWorld.name).toBe('Market World');
     });
 
     test('keeps submitted creator assets hidden from non-owners until admin approval', async () => {
