@@ -273,6 +273,10 @@ function seedDemoMarketplace(options) {
     }
 
     const dataRoot = path.resolve(options.dataRoot);
+    if (fs.existsSync(dataRoot) && !fs.statSync(dataRoot).isDirectory()) {
+        throw new Error(`Data root is not a directory: ${dataRoot}`);
+    }
+
     const storePath = path.join(dataRoot, MARKET_STORE_FILE);
     const timestamp = new Date().toISOString();
     const store = readStore(storePath);

@@ -65,6 +65,16 @@ describe('marketplace demo seed script', () => {
         expect(() => runSeed(dataRoot, ['--creator='])).toThrow('Missing value for --creator');
     });
 
+    test('rejects a file data root with a clear error', () => {
+        const dataRoot = makeTempRoot();
+        const fileRoot = path.join(dataRoot, 'not-a-directory');
+        fs.writeFileSync(fileRoot, 'x', 'utf8');
+
+        expect(() => runSeed(fileRoot)).toThrow('Data root is not a directory:');
+        expect(fs.readFileSync(fileRoot, 'utf8')).toBe('x');
+        expect(fs.existsSync(path.join(fileRoot, 'market-assets.json'))).toBe(false);
+    });
+
     test('creates listed demo assets and preserves wallet storage isolation', () => {
         const dataRoot = makeTempRoot();
 

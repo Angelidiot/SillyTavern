@@ -1779,6 +1779,13 @@
 - marketplace-wallet 管理员赠币表单新增 `maxlength="200"` 和本地超长 warning，并将扩展/PWA 预缓存版本同步到 `0.2.29`。
 - README、设计文档、API reference 生成脚本和 checked-in API reference 已同步记录 admin grant reason 200 字符边界。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js marketplace-api-reference.test.js pwa.test.js`、`npm --prefix tests run test:unit -- market-wallet.test.js -t "enforces wallet read scope and validates admin grant input" --runInBand`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `26ea7928d Validate wallet grant reasons` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28771332053` 正在执行 Marketplace Wallet Checks。
+
+## 2026-07-06 阶段 151：Demo seed 拒绝文件 dataRoot
+- 开始处理 demo seed 防呆缺口：`--dataRoot` 指向普通文件时此前会到 `fs.mkdirSync()` 抛 Node 原生 `EEXIST`，没有明确说明 dataRoot 必须是目录。
+- `scripts/seed-marketplace-demo.mjs` 现在在 seed 入口检查已存在路径，普通文件会抛出 `Data root is not a directory:`；不存在的 dataRoot 仍保持自动创建，方便 README 开箱命令。
+- `tests/marketplace-demo-seed.test.js` 新增 `rejects a file data root with a clear error`，确认普通文件内容不被改写且不会创建 `market-assets.json`。
+- 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-demo-seed.test.js`、`npm run test:marketplace` 和 `git diff --check`。
 
 ## 五问重启检查
 | 问题 | 答案 |

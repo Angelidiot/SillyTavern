@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 150
+阶段 151
 
 ## 各阶段
 
@@ -1424,6 +1424,15 @@
 - [x] 前端 grant 表单增加 `maxlength` 和本地 warning，并同步 marketplace-wallet/PWA 版本
 - [x] 更新 API reference、README、设计文档和发现记录
 - [x] 运行目标后端/UI/API/PWA 验证和 marketplace 基础验证
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 151：Demo seed 拒绝文件 dataRoot
+- [x] 确认 `--dataRoot` 指向普通文件时会落到 Node 原生 mkdir `EEXIST`，错误不够明确
+- [x] 在 demo seed 入口新增“已存在但不是目录”的显式错误
+- [x] 新增 Jest 回归，确认普通文件 dataRoot 抛出清晰错误且不会写 store
+- [x] 运行目标 seed 测试、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress
