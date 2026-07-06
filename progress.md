@@ -1687,6 +1687,8 @@
 - `.github/workflows/marketplace-wallet-checks.yml` 已在 pull_request 和 push path filters 中加入同一组启动入口，避免启动链变更绕过 Marketplace Wallet Checks。
 - `tests/marketplace-scripts.test.js` 新增契约，锁定这些路径在 workflow 中出现两次，并且出现在 syntax gate 文件清单中。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `8e34fbce3 Cover marketplace startup entries` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28764972000` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
