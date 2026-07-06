@@ -1806,6 +1806,8 @@
 - `tests/marketplace-scripts.test.js` 新增脚本契约，确认 `tests/marketplace-wallet.e2e.js` 从 marketplace-wallet manifest 读取版本，且 PWA shell asset paths 通过 `MARKETPLACE_WALLET_EXTENSION_VERSION` 拼接。
 - 按只读 agent 建议补充负向 regex，禁止 browser E2E 源码里出现 marketplace-wallet `index`、`filters` 或 `style.css` 的硬编码 `?v=0.2.x` URL。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `8901dcfc4 Guard PWA E2E asset version sync` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28772596290` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

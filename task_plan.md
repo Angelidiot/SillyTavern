@@ -1459,9 +1459,9 @@
 - [x] 新增脚本契约，禁止 browser E2E 硬编码 marketplace-wallet `0.2.x` 版本
 - [x] 契约确认 browser E2E 从 marketplace-wallet manifest 读取版本并拼接 shell asset paths
 - [x] 运行目标脚本契约、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
