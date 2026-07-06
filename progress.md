@@ -1875,12 +1875,16 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `hides the browser install action in standalone display mode`，在 page init 阶段 mock standalone media query 为 true。
 - 用例在 `/login.html` 派发 `beforeinstallprompt` 后断言 `#pwa_install_prompt` 不出现，并确认 mock `prompt()` 未被调用。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "standalone display mode" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `e933c4119 Cover PWA standalone install suppression` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28774332885` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 163：PWA 离线登录页缓存导航
 - 开始处理 Aquinas 子 agent 建议的离线登录页缺口：已有 PWA E2E 证明 `/login.html` 在 shell cache 中，也验证离线 query 回根壳，但未覆盖离线直接打开已缓存登录页。
 - `tests/marketplace-wallet.e2e.js` 新增 `serves the cached login shell while offline`，在 service worker 激活并控制页面后确认 `/login.html` 已缓存。
 - 用例断网导航到 `/login.html`，断言 `#logoBlock` 渲染 `Welcome to SillyTavern` 且页面标题为 SillyTavern。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "serves the cached login shell while offline" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `3a029221b Cover offline cached login shell` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28774547874` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 164：拒绝 partial fixed-price purchase ledger
 - 开始处理 Carver 子 agent 指出的账务一致性缺口：`purchaseWithWallet()` 旧逻辑只要看到同 `purchase_id` 的任意 ledger entry 就返回 already settled，可能把只有买家扣款、没有创作者收益的 partial ledger 当成成功。
@@ -1888,6 +1892,14 @@
 - `tests/market-wallet.test.js` 新增 `rejects partial fixed-price purchase ledger before creating entitlement`，人工写入同 purchase id 的 buyer debit 后重试购买。
 - 用例确认 market purchase 返回 409，不创建 entitlement、不增加 `sales_count`，也不会补写错误的 creator earning。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js --runInBand -t "rejects partial fixed-price purchase ledger before creating entitlement"`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
+- 已提交 `4b9475440 Reject incomplete purchase ledgers` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28774686203` 已触发并处于执行中。
+
+## 2026-07-06 阶段 165：固定价 checkout 失败恢复 E2E
+- 开始处理 Aquinas 子 agent 建议的 fixed-price purchase 失败恢复缺口：已有自动 install 失败覆盖，但 purchase POST 本身失败时是否保持可重试缺少浏览器回归。
+- `tests/marketplace-wallet.e2e.js` 的 `mockMarketplaceApis()` 新增 `failPurchaseOnceFor`，在 purchase route 执行扣币、entitlement、Library 状态变更前返回一次 `503 Checkout temporarily unavailable`。
+- 新增 `keeps a fixed-price purchase retryable when checkout fails`，断言第一次 checkout 失败后 wallet total/buckets 不变、Library 不出现资产、install 未触发、Buy & Install 按钮恢复可点。
+- 同一用例二次点击确认 purchase/install 成功，余额变为 `50`，资产进入 Library 并显示 `Purchased` 和 `1 installs`。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a fixed-price purchase retryable when checkout fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

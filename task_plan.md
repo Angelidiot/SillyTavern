@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 164
+阶段 165
 
 ## 各阶段
 
@@ -1535,8 +1535,8 @@
 - [x] 断言安装提示不会出现，原生 prompt 不会被调用
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 163：PWA 离线登录页缓存导航
 - [x] 确认 PWA E2E 已检查 `/login.html` 在 shell cache 中，但未覆盖离线直接导航到登录页
@@ -1544,8 +1544,8 @@
 - [x] 断言 cached login shell 可渲染 SillyTavern 标题和欢迎文案
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 164：拒绝 partial fixed-price purchase ledger
 - [x] 确认 `purchaseWithWallet()` 旧逻辑把任意同 `purchase_id` ledger 当作已结算
@@ -1553,6 +1553,16 @@
 - [x] partial ledger 返回 409 `Incomplete purchase ledger`
 - [x] 补充后端契约测试，确认不创建 entitlement、不增加 sales、不补错 creator earning
 - [x] 运行目标后端测试、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 165：固定价 checkout 失败恢复 E2E
+- [x] 确认浏览器 E2E mock 只能覆盖自动 install 失败，缺少 purchase POST 本身失败路径
+- [x] mock purchase route 新增一次性 checkout 失败开关，并保证失败发生在扣币、授权和入库状态变更前
+- [x] 新增浏览器 E2E，断言 checkout 失败后余额不变、Library 不新增、Install 不触发且按钮恢复可点
+- [x] 同一用例二次点击成功购买并安装，覆盖 retryable 用户路径
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress
