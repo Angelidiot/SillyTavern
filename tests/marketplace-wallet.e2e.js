@@ -1016,6 +1016,49 @@ test.describe('marketplace wallet extension', () => {
         await expect(page.locator('[data-marketplace-wallet-report-action="resolve"]')).toHaveCount(0);
     });
 
+    test('inspects a submitted asset from the review queue', async ({ page }) => {
+        const submittedAsset = makeSubmittedAsset({
+            id: 'inspect-review-world',
+            type: 'world_book',
+            title: 'Inspect Review World',
+            summary: 'Inspect before approval.',
+            language: 'ko',
+            content_rating: 'teen',
+            price_type: 'free',
+            price_coins: 0,
+            normalized_payload: {
+                name: 'Inspect Review World',
+                entries: {
+                    lore: {
+                        key: ['inspect'],
+                        content: 'Review queue payload lore.',
+                    },
+                },
+            },
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [submittedAsset],
+        });
+
+        await loadSillyTavern(page);
+
+        const reviewItem = page
+            .locator('#marketplace_wallet_review_queue .marketplace-wallet-review-item', { hasText: 'Inspect Review World' });
+        await expect(reviewItem).toContainText('Inspect before approval.');
+
+        await reviewItem.locator('[data-marketplace-wallet-action="inspect"]').click();
+
+        await expect.poll(() => apiCalls.details).toEqual(['inspect-review-world']);
+        const detailsPopup = page.getByRole('dialog').filter({ hasText: 'Inspect Review World' });
+        await expect(detailsPopup).toBeVisible();
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('Status');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('submitted');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('ko');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-meta')).toContainText('Payload');
+        await expect(detailsPopup.locator('.marketplace-wallet-preview-payload')).toContainText('Review queue payload lore.');
+        await detailsPopup.locator('.popup-button-ok').click();
+    });
+
     test('keeps overlong rejection reasons local without truncating submissions', async ({ page }) => {
         const apiCalls = await mockMarketplaceApis(page);
 

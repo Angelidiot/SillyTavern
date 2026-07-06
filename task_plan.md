@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 147
+阶段 148
 
 ## 各阶段
 
@@ -1398,6 +1398,15 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 148：Review Queue Inspect 浏览器闭环
+- [x] 确认 Review Queue 已渲染 Inspect 按钮且 UI contract 覆盖字符串，但缺少真实浏览器点击详情路径
+- [x] 新增 submitted world_book 审核资产，带 payload 和审核元数据
+- [x] 新增浏览器用例，从 Review Queue 点击 Inspect，断言 detail API 调用、详情弹窗、状态/语言和 payload 预览
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
