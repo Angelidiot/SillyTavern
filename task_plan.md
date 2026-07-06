@@ -1414,9 +1414,9 @@
 - [x] 断言 create POST body 包含 `price_type: fixed_price` 和 `price_coins`，且未提交审核
 - [x] 断言 Marketplace 卡片和 Creator Center 都显示付费 coin 标签，表单保存后重置为 free
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

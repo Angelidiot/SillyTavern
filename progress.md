@@ -1770,6 +1770,8 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `saves a fixed-price upload draft with coin pricing`，填写 world_book 上传表单、选择 fixed_price、设置 75 coins 并点击 Save Draft。
 - 用例断言 create POST body 带 `price_type: fixed_price` 和 `price_coins: 75`、没有 submit 调用、Marketplace 卡片和 Creator Center 都显示 `75 coins`，保存后上传 price controls 回到 free/0。
 - 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "fixed-price upload" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `0fd1899e0 Cover fixed price upload draft` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28770714198` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
