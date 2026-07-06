@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 168
+阶段 169
 
 ## 各阶段
 
@@ -1592,6 +1592,16 @@
 - [x] marketplace E2E mock 新增一次性 grant 失败开关，失败发生在余额和 ledger 变更前
 - [x] 新增浏览器 E2E，断言第一次 grant 503 后按钮恢复、钱包 total/bonus 不变、ledger 不出现 reason
 - [x] 同一用例二次点击成功，钱包 total/bonus 和 Wallet Activity 正确刷新
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 169：admin approve 失败恢复 E2E
+- [x] 使用 Kuhn 子 agent 建议，确认 Review Queue approve POST 失败后缺少真实浏览器重试覆盖
+- [x] marketplace E2E mock 新增 `failApproveOnceFor`，失败发生在资产状态变更前
+- [x] 新增浏览器 E2E，断言第一次 approve 503 后 Review Queue 仍保留资产、Approve 按钮恢复
+- [x] 同一用例二次点击成功，Review Queue 清空且 Marketplace 卡片变为 listed
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过

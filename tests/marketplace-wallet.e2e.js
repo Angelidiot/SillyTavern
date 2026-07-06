@@ -135,6 +135,7 @@ async function mockMarketplaceApis(page, {
     reports = [],
     library = [],
     failAssetListOnce = false,
+    failApproveOnceFor = '',
     failCreatorOnce = false,
     failLedgerOnce = false,
     failLibraryOnce = false,
@@ -150,6 +151,7 @@ async function mockMarketplaceApis(page, {
     let wallet = makeWallet();
     let ledger = [];
     let shouldFailAssetList = failAssetListOnce;
+    let failedApprove = false;
     let shouldFailCreator = failCreatorOnce;
     let shouldFailLedger = failLedgerOnce;
     let shouldFailLibrary = failLibraryOnce;
@@ -460,6 +462,15 @@ async function mockMarketplaceApis(page, {
     await page.route('**/api/market/assets/*/approve', route => {
         const assetId = route.request().url().split('/').at(-2);
         apiCalls.approve.push(assetId);
+        if (failApproveOnceFor === assetId && !failedApprove) {
+            failedApprove = true;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Review approval temporarily unavailable' }),
+            });
+            return;
+        }
         assets = assets.map(asset => asset.id === assetId
             ? { ...asset, status: 'listed', listed_at: '2026-06-26T12:00:00.000Z' }
             : asset);
@@ -1109,6 +1120,44 @@ test.describe('marketplace wallet extension', () => {
             bucket: 'paid',
             reason: 'Admin grant',
         }]);
+    });
+
+    test('keeps an admin approval retryable when the approval request fails', async ({ page }) => {
+        const submittedAsset = makeSubmittedAsset({
+            id: 'approve-retry-character',
+            title: 'Approve Retry Character',
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [submittedAsset],
+            failApproveOnceFor: 'approve-retry-character',
+        });
+
+        await loadSillyTavern(page);
+
+        const reviewQueue = page.locator('#marketplace_wallet_review_queue');
+        const reviewItem = reviewQueue.locator('.marketplace-wallet-review-item', { hasText: 'Approve Retry Character' });
+        const approveButton = reviewItem.locator('[data-marketplace-wallet-action="approve"]');
+
+        await expect(reviewItem).toContainText('Awaiting review.');
+        await expect(approveButton).toHaveText(/Approve/);
+        await approveButton.click();
+
+        await expect.poll(() => apiCalls.approve).toEqual(['approve-retry-character']);
+        await expect(reviewItem).toContainText('Awaiting review.');
+        await expect(reviewQueue).not.toContainText('No assets awaiting review.');
+        await expect(approveButton).toBeEnabled();
+        await expect(approveButton).toHaveText(/Approve/);
+
+        await approveButton.click();
+
+        await expect.poll(() => apiCalls.approve).toEqual([
+            'approve-retry-character',
+            'approve-retry-character',
+        ]);
+        await expect(reviewQueue).toContainText('No assets awaiting review.');
+        const listedCard = page.locator('#marketplace_wallet_assets article', { hasText: 'Approve Retry Character' });
+        await expect(listedCard).toContainText('listed');
+        await expect(listedCard.locator('[data-marketplace-wallet-action="approve"]')).toHaveCount(0);
     });
 
     test('keeps an admin grant retryable when the wallet grant request fails', async ({ page }) => {

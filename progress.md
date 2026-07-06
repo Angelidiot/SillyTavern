@@ -1927,6 +1927,14 @@
 - 新增 `keeps an admin grant retryable when the wallet grant request fails`，第一次给 `default-user` 发 bonus 20 coins 失败后断言 submit 按钮恢复 enabled、wallet total 仍 `175`、bonus 仍 `100`、Wallet Activity 不出现 `Retry grant`。
 - 同一用例二次点击成功后断言 wallet total 变为 `195`、bonus 变为 `120`，Wallet Activity 显示 `Retry grant` 和 `+20`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin grant retryable when the wallet grant request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `cb8f2d19d Cover admin grant retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28776177866` 已触发并处于执行中。
+
+## 2026-07-06 阶段 169：admin approve 失败恢复 E2E
+- 开始处理 Kuhn 子 agent 建议的 Review Queue approve POST 失败恢复缺口：已有 approve 成功路径，但没有证明审核服务临时失败时队列资产仍保留且按钮可重试。
+- `tests/marketplace-wallet.e2e.js` 的 `mockMarketplaceApis()` 新增 `failApproveOnceFor`，在 approve route 修改 asset status/listed_at 前返回一次 `503 Review approval temporarily unavailable`。
+- 新增 `keeps an admin approval retryable when the approval request fails`，第一次点击 Approve 失败后断言 Review Queue 仍显示 `Approve Retry Character`、不是空队列、Approve 按钮恢复 enabled。
+- 同一用例二次点击成功后断言 approve 调用两次、Review Queue 显示空状态，Marketplace 卡片变为 `listed` 且不再显示 Approve 操作。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin approval retryable when the approval request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |
