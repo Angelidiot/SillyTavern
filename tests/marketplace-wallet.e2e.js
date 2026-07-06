@@ -129,8 +129,10 @@ async function mockMarketplaceApis(page, {
     failLibraryOnce = false,
     failReportsOnce = false,
     failInstallOnceFor = '',
+    failResolveOnceFor = '',
     failSubmitOnceFor = '',
     holdNextInstallFor = '',
+    holdNextResolveFor = '',
 } = {}) {
     let wallet = makeWallet();
     let ledger = [];
@@ -140,9 +142,12 @@ async function mockMarketplaceApis(page, {
     let shouldFailLibrary = failLibraryOnce;
     let shouldFailReports = failReportsOnce;
     let failedInstall = false;
+    let failedResolve = false;
     let failedSubmit = false;
     let didHoldInstall = false;
+    let didHoldResolve = false;
     let heldInstall = null;
+    let heldResolve = null;
     const apiCalls = {
         approve: [],
         creates: [],
@@ -159,6 +164,13 @@ async function mockMarketplaceApis(page, {
             if (heldInstall) {
                 const release = heldInstall;
                 heldInstall = null;
+                await release();
+            }
+        },
+        resolveHeldReport: async () => {
+            if (heldResolve) {
+                const release = heldResolve;
+                heldResolve = null;
                 await release();
             }
         },
@@ -645,12 +657,29 @@ async function mockMarketplaceApis(page, {
         const reportId = route.request().url().split('/').at(-2);
         const payload = JSON.parse(route.request().postData() || '{}');
         apiCalls.resolveReports.push({ reportId, payload });
-        reports = reports.filter(report => report.id !== reportId);
-        route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ report: { id: reportId, status: 'resolved', resolution_note: payload.note || '' } }),
-        });
+        const fulfillResolve = async () => {
+            if (failResolveOnceFor === reportId && !failedResolve) {
+                failedResolve = true;
+                await route.fulfill({
+                    status: 503,
+                    contentType: 'application/json',
+                    body: JSON.stringify({ error: 'Report resolution temporarily unavailable' }),
+                });
+                return;
+            }
+            reports = reports.filter(report => report.id !== reportId);
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ report: { id: reportId, status: 'resolved', resolution_note: payload.note || '' } }),
+            });
+        };
+        if (holdNextResolveFor === reportId && !didHoldResolve && !heldResolve) {
+            didHoldResolve = true;
+            heldResolve = fulfillResolve;
+            return;
+        }
+        void fulfillResolve();
     });
 
     await page.route('**/api/wallet/grants/admin', async route => {
@@ -1055,6 +1084,68 @@ test.describe('marketplace wallet extension', () => {
                 note: 'Reviewed and cleared by moderation.',
             },
         }]);
+        await expect(reportQueue).toContainText('No reports queued.');
+    });
+
+    test('keeps a report queued and retryable when resolve fails', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [makeListedAsset()],
+            reports: [makeOpenReport({ id: 'report-flaky-world' })],
+            failResolveOnceFor: 'report-flaky-world',
+            holdNextResolveFor: 'report-flaky-world',
+        });
+
+        await loadSillyTavern(page);
+
+        const reportQueue = page.locator('#marketplace_wallet_report_queue');
+        const reportItem = reportQueue.locator('.marketplace-wallet-report-item', { hasText: 'Listed World' });
+        const resolveButton = reportItem.locator('[data-marketplace-wallet-report-action="resolve"]');
+
+        await expect(reportItem).toContainText('unsafe_prompt');
+        await expect(resolveButton).toHaveText(/Resolve/);
+
+        await resolveButton.click();
+        const firstNotePopup = page.getByRole('dialog').filter({ hasText: 'Resolution note (optional):' });
+        await expect(firstNotePopup).toBeVisible();
+        await firstNotePopup.locator('.popup-input').fill('First moderation attempt.');
+        await firstNotePopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.resolveReports).toEqual([{
+            reportId: 'report-flaky-world',
+            payload: {
+                note: 'First moderation attempt.',
+            },
+        }]);
+        await expect(resolveButton).toBeDisabled();
+        await expect(resolveButton).toHaveText(/Resolving/);
+
+        await apiCalls.resolveHeldReport();
+
+        await expect(reportItem).toContainText('unsafe_prompt');
+        await expect(reportQueue).not.toContainText('No reports queued.');
+        await expect(resolveButton).toBeEnabled();
+        await expect(resolveButton).toHaveText(/Resolve/);
+
+        await resolveButton.click();
+        const retryNotePopup = page.getByRole('dialog').filter({ hasText: 'Resolution note (optional):' });
+        await expect(retryNotePopup).toBeVisible();
+        await retryNotePopup.locator('.popup-input').fill('Resolved after retry.');
+        await retryNotePopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.resolveReports).toEqual([
+            {
+                reportId: 'report-flaky-world',
+                payload: {
+                    note: 'First moderation attempt.',
+                },
+            },
+            {
+                reportId: 'report-flaky-world',
+                payload: {
+                    note: 'Resolved after retry.',
+                },
+            },
+        ]);
         await expect(reportQueue).toContainText('No reports queued.');
     });
 

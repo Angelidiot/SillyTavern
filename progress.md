@@ -1733,6 +1733,12 @@
 - 已提交 `66eb19ab5 Discover README marketplace scripts` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28766788258` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 145：Report resolve 失败恢复 E2E
+- 开始处理 Report Queue resolve 失败恢复缺口：已有 E2E 覆盖报告队列加载失败 retry 和 resolve 成功路径，但没有证明 resolve POST 失败时报告仍留在队列且按钮恢复可重试。
+- `tests/marketplace-wallet.e2e.js` 的 mock API 新增 `failResolveOnceFor` 和 `holdNextResolveFor`，可模拟第一次 resolve 请求挂起后返回 503。
+- 新增 `keeps a report queued and retryable when resolve fails`，覆盖 Resolve 按钮进入 `Resolving` disabled 状态、失败后报告仍显示、按钮恢复、第二次带新 note 重试成功并清空队列。
+- 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a report queued and retryable" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
