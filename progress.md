@@ -1724,6 +1724,13 @@
 - 已提交 `eea0d0c36 Require API route notes` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28766448423` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 144：README runnable scripts 动态覆盖
+- 开始处理 README runnable scripts 覆盖漂移：`tests/marketplace-scripts.test.js` 会校验 README Useful Scripts，但之前用硬编码清单，新增 marketplace/PWA/hosted 脚本时测试本身也要手动维护。
+- 新增 `getHostedReadmeScriptNames(scripts)`，从 `package.json` 动态发现 `marketplace:*`、`test:marketplace*`、`test:pwa*`、`test:hosted:*` 和 `start:no-csrf`。
+- `documents hosted marketplace and PWA scripts in README` 现在对每个动态发现到的托管市场/PWA 脚本都要求 README 有可复制的 `npm run ...` 命令，同时保留 API reference 固定时间戳和 syntax gate 文案断言。
+- 当前 README 已覆盖全部动态发现脚本，无需修改 README 正文。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

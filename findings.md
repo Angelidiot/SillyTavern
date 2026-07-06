@@ -243,6 +243,7 @@
 - Report resolve note 不应只停留在 API；管理员前端需要可选备注输入、1000 字本地边界和真实 POST body，才能形成可审计的举报处理说明。
 - Snapshot export 必须拒绝不存在的 dataRoot；目录存在但 store/storage 未初始化可以导出空快照，路径拼错则应失败，避免备份/迁移演练误判成功。
 - API reference route 列表和 Notes 必须一一对应；新增 market/wallet route 时，测试应强制补权限、隐私、请求边界或行为说明，而不是只生成裸路由清单。
+- README runnable scripts 覆盖应从 `package.json` 动态发现 marketplace/PWA/hosted 脚本；新增可运行脚本时测试应强制同步 README，而不是依赖维护者手写测试清单。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

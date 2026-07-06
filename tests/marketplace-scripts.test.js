@@ -30,6 +30,16 @@ function getReadmeScriptSection(readme) {
     return readme.slice(start, end);
 }
 
+function getHostedReadmeScriptNames(scripts) {
+    return Object.keys(scripts)
+        .filter(scriptName => scriptName === 'start:no-csrf'
+            || scriptName.startsWith('marketplace:')
+            || scriptName.startsWith('test:hosted:')
+            || scriptName.startsWith('test:marketplace')
+            || scriptName.startsWith('test:pwa'))
+        .sort();
+}
+
 function getWorkflowStep(workflow, stepName) {
     const startMarker = `- name: ${stepName}`;
     const start = workflow.indexOf(startMarker);
@@ -141,25 +151,13 @@ describe('marketplace runnable scripts', () => {
     test('documents hosted marketplace and PWA scripts in README', () => {
         const { scripts } = readRootPackage();
         const readmeScriptSection = getReadmeScriptSection(readReadme());
-        const documentedScripts = [
-            'start:no-csrf',
-            'marketplace:seed:demo',
-            'marketplace:export:snapshot',
-            'marketplace:export:api',
-            'test:hosted:docker',
-            'test:marketplace:syntax',
-            'test:marketplace',
-            'test:marketplace:smoke',
-            'test:marketplace:e2e',
-            'test:marketplace:e2e:server',
-            'test:marketplace:all',
-            'test:marketplace:ci',
-            'test:pwa',
-            'test:pwa:e2e',
-        ];
+        const documentedScripts = getHostedReadmeScriptNames(scripts);
+
+        expect(documentedScripts).toContain('marketplace:export:api');
+        expect(documentedScripts).toContain('test:marketplace:ci');
+        expect(documentedScripts).toContain('test:pwa:e2e');
 
         for (const scriptName of documentedScripts) {
-            expect(scripts).toHaveProperty(scriptName);
             expect(readmeScriptSection).toMatch(new RegExp(`npm run ${escapeRegex(scriptName)}(?:\\s|$)`));
         }
 

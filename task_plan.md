@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 143
+阶段 144
 
 ## 各阶段
 
@@ -1362,6 +1362,15 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 144：README runnable scripts 动态覆盖
+- [x] 确认 README hosted marketplace/PWA 脚本覆盖测试仍使用硬编码清单
+- [x] 从 `package.json` 动态发现 `marketplace:*`、`test:marketplace*`、`test:pwa*`、`test:hosted:*` 和 `start:no-csrf` 脚本
+- [x] 要求 README Useful Scripts 对每个发现到的托管市场/PWA 脚本提供可复制命令
+- [x] 运行目标脚本测试和 marketplace 基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
