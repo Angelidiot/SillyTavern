@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 160
+阶段 161
 
 ## 各阶段
 
@@ -1490,8 +1490,8 @@
 - [x] 运行目标后端/API 文档测试、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
 - [x] 修复 runtime smoke demo creator 账号 seed
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 158：World book 安装写回 fallback name
 - [x] 确认 world book 安装会用资产标题作为文件名 fallback，但落盘 JSON payload 仍可能缺少 `name`
@@ -1515,6 +1515,15 @@
 - [x] 确认 PWA install prompt 已覆盖安装按钮和 `appinstalled`，但 dismiss 按钮缺少浏览器行为测试
 - [x] 新增浏览器 E2E，模拟 `beforeinstallprompt` 后点击 `Dismiss install prompt`
 - [x] 断言 prompt 从 DOM 移除且没有调用原生 install prompt
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 161：市场 access/sort DOM 接线 E2E
+- [x] 确认筛选排序纯函数已有测试，但真实 DOM 下 access 和 sort 下拉接线缺少浏览器覆盖
+- [x] 新增浏览器 E2E，覆盖 available/library/mine access filter
+- [x] 在 available 结果里切换 `price_desc` 并断言卡片顺序
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过

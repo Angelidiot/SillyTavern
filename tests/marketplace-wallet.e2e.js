@@ -1656,6 +1656,65 @@ test.describe('marketplace wallet extension', () => {
         await expect(clearFilters).toBeHidden();
     });
 
+    test('applies marketplace access filters and sort controls in the DOM', async ({ page }) => {
+        await mockMarketplaceApis(page, {
+            assets: [
+                makeListedAsset({
+                    id: 'available-cheap-world',
+                    title: 'Available Cheap World',
+                    type: 'world_book',
+                    price_type: 'fixed_price',
+                    price_coins: 15,
+                }),
+                makeListedAsset({
+                    id: 'available-premium-world',
+                    title: 'Available Premium World',
+                    type: 'world_book',
+                    price_type: 'fixed_price',
+                    price_coins: 90,
+                }),
+                makeListedAsset({
+                    id: 'library-mid-world',
+                    title: 'Library Mid World',
+                    type: 'world_book',
+                    price_type: 'fixed_price',
+                    price_coins: 40,
+                    entitled: true,
+                }),
+                makeListedAsset({
+                    id: 'mine-draft-world',
+                    title: 'Mine Draft World',
+                    status: 'draft',
+                    owned: true,
+                    price_type: 'free',
+                    price_coins: 0,
+                    listed_at: '',
+                    updated_at: '2026-06-26T13:00:00.000Z',
+                }),
+            ],
+        });
+
+        await loadSillyTavern(page);
+
+        const cards = page.locator('#marketplace_wallet_assets article');
+        await expect(cards).toHaveCount(4);
+
+        await page.locator('#marketplace_wallet_access_filter').selectOption('available');
+        await expect(cards).toHaveCount(2);
+        await expect(cards).toContainText(['Available Cheap World', 'Available Premium World']);
+
+        await page.locator('#marketplace_wallet_sort').selectOption('price_desc');
+        await expect(cards).toContainText(['Available Premium World', 'Available Cheap World']);
+
+        await page.locator('#marketplace_wallet_access_filter').selectOption('library');
+        await expect(cards).toHaveCount(1);
+        await expect(cards).toContainText(['Library Mid World']);
+
+        await page.locator('#marketplace_wallet_access_filter').selectOption('mine');
+        await expect(cards).toHaveCount(1);
+        await expect(cards).toContainText(['Mine Draft World']);
+    });
+
     test('shows a retryable marketplace error when the asset list fails to load', async ({ page }) => {
         await mockMarketplaceApis(page, {
             assets: [

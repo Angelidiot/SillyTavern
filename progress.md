@@ -1836,6 +1836,7 @@
 - GitHub run `28773505441` 在 runtime smoke 的 `/api/wallet/ledger creator earnings` 失败，因为 demo creator `smoke-creator` 有 marketplace 资产和 earnings ledger，但没有临时账号记录，新的 wallet handle 404 正确暴露了 smoke fixture 不完整。
 - `scripts/smoke-marketplace-runtime.mjs` 现在在临时 data root 的 `_storage` 中 seed `default-user` 和 `smoke-creator` 账号，再启动 server；已通过 `npm run test:marketplace:smoke` 和 `npm run test:marketplace:syntax`。
 - 已提交 `cc4c9622d Seed smoke creator wallet account` 并推送到 `fork/codex/marketplace-wallet-mvp`，用于恢复 Stage 157 的 runtime smoke。
+- GitHub run `28773715810` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 158：World book 安装写回 fallback name
 - 开始处理 world book 安装细节缺口：合法 world book payload 只要求 `entries`，旧安装逻辑会用资产标题生成文件名，但落盘 JSON 仍可能没有 `name`。
@@ -1856,6 +1857,12 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `dismisses the browser install action`，在 `/login.html` 模拟 `beforeinstallprompt` 后点击 `aria-label="Dismiss install prompt"`。
 - 用例断言 `#pwa_install_prompt` 从 DOM 移除，且 mock 的 `prompt()` 没有被调用。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "dismisses the browser install action" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+
+## 2026-07-06 阶段 161：市场 access/sort DOM 接线 E2E
+- 开始处理前端只读 agent 建议的筛选排序 DOM 接线缺口：`filterAndSortAssets()` 已有纯函数测试，但浏览器中 access/sort select 的 change 事件和卡片顺序缺少覆盖。
+- `tests/marketplace-wallet.e2e.js` 新增 `applies marketplace access filters and sort controls in the DOM`，构造 available、library、mine 三类资产。
+- 用例依次断言 available 只显示未拥有/未授权 listed 资产、`price_desc` 下高价卡片在前、library 只显示已授权资产、mine 只显示当前用户资产。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "access filters and sort" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |
