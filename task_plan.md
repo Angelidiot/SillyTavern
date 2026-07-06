@@ -1309,9 +1309,9 @@
 - [x] 新增 E2E 覆盖管理员从 Review Queue 输入 reason 并 Reject submitted 资产
 - [x] 断言 Reject POST payload、Review Queue 清空、Creator Center 显示 rejected reason 和状态计数刷新
 - [x] 运行目标浏览器 E2E 与 marketplace 基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

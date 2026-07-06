@@ -1678,6 +1678,8 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `rejects a submitted asset from the review queue`，使用 owned submitted world_book 资产，模拟管理员输入驳回原因并点击 Reject。
 - 用例断言 `apiCalls.rejects` 收到 `{ assetId, payload.reason }`，Review Queue 变为 `No assets awaiting review.`，Creator Center 显示 `rejected: Needs clearer lore safety tags`，submitted/rejected 计数从 `1/0` 刷新为 `0/1`。
 - 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "rejects a submitted asset from the review queue" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `85db8ec6e Cover admin reject review flow` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28764628823` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
