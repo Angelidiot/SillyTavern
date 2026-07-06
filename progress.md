@@ -1792,6 +1792,12 @@
 - 开始处理 admin grant reason 的浏览器覆盖缺口：已有 UI contract 锁定 `maxlength`/warning 字符串，但没有真实浏览器证明超长 reason 不会发 POST。
 - `tests/marketplace-wallet.e2e.js` 新增 `blocks overlong admin grant reasons before posting`，断言 reason input `maxlength=200`，脚本注入 201 字符 reason 后点击 Grant 不会调用 `/api/wallet/grants/admin`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "overlong admin grant" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `d895c4563 Cover grant reason browser validation` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28771674420` 正在执行 Marketplace Wallet Checks。
+
+## 2026-07-06 阶段 153：PWA E2E 读取 manifest 版本
+- GitHub run `28771332053` 暴露 PWA 浏览器 E2E 漂移：service worker 已缓存 marketplace-wallet `0.2.29` 资源，但 `tests/marketplace-wallet.e2e.js` 仍检查硬编码 `0.2.28` 路径，导致缓存断言失败。
+- `tests/marketplace-wallet.e2e.js` 现在从 `public/scripts/extensions/marketplace-wallet/manifest.json` 动态读取版本，PWA shell cache 断言会跟随 manifest/service worker 版本。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "service worker shell cache" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:e2e:server -- --workers=1` 和 `git diff --check`。
 
 ## 五问重启检查
 | 问题 | 答案 |

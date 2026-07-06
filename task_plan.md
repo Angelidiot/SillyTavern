@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 152
+阶段 153
 
 ## 各阶段
 
@@ -1442,6 +1442,14 @@
 - [x] 新增浏览器用例，断言 reason input `maxlength=200`
 - [x] 用脚本注入 201 字符 reason 后点击 Grant，断言不会发起 grant POST
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 153：PWA E2E 读取 manifest 版本
+- [x] 调查 GitHub run `28771332053` 失败：PWA 浏览器 E2E 仍硬编码 marketplace-wallet `0.2.28` 预缓存路径
+- [x] 将 Playwright E2E 的 marketplace-wallet 版本改为从 manifest 读取
+- [x] 运行 PWA 目标浏览器 E2E、全量 browser E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress

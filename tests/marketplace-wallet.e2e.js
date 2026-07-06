@@ -1,7 +1,16 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { test, expect } from '@playwright/test';
 
+const testDirectory = path.dirname(fileURLToPath(import.meta.url));
+const rootDirectory = path.resolve(testDirectory, '..');
 const SHELL_CACHE_NAME = 'sillytavern-shell-v3';
-const MARKETPLACE_WALLET_EXTENSION_VERSION = '0.2.28';
+const MARKETPLACE_WALLET_EXTENSION_VERSION = JSON.parse(fs.readFileSync(
+    path.join(rootDirectory, 'public/scripts/extensions/marketplace-wallet/manifest.json'),
+    'utf8',
+)).version;
 const PWA_SHELL_PATHS = [
     '/',
     '/login.html',
