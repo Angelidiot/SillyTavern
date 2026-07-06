@@ -1652,6 +1652,8 @@
 - workflow 同步加入 marketplace-wallet 前端共享 helper：`public/script.js`、`public/scripts/extensions.js`、`public/scripts/popup.js`、`public/scripts/user.js`、`public/scripts/utils.js`。
 - `tests/marketplace-scripts.test.js` 新增 shared dependency path-filter 契约，锁定这些路径在 PR/push 两个 filter 中各出现一次。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `cfa59ef44 Trigger marketplace checks for shared dependencies` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28655694473` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
