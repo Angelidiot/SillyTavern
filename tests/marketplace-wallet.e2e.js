@@ -138,6 +138,7 @@ async function mockMarketplaceApis(page, {
     failCreatorOnce = false,
     failLedgerOnce = false,
     failLibraryOnce = false,
+    failGrantOnce = false,
     failReportsOnce = false,
     failInstallOnceFor = '',
     failPurchaseOnceFor = '',
@@ -152,6 +153,7 @@ async function mockMarketplaceApis(page, {
     let shouldFailCreator = failCreatorOnce;
     let shouldFailLedger = failLedgerOnce;
     let shouldFailLibrary = failLibraryOnce;
+    let shouldFailGrant = failGrantOnce;
     let shouldFailReports = failReportsOnce;
     let failedInstall = false;
     let failedPurchase = false;
@@ -721,6 +723,15 @@ async function mockMarketplaceApis(page, {
     await page.route('**/api/wallet/grants/admin', async route => {
         const payload = JSON.parse(route.request().postData() || '{}');
         apiCalls.grants.push(payload);
+        if (shouldFailGrant) {
+            shouldFailGrant = false;
+            route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Wallet grant temporarily unavailable' }),
+            });
+            return;
+        }
         if (payload.targetHandle === wallet.handle) {
             wallet = makeWallet({
                 balance: {
@@ -1098,6 +1109,56 @@ test.describe('marketplace wallet extension', () => {
             bucket: 'paid',
             reason: 'Admin grant',
         }]);
+    });
+
+    test('keeps an admin grant retryable when the wallet grant request fails', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page, {
+            failGrantOnce: true,
+        });
+
+        await loadSillyTavern(page);
+
+        const submitButton = page.locator('#marketplace_wallet_grant_submit');
+        await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
+        await expect(page.locator('[data-marketplace-wallet-bucket="bonus"]')).toHaveText('100');
+
+        await page.locator('#marketplace_wallet_grant_handle').fill('default-user');
+        await page.locator('#marketplace_wallet_grant_amount').fill('20');
+        await page.locator('#marketplace_wallet_grant_bucket').selectOption('bonus');
+        await page.locator('#marketplace_wallet_grant_reason').fill('Retry grant');
+        await submitButton.click();
+
+        await expect.poll(() => apiCalls.grants).toEqual([{
+            targetHandle: 'default-user',
+            amount: 20,
+            bucket: 'bonus',
+            reason: 'Retry grant',
+        }]);
+        await expect(submitButton).toBeEnabled();
+        await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
+        await expect(page.locator('[data-marketplace-wallet-bucket="bonus"]')).toHaveText('100');
+        await expect(page.locator('#marketplace_wallet_ledger_items')).not.toContainText('Retry grant');
+
+        await submitButton.click();
+
+        await expect.poll(() => apiCalls.grants).toEqual([
+            {
+                targetHandle: 'default-user',
+                amount: 20,
+                bucket: 'bonus',
+                reason: 'Retry grant',
+            },
+            {
+                targetHandle: 'default-user',
+                amount: 20,
+                bucket: 'bonus',
+                reason: 'Retry grant',
+            },
+        ]);
+        await expect(page.locator('#marketplace_wallet_total')).toHaveText('195');
+        await expect(page.locator('[data-marketplace-wallet-bucket="bonus"]')).toHaveText('120');
+        await expect(page.locator('#marketplace_wallet_ledger_items')).toContainText('Retry grant');
+        await expect(page.locator('#marketplace_wallet_ledger_items')).toContainText('+20');
     });
 
     test('blocks overlong admin grant reasons before posting', async ({ page }) => {

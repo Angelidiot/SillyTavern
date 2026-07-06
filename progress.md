@@ -1918,6 +1918,15 @@
 - 用例 seed `install_count: 1` 和旧 `last_install`，断言失败后按钮恢复 enabled/Install，仍显示 `1 installs` 与旧 `worlds/old-library-retry-install-world.json`，且不出现 `2 installs` 或新路径。
 - 同一用例二次点击成功后断言 `apiCalls.installs` 有两次调用，Library 行展示 `2 installs` 和新的 `worlds/library-retry-install-world.json`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a library reinstall retryable when install fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `2bde9d990 Cover library reinstall retry after install failure` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28775448638` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
+
+## 2026-07-06 阶段 168：admin grant 失败恢复 E2E
+- 开始处理 admin grant POST 失败恢复缺口：已有成功路径和超长 reason 本地拦截，但没有证明后端临时失败时按钮恢复、钱包不误变且可重试。
+- `tests/marketplace-wallet.e2e.js` 的 `mockMarketplaceApis()` 新增 `failGrantOnce`，在 grant route 修改 wallet/ledger 前返回一次 `503 Wallet grant temporarily unavailable`。
+- 新增 `keeps an admin grant retryable when the wallet grant request fails`，第一次给 `default-user` 发 bonus 20 coins 失败后断言 submit 按钮恢复 enabled、wallet total 仍 `175`、bonus 仍 `100`、Wallet Activity 不出现 `Retry grant`。
+- 同一用例二次点击成功后断言 wallet total 变为 `195`、bonus 变为 `120`，Wallet Activity 显示 `Retry grant` 和 `+20`。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin grant retryable when the wallet grant request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 167
+阶段 168
 
 ## 各阶段
 
@@ -1574,14 +1574,24 @@
 - [x] 补充后端路由级测试，mock store 写入失败后确认买家余额恢复、创作者收益不增加、sales/entitlement 不落盘，随后重试购买成功
 - [x] 运行目标后端测试、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 167：Library 重装失败恢复 E2E
 - [x] 使用 Erdos 子 agent 只读结论，确认现有 `failInstallOnceFor` mock 能覆盖手动 reinstall 失败
 - [x] 新增浏览器 E2E，seed 已安装 Library 资产和旧 `last_install`
 - [x] 断言第一次 install 失败后按钮恢复可点、安装次数仍为 1、旧 last installed 摘要保留，且不会显示成功路径
 - [x] 同一用例二次点击成功，安装次数变为 2 并更新 last installed path
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
+
+### 阶段 168：admin grant 失败恢复 E2E
+- [x] 确认 admin grant 成功和本地超长 reason 已有覆盖，但缺少 POST 失败后的按钮恢复与钱包不变回归
+- [x] marketplace E2E mock 新增一次性 grant 失败开关，失败发生在余额和 ledger 变更前
+- [x] 新增浏览器 E2E，断言第一次 grant 503 后按钮恢复、钱包 total/bonus 不变、ledger 不出现 reason
+- [x] 同一用例二次点击成功，钱包 total/bonus 和 Wallet Activity 正确刷新
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
