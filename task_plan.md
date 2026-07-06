@@ -1594,8 +1594,8 @@
 - [x] 同一用例二次点击成功，钱包 total/bonus 和 Wallet Activity 正确刷新
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 169：admin approve 失败恢复 E2E
 - [x] 使用 Kuhn 子 agent 建议，确认 Review Queue approve POST 失败后缺少真实浏览器重试覆盖
@@ -1604,8 +1604,8 @@
 - [x] 同一用例二次点击成功，Review Queue 清空且 Marketplace 卡片变为 listed
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 170：admin reject 失败恢复 E2E
 - [x] 使用 Kuhn 子 agent 建议，确认 Review Queue reject POST 失败后缺少真实浏览器重试覆盖
@@ -1614,8 +1614,8 @@
 - [x] 同一用例二次输入原因并成功 reject，队列清空且 Creator Center 显示最终驳回理由
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 171：admin delist 失败恢复 E2E
 - [x] 使用 Kuhn 子 agent 建议，确认 Delist POST 失败后缺少真实浏览器重试覆盖
@@ -1623,9 +1623,9 @@
 - [x] 新增浏览器 E2E，断言第一次 delist 503 后卡片仍是 listed、Delist 按钮恢复
 - [x] 同一用例二次确认成功后卡片变为 delisted 且 Delist 按钮消失
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

@@ -1927,7 +1927,8 @@
 - 新增 `keeps an admin grant retryable when the wallet grant request fails`，第一次给 `default-user` 发 bonus 20 coins 失败后断言 submit 按钮恢复 enabled、wallet total 仍 `175`、bonus 仍 `100`、Wallet Activity 不出现 `Retry grant`。
 - 同一用例二次点击成功后断言 wallet total 变为 `195`、bonus 变为 `120`，Wallet Activity 显示 `Retry grant` 和 `+20`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin grant retryable when the wallet grant request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
-- 已提交 `cb8f2d19d Cover admin grant retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28776177866` 已触发并处于执行中。
+- 已提交 `cb8f2d19d Cover admin grant retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28776177866` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 169：admin approve 失败恢复 E2E
 - 开始处理 Kuhn 子 agent 建议的 Review Queue approve POST 失败恢复缺口：已有 approve 成功路径，但没有证明审核服务临时失败时队列资产仍保留且按钮可重试。
@@ -1935,7 +1936,8 @@
 - 新增 `keeps an admin approval retryable when the approval request fails`，第一次点击 Approve 失败后断言 Review Queue 仍显示 `Approve Retry Character`、不是空队列、Approve 按钮恢复 enabled。
 - 同一用例二次点击成功后断言 approve 调用两次、Review Queue 显示空状态，Marketplace 卡片变为 `listed` 且不再显示 Approve 操作。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin approval retryable when the approval request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
-- 已提交 `83a20786b Cover admin approval retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28776302934` 已触发并处于执行中。
+- 已提交 `83a20786b Cover admin approval retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28776302934` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 170：admin reject 失败恢复 E2E
 - 开始处理 Kuhn 子 agent 建议的 Review Queue reject POST 失败恢复缺口：已有 reject 成功路径和超长 reason 本地拦截，但没有证明 reject POST 失败后队列、计数和按钮都保持可重试。
@@ -1943,7 +1945,8 @@
 - 新增 `keeps an admin rejection retryable when the rejection request fails`，第一次输入原因后断言 reject 调用发生但资产仍在 Review Queue，Reject 按钮恢复 enabled，Creator Center submitted/rejected 计数仍为 `1/0`，且不显示第一次失败原因。
 - 同一用例二次打开弹窗输入新原因并成功 reject 后，断言队列为空、Creator Center 显示最终 `rejected: Rejected after retry.`，submitted/rejected 计数变为 `0/1`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin rejection retryable when the rejection request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
-- 已提交 `836346d04 Cover admin rejection retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28776461216` 已触发并处于执行中。
+- 已提交 `836346d04 Cover admin rejection retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28776461216` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 171：admin delist 失败恢复 E2E
 - 开始处理 Kuhn 子 agent 建议的 Delist POST 失败恢复缺口：已有下架成功路径，但没有证明服务临时失败时 listed 状态和按钮仍可重试。
@@ -1951,6 +1954,9 @@
 - 新增 `keeps an admin delist retryable when the delist request fails`，第一次确认下架失败后断言卡片仍有 listed badge、没有 delisted 文案，Delist 按钮恢复 enabled。
 - 同一用例二次确认成功后断言 delist 调用两次，卡片显示 delisted badge 且 Delist 按钮消失。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps an admin delist retryable when the delist request fails" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `f5c787307 Cover admin delist retry after failure` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28776603843` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
+- 完整本地非 Docker 慢速闭环已通过：`npm run test:marketplace`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs --workers=1`（46 browser E2E 全部通过，用时约 4.9 分钟）。
 
 ## 五问重启检查
 | 问题 | 答案 |
