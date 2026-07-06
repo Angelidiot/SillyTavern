@@ -1738,6 +1738,8 @@
 - `tests/marketplace-wallet.e2e.js` 的 mock API 新增 `failResolveOnceFor` 和 `holdNextResolveFor`，可模拟第一次 resolve 请求挂起后返回 503。
 - 新增 `keeps a report queued and retryable when resolve fails`，覆盖 Resolve 按钮进入 `Resolving` disabled 状态、失败后报告仍显示、按钮恢复、第二次带新 note 重试成功并清空队列。
 - 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a report queued and retryable" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `d28d92791 Cover report resolve retry flow` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28767166009` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

@@ -1377,9 +1377,9 @@
 - [x] 扩展 E2E mock，支持一次性 report resolve 失败和挂起请求
 - [x] 新增浏览器用例，覆盖 Resolve 忙态、失败后报告仍留队列、按钮恢复和二次重试成功
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
