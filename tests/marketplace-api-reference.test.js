@@ -15,6 +15,34 @@ afterEach(async () => {
     }
 });
 
+function getSection(markdown, heading) {
+    const startMarker = `## ${heading}`;
+    const start = markdown.indexOf(startMarker);
+    expect(start).toBeGreaterThanOrEqual(0);
+
+    const next = markdown.indexOf('\n## ', start + startMarker.length);
+    return next === -1 ? markdown.slice(start) : markdown.slice(start, next);
+}
+
+function getSectionRouteKeys(section) {
+    const match = section.match(/```text\n([\s\S]*?)\n```/);
+    expect(match).toBeTruthy();
+
+    return match[1]
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/, ' '))
+        .filter(Boolean);
+}
+
+function getSectionNoteKeys(section) {
+    return section
+        .split('\n')
+        .map(line => line.match(/^- ([A-Z]+) (\/api\/(?:market|wallet)[^ ]*): /))
+        .filter(Boolean)
+        .map(match => `${match[1]} ${match[2]}`);
+}
+
 describe('marketplace API reference export script', () => {
     test('generates markdown from current MVP routes', async () => {
         const markdown = await generateMarketplaceApiReference({ generatedAt: '2026-06-26T00:00:00.000Z' });
@@ -75,6 +103,15 @@ describe('marketplace API reference export script', () => {
         const checkedIn = await readFile(path.join(path.dirname(fileURLToPath(import.meta.url)), '../docs/marketplace-api-reference.md'), 'utf8');
 
         expect(checkedIn).toBe(expected);
+    });
+
+    test('documents every generated market and wallet route with a note', async () => {
+        const markdown = await generateMarketplaceApiReference({ generatedAt: '2026-06-26T00:00:00.000Z' });
+
+        for (const heading of ['Market API', 'Wallet API']) {
+            const section = getSection(markdown, heading);
+            expect(getSectionNoteKeys(section).sort()).toEqual(getSectionRouteKeys(section).sort());
+        }
     });
 
     test('writes markdown to an explicit output path', async () => {

@@ -1715,6 +1715,13 @@
 - 已提交 `f2bca54e5 Reject missing snapshot data roots` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28766137193` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 143：API reference route notes 覆盖
+- 开始处理 API reference 文档质量缺口：生成脚本会从源码自动列 route，但如果新增 route 时忘记补 `routeNotes`，checked-in 文档仍会同步，只是少了权限/隐私/边界说明。
+- `tests/marketplace-api-reference.test.js` 新增 Markdown section 解析 helper，读取 Market API 与 Wallet API 的 route code block 和 Notes 列表。
+- 新增 `documents every generated market and wallet route with a note`，要求每个生成的 market/wallet route key 都有对应 note；首次测试解析器未支持 `:id` 路径参数，已改为匹配 `/api/(market|wallet)` path。
+- 当前生成文档已满足该契约，无需修改 `docs/marketplace-api-reference.md` 或生成脚本。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-api-reference.test.js`、`node --check tests/marketplace-api-reference.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
