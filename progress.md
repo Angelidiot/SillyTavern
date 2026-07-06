@@ -1730,6 +1730,8 @@
 - `documents hosted marketplace and PWA scripts in README` 现在对每个动态发现到的托管市场/PWA 脚本都要求 README 有可复制的 `npm run ...` 命令，同时保留 API reference 固定时间戳和 syntax gate 文案断言。
 - 当前 README 已覆盖全部动态发现脚本，无需修改 README 正文。
 - 已通过 `npm --prefix tests run test:unit -- marketplace-scripts.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `66eb19ab5 Discover README marketplace scripts` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28766788258` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |
