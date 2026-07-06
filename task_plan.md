@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 149
+阶段 150
 
 ## 各阶段
 
@@ -1417,6 +1417,16 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 150：钱包赠币 reason 边界
+- [x] 确认 admin grant reason 会被 ledger 创建逻辑静默截断到 200 字符
+- [x] 后端 grant 路由新增 200 字符显式校验，空白 reason 继续默认 `Admin grant`
+- [x] 前端 grant 表单增加 `maxlength` 和本地 warning，并同步 marketplace-wallet/PWA 版本
+- [x] 更新 API reference、README、设计文档和发现记录
+- [x] 运行目标后端/UI/API/PWA 验证和 marketplace 基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？

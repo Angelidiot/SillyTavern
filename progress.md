@@ -1773,6 +1773,13 @@
 - 已提交 `0fd1899e0 Cover fixed price upload draft` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28770714198` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 150：钱包赠币 reason 边界
+- 开始处理不可变 ledger 审计文本边界：`createLedgerEntry()` 会把 reason 静默截断到 200 字符，admin grant 路由此前没有提前返回错误。
+- `src/endpoints/wallet.js` 新增同源 reason 上限常量和 admin grant 显式校验；空白 reason 仍规范为 `Admin grant`，超长 reason 返回 `Invalid grant reason` 且不写 ledger。
+- marketplace-wallet 管理员赠币表单新增 `maxlength="200"` 和本地超长 warning，并将扩展/PWA 预缓存版本同步到 `0.2.29`。
+- README、设计文档、API reference 生成脚本和 checked-in API reference 已同步记录 admin grant reason 200 字符边界。
+- 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js marketplace-api-reference.test.js pwa.test.js`、`npm --prefix tests run test:unit -- market-wallet.test.js -t "enforces wallet read scope and validates admin grant input" --runInBand`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

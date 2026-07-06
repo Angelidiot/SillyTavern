@@ -24,7 +24,7 @@ This branch adds a hosted AI tavern marketplace and wallet MVP on top of SillyTa
 - Admin approval revalidates the full publishable asset, including title, type, price, metadata, and payload, before public listing.
 - Admin delist action to remove listed assets from public purchase while preserving existing entitlements.
 - User report action with required bounded reason/details body, admin report queue with reported dates, bounded resolution notes, and resolve workflow for marketplace moderation; report and rejection forms warn locally instead of truncating overlong text.
-- Admin coin grants for `bonus`, `paid`, and `earnings`, with `handle`, `userHandle`, or `targetHandle` recipient aliases.
+- Admin coin grants for `bonus`, `paid`, and `earnings`, with `handle`, `userHandle`, or `targetHandle` recipient aliases and a 200-character reason limit.
 - Free and fixed-price purchase flow with `bonus -> paid` spending order.
 - Fixed-price cards show the missing bonus/paid coin amount when the buyer cannot afford them.
 - Install flow copies approved/purchased assets into the user's private data directory.

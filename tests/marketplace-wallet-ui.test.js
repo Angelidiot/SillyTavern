@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.28');
+        expect(manifest.version).toBe('0.2.29');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -61,6 +61,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(html).toContain('<option value="paid">paid</option>');
         expect(html).toContain('<option value="earnings">earnings</option>');
         expect(html).toContain('id="marketplace_wallet_grant_reason"');
+        expect(html).toContain('id="marketplace_wallet_grant_reason" class="text_pole" value="Admin grant" maxlength="200"');
         expect(html).toContain('id="marketplace_wallet_review_queue"');
         expect(html).toContain('id="marketplace_wallet_report_queue"');
         expect(html).toContain('id="marketplace_wallet_upload_status"');
@@ -341,6 +342,8 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("$root.find('#marketplace_wallet_report_queue').on('click', onReportAction)");
         expect(script).toContain("await fetchJson('/api/wallet/grants/admin'");
         expect(script).toContain("['bonus', 'paid', 'earnings'].includes(bucket)");
+        expect(script).toContain('MAX_GRANT_REASON_LENGTH = 200');
+        expect(script).toContain('Grant reason must be ${MAX_GRANT_REASON_LENGTH} characters or less');
         expect(script).toContain("|| 'Admin grant'");
     });
 

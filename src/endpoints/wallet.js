@@ -10,6 +10,7 @@ const LEDGER_KEY_PREFIX = 'wallet:ledger:v1:';
 const WALLET_BUCKETS = Object.freeze(['paid', 'bonus', 'earnings']);
 const PURCHASE_SPEND_BUCKETS = Object.freeze(['bonus', 'paid']);
 const DEFAULT_GRANT_BUCKET = 'bonus';
+const MAX_WALLET_LEDGER_REASON_LENGTH = 200;
 
 /**
  * @typedef {Object} WalletLedgerEntry
@@ -69,6 +70,21 @@ function parseBucket(value) {
     return WALLET_BUCKETS.includes(bucket) ? bucket : null;
 }
 
+function parseGrantReason(value) {
+    const reason = String(value || '').trim() || 'Admin grant';
+    if (reason.length > MAX_WALLET_LEDGER_REASON_LENGTH) {
+        return {
+            error: {
+                status: 400,
+                message: 'Invalid grant reason',
+                details: [`reason must be ${MAX_WALLET_LEDGER_REASON_LENGTH} characters or less`],
+            },
+        };
+    }
+
+    return { reason };
+}
+
 /**
  * Creates an empty wallet balance object.
  * @returns {Record<string, number>}
@@ -125,7 +141,7 @@ function createLedgerEntry({ type, userHandle, actorHandle, bucket, amount, reas
         actorHandle,
         bucket,
         amount,
-        reason: String(reason || type).slice(0, 200),
+        reason: String(reason || type).slice(0, MAX_WALLET_LEDGER_REASON_LENGTH),
         createdAt: Date.now(),
         metadata,
     };
@@ -365,6 +381,14 @@ router.post('/grants/admin', async (request, response) => {
             return response.status(400).json({ error: 'Invalid wallet bucket' });
         }
 
+        const { reason, error: reasonError } = parseGrantReason(body.reason);
+        if (reasonError) {
+            return response.status(reasonError.status).json({
+                error: reasonError.message,
+                details: reasonError.details,
+            });
+        }
+
         if (!await userExists(targetHandle, request)) {
             return response.status(404).json({ error: 'User not found' });
         }
@@ -374,7 +398,7 @@ router.post('/grants/admin', async (request, response) => {
             actorHandle: currentHandle,
             bucket,
             amount,
-            reason: body.reason || 'Admin grant',
+            reason,
             metadata: {
                 source: 'wallet.grants.admin',
             },

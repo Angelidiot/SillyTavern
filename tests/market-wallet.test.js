@@ -1216,6 +1216,7 @@ describe('market and wallet MVP endpoints', () => {
             actorHandle: 'alice',
             bucket: 'bonus',
             amount: 10,
+            reason: 'Admin grant',
         });
         expect(targetHandleGrant.body.balance.buckets.bonus).toBe(10);
 
@@ -1354,6 +1355,38 @@ describe('market and wallet MVP endpoints', () => {
         });
         expect(invalidAmount.status).toBe(400);
         expect(invalidAmount.body.error).toBe('Amount must be a positive safe integer');
+
+        const maxGrantReason = 'x'.repeat(200);
+        const tooLongReason = await request(aliceApp, '/api/wallet/grants/admin', {
+            method: 'POST',
+            body: {
+                targetHandle: 'bob',
+                amount: 5,
+                bucket: 'bonus',
+                reason: `${maxGrantReason}!`,
+            },
+        });
+        expect(tooLongReason.status).toBe(400);
+        expect(tooLongReason.body).toMatchObject({
+            error: 'Invalid grant reason',
+            details: ['reason must be 200 characters or less'],
+        });
+
+        const ledgerAfterInvalidReason = await request(aliceApp, '/api/wallet/ledger?handle=bob', { method: 'GET' });
+        expect(ledgerAfterInvalidReason.status).toBe(200);
+        expect(ledgerAfterInvalidReason.body.ledger).toHaveLength(1);
+
+        const boundaryReason = await request(aliceApp, '/api/wallet/grants/admin', {
+            method: 'POST',
+            body: {
+                targetHandle: 'bob',
+                amount: 5,
+                bucket: 'bonus',
+                reason: maxGrantReason,
+            },
+        });
+        expect(boundaryReason.status).toBe(201);
+        expect(boundaryReason.body.entry.reason).toBe(maxGrantReason);
 
         const unknownUser = await request(aliceApp, '/api/wallet/grants/admin', {
             method: 'POST',

@@ -3,7 +3,7 @@ import { renderExtensionTemplateAsync } from '../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../popup.js';
 import { getCurrentUserHandle, isAdmin } from '../../user.js';
 import { getFileText } from '../../utils.js';
-import { filterAndSortAssets } from './filters.js?v=0.2.28';
+import { filterAndSortAssets } from './filters.js?v=0.2.29';
 
 const MODULE_NAME = 'marketplace-wallet';
 const MARKET_TYPES = {
@@ -21,6 +21,7 @@ const MAX_UPLOAD_PAYLOAD_BYTES = 1024 * 1024;
 const MAX_REPORT_REASON_LENGTH = 120;
 const MAX_REPORT_BODY_LENGTH = 2000;
 const MAX_REPORT_RESOLUTION_NOTE_LENGTH = 1000;
+const MAX_GRANT_REASON_LENGTH = 200;
 const MAX_REJECT_REASON_LENGTH = 1000;
 const MAX_PAYLOAD_PREVIEW_LENGTH = 20000;
 
@@ -1402,6 +1403,10 @@ async function grantCoins() {
     }
     if (!['bonus', 'paid', 'earnings'].includes(bucket)) {
         toastr.warning('Grant bucket is invalid');
+        return;
+    }
+    if (reason.length > MAX_GRANT_REASON_LENGTH) {
+        toastr.warning(`Grant reason must be ${MAX_GRANT_REASON_LENGTH} characters or less`);
         return;
     }
 

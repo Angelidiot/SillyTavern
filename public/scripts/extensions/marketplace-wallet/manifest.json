@@ -3,10 +3,10 @@
     "loading_order": 16,
     "requires": [],
     "optional": [],
-    "js": "index.js?v=0.2.28",
-    "css": "style.css?v=0.2.28",
+    "js": "index.js?v=0.2.29",
+    "css": "style.css?v=0.2.29",
     "author": "SillyTavern",
-    "version": "0.2.28",
+    "version": "0.2.29",
     "homePage": "https://github.com/SillyTavern/SillyTavern",
     "hooks": {
         "activate": "init"
