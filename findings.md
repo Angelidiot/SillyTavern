@@ -254,6 +254,7 @@
 - Review Queue 的 Inspect 入口需要真实浏览器覆盖；审核员批准/拒绝前必须能从队列拉取详情并查看 payload 预览，而不只依赖按钮字符串契约。
 - Fixed-price 创作者上传需要浏览器闭环；购买路径验证不了上传表单是否真实提交 `price_type`/`price_coins`，也验证不了草稿保存后付费标签展示。
 - Admin grant reason 的前端边界需要浏览器行为覆盖；`maxlength` 是输入防线，但脚本注入超长值时仍应由 JS 拦截并避免 POST。
+- Admin grant reason 必须保持字符串契约；对象或数组等非字符串值不应被 `String()` 成 `[object Object]` 写入不可变 ledger，避免审计文本被客户端类型错误污染。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

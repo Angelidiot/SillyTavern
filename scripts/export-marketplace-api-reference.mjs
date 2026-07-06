@@ -42,7 +42,7 @@ const routeNotes = new Map([
     ['POST /api/market/assets/:id/install', 'Installs creator-owned or entitled assets into the user data directory and returns a redacted local reference without absolute paths.'],
     ['GET /api/wallet', 'Authenticated users can read their own wallet; admins may pass handle to inspect another wallet.'],
     ['GET /api/wallet/ledger', 'Authenticated users can read their own ledger; admins may pass handle to inspect another ledger.'],
-    ['POST /api/wallet/grants/admin', 'Admin-only grant endpoint; target can be handle, userHandle, or targetHandle; optional reason defaults to Admin grant and must be 200 characters or less.'],
+    ['POST /api/wallet/grants/admin', 'Admin-only grant endpoint; target can be handle, userHandle, or targetHandle; optional string reason defaults to Admin grant and must be 200 characters or less.'],
 ]);
 
 function parseArgs(argv) {

@@ -1809,6 +1809,13 @@
 - 已提交 `8901dcfc4 Guard PWA E2E asset version sync` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28772596290` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 155：钱包赠币 reason 类型校验
+- 开始处理 admin grant reason 类型边界：之前超长字符串已被拒绝，但对象/数组等非字符串值仍会被 `String()` 成审计文本写入不可变 ledger。
+- `src/endpoints/wallet.js` 的 admin grant reason 解析现在只接受空值或字符串；非字符串返回 `Invalid grant reason`，详情为 `reason must be a string`。
+- `tests/market-wallet.test.js` 在 admin grant 输入契约中新增对象 reason 400 断言，并确认失败请求不会新增 bob 的 ledger。
+- API reference 生成脚本、checked-in `docs/marketplace-api-reference.md` 和 `docs/marketplace-currency-design.md` 已同步标注 reason 必须是可选字符串。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "enforces wallet read scope and validates admin grant input" --runInBand`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js --runInBand`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

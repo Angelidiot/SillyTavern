@@ -71,6 +71,16 @@ function parseBucket(value) {
 }
 
 function parseGrantReason(value) {
+    if (value !== undefined && value !== null && typeof value !== 'string') {
+        return {
+            error: {
+                status: 400,
+                message: 'Invalid grant reason',
+                details: ['reason must be a string'],
+            },
+        };
+    }
+
     const reason = String(value || '').trim() || 'Admin grant';
     if (reason.length > MAX_WALLET_LEDGER_REASON_LENGTH) {
         return {

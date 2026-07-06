@@ -1376,6 +1376,25 @@ describe('market and wallet MVP endpoints', () => {
         expect(ledgerAfterInvalidReason.status).toBe(200);
         expect(ledgerAfterInvalidReason.body.ledger).toHaveLength(1);
 
+        const objectReason = await request(aliceApp, '/api/wallet/grants/admin', {
+            method: 'POST',
+            body: {
+                targetHandle: 'bob',
+                amount: 5,
+                bucket: 'bonus',
+                reason: { code: 'promo' },
+            },
+        });
+        expect(objectReason.status).toBe(400);
+        expect(objectReason.body).toMatchObject({
+            error: 'Invalid grant reason',
+            details: ['reason must be a string'],
+        });
+
+        const ledgerAfterObjectReason = await request(aliceApp, '/api/wallet/ledger?handle=bob', { method: 'GET' });
+        expect(ledgerAfterObjectReason.status).toBe(200);
+        expect(ledgerAfterObjectReason.body.ledger).toHaveLength(1);
+
         const boundaryReason = await request(aliceApp, '/api/wallet/grants/admin', {
             method: 'POST',
             body: {
