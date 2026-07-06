@@ -164,6 +164,7 @@ describe('marketplace runnable scripts', () => {
         }
 
         expect(readmeScriptSection).toContain('docs/marketplace-api-reference.md');
+        expect(readmeScriptSection).toContain('MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md');
         expect(readmeScriptSection).toContain('root PWA manifest and marketplace-wallet manifest/window/style asset checks');
     });
 

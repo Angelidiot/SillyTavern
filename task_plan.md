@@ -1284,6 +1284,16 @@
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
+### 阶段 136：API reference 生成命令固定时间戳
+- [x] 确认 checked-in API reference 测试固定 `2026-06-26T00:00:00.000Z`
+- [x] 更新 README 示例命令和 Development Notes，使用 `MARKETPLACE_API_REFERENCE_GENERATED_AT`
+- [x] 更新 marketplace scripts contract 测试，锁定 README 中的固定时间戳生成命令
+- [x] 用 README 等价命令生成临时 API reference 并与 checked-in 文档比对
+- [x] 运行本地基础验证
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？

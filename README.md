@@ -77,8 +77,8 @@ npm run marketplace:seed:demo -- --dataRoot ./data
 # Export a redacted market/wallet snapshot outside the data root
 npm run marketplace:export:snapshot -- --dataRoot ./data --out ./marketplace-snapshot.json
 
-# Export the current marketplace/wallet/health API reference
-npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
+# Export the checked-in marketplace/wallet/health API reference
+MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md
 
 # Run marketplace/wallet/PWA/health syntax and contract tests
 npm run test:marketplace
@@ -142,7 +142,7 @@ Validation matrix:
 
 - The MVP still uses JSON/node-persist storage and is intended for local validation, not production SaaS scale.
 - `npm run marketplace:export:snapshot` creates a redacted read-only market/wallet snapshot with asset and report lifecycle timestamps for backup checks and migration rehearsals; output files must be outside the data root.
-- `npm run marketplace:export:api` generates `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including client CSRF request requirements, key list/detail/creator privacy, upload validation, approval revalidation, review lifecycle, purchase/install, and report length notes, with tests locking the checked-in reference to the full MVP route set.
+- `MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z npm run marketplace:export:api -- --out ./docs/marketplace-api-reference.md` regenerates the checked-in `docs/marketplace-api-reference.md` from the current market, wallet, and public health routes, including client CSRF request requirements, key list/detail/creator privacy, upload validation, approval revalidation, review lifecycle, purchase/install, and report length notes, with tests locking the reference to the full MVP route set.
 - `tests/marketplace-scripts.test.js` locks the hosted marketplace/PWA command list against this README so runnable scripts and setup docs do not drift.
 - `npm run test:hosted:docker` verifies the deployable Docker image exposes the hosted health endpoint, wallet/market API routes, and PWA shell; local machines without Docker should rely on CI for this check or run `test:marketplace:all` for the non-Docker slow loop.
 - Paid purchase responses return the entitlement summary, ownership status, purchase id, and buyer balance only; creator balances, full ledger entries, and entitlement ledger internals remain behind wallet/creator APIs.

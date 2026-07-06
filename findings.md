@@ -234,6 +234,7 @@
 - Marketplace Wallet Checks 后续应覆盖 market/wallet 共享依赖和 marketplace-wallet 前端共享 helper；否则 `src/users.js`、`src/util.js` 或 `public/scripts/popup.js` 等改动可能绕过 marketplace gate。
 - Marketplace Wallet Checks path filter 应覆盖 market/wallet 后端共享依赖和 marketplace-wallet 前端共享 helper；这些文件不属于 marketplace 专属目录，但会直接影响权限、安装写入、角色卡校验、CSRF header、popup 和用户上下文。
 - README 的 API reference 生成命令应说明固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT`，避免 checked-in docs 因当前时间戳漂移。
+- checked-in API reference 再生成命令必须固定 `MARKETPLACE_API_REFERENCE_GENERATED_AT=2026-06-26T00:00:00.000Z`；否则文档内容未变也会因为 `Generated at` 当前时间产生 diff。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*
