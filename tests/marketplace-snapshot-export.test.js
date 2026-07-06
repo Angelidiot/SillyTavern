@@ -386,6 +386,20 @@ describe('marketplace snapshot export script', () => {
         expect(fs.existsSync(outPath)).toBe(false);
     });
 
+    test('rejects output paths that resolve inside the data root through a symlink', () => {
+        const dataRoot = makeTempRoot();
+        const outputRoot = makeTempRoot();
+        writeMarketStore(dataRoot);
+        const dataExportRoot = path.join(dataRoot, 'exports');
+        const linkedExportRoot = path.join(outputRoot, 'linked-export');
+        fs.mkdirSync(dataExportRoot);
+        fs.symlinkSync(dataExportRoot, linkedExportRoot, 'dir');
+        const outPath = path.join(linkedExportRoot, 'nested', 'marketplace-snapshot.json');
+
+        expect(() => runExport(dataRoot, ['--out', outPath])).toThrow('--out must point outside the data root');
+        expect(fs.existsSync(path.join(dataExportRoot, 'nested'))).toBe(false);
+    });
+
     test('does not create wallet storage when exporting a market-only data root', () => {
         const dataRoot = makeTempRoot();
         writeMarketStore(dataRoot);

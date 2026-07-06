@@ -310,6 +310,31 @@ function isInsideDirectory(filePath, directoryPath) {
     return relativePath === '' || (!!relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath));
 }
 
+function resolvePossiblyMissingPath(targetPath) {
+    const absolutePath = path.resolve(targetPath);
+    const parsed = path.parse(absolutePath);
+    const segments = path.relative(parsed.root, absolutePath).split(path.sep).filter(Boolean);
+    let currentPath = fs.realpathSync.native(parsed.root);
+
+    for (let index = 0; index < segments.length; index += 1) {
+        const nextPath = path.join(currentPath, segments[index]);
+        if (!fs.existsSync(nextPath)) {
+            return path.join(currentPath, ...segments.slice(index));
+        }
+        currentPath = fs.realpathSync.native(nextPath);
+    }
+
+    return currentPath;
+}
+
+function validateOutputPathOutsideDataRoot(outPath, dataRoot) {
+    const resolvedOutPath = resolvePossiblyMissingPath(outPath);
+    const realDataRoot = fs.realpathSync.native(dataRoot);
+    if (isInsideDirectory(outPath, dataRoot) || isInsideDirectory(outPath, realDataRoot) || isInsideDirectory(resolvedOutPath, realDataRoot)) {
+        throw new Error('--out must point outside the data root to keep the export command read-only for user data');
+    }
+}
+
 async function run(argv = process.argv.slice(2)) {
     const options = parseArgs(argv);
 
@@ -324,9 +349,7 @@ async function run(argv = process.argv.slice(2)) {
     if (options.out) {
         const outPath = path.resolve(options.out);
         const dataRoot = path.resolve(options.dataRoot);
-        if (isInsideDirectory(outPath, dataRoot)) {
-            throw new Error('--out must point outside the data root to keep the export command read-only for user data');
-        }
+        validateOutputPathOutsideDataRoot(outPath, dataRoot);
         fs.mkdirSync(path.dirname(outPath), { recursive: true });
         fs.writeFileSync(outPath, output, 'utf8');
         process.stdout.write(`Marketplace snapshot exported to ${outPath}\n`);

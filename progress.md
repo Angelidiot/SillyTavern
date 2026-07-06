@@ -1815,6 +1815,13 @@
 - `tests/market-wallet.test.js` 在 admin grant 输入契约中新增对象 reason 400 断言，并确认失败请求不会新增 bob 的 ledger。
 - API reference 生成脚本、checked-in `docs/marketplace-api-reference.md` 和 `docs/marketplace-currency-design.md` 已同步标注 reason 必须是可选字符串。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "enforces wallet read scope and validates admin grant input" --runInBand`、`npm --prefix tests run test:unit -- marketplace-api-reference.test.js --runInBand`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
+- 已提交 `32244421c Validate wallet grant reason type` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28773200312` 已触发并处于执行中。
+
+## 2026-07-06 阶段 156：Snapshot 导出 symlink 输出防护
+- 开始处理只读 agent 指出的 snapshot `--out` symlink 绕过：旧检查只比较字符串路径，外部 symlink 指向 dataRoot 时可能把导出文件写回用户数据根。
+- `scripts/export-marketplace-snapshot.mjs` 新增 `resolvePossiblyMissingPath()`，在创建输出目录前解析路径中已存在的 symlink 段，并用真实目标路径判断是否落入 dataRoot。
+- `tests/marketplace-snapshot-export.test.js` 新增 `rejects output paths that resolve inside the data root through a symlink`，覆盖外部 symlink 加缺失子目录的场景，并确认不会在 dataRoot 下创建该子目录。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-snapshot-export.test.js --runInBand`、`node --check scripts/export-marketplace-snapshot.mjs`、`node --check tests/marketplace-snapshot-export.test.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

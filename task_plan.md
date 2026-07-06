@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 155
+阶段 156
 
 ## 各阶段
 
@@ -1468,6 +1468,16 @@
 - [x] 补充后端契约测试，确认对象 reason 返回 400 且不新增 ledger
 - [x] 同步 API reference 生成脚本、checked-in API reference 和货币设计说明
 - [x] 运行目标后端/API 文档测试、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 156：Snapshot 导出 symlink 输出防护
+- [x] 确认 snapshot `--out` 通过外部 symlink 指回 dataRoot 时会绕过字符串路径判断
+- [x] 在创建输出目录前解析可能不存在路径中的已存在 symlink 段
+- [x] 拒绝真实目标落入 dataRoot 的输出路径，保持导出脚本对用户数据根只读
+- [x] 补充 symlink 输出路径单测，确认不会在 dataRoot 下创建缺失子目录
+- [x] 运行 snapshot 目标测试、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress
