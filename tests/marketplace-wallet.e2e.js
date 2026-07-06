@@ -121,6 +121,8 @@ function makeCurrentUser(overrides = {}) {
 
 async function mockMarketplaceApis(page, {
     assets = [makeListedAsset(), makeSubmittedAsset()],
+    currentUser = makeCurrentUser(),
+    enableAccounts = false,
     reports = [],
     library = [],
     failAssetListOnce = false,
@@ -181,9 +183,23 @@ async function mockMarketplaceApis(page, {
         route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify(makeCurrentUser()),
+            body: JSON.stringify(currentUser),
         });
     });
+
+    if (enableAccounts) {
+        await page.route('**/api/settings/get', async route => {
+            const response = await route.fetch();
+            const data = await response.json();
+            route.fulfill({
+                response,
+                json: {
+                    ...data,
+                    enable_accounts: true,
+                },
+            });
+        });
+    }
 
     await page.route('**/api/wallet', route => {
         route.fulfill({
@@ -959,6 +975,45 @@ test.describe('marketplace wallet extension', () => {
             bucket: 'paid',
             reason: 'Admin grant',
         }]);
+    });
+
+    test('hides admin queues and moderation actions from non-admin users', async ({ page }) => {
+        await mockMarketplaceApis(page, {
+            assets: [
+                makeListedAsset({
+                    id: 'non-admin-listed-world',
+                    title: 'Non Admin Listed World',
+                }),
+                makeSubmittedAsset({
+                    id: 'non-admin-submitted-character',
+                    title: 'Non Admin Submitted Character',
+                }),
+            ],
+            currentUser: makeCurrentUser({
+                admin: false,
+            }),
+            enableAccounts: true,
+            reports: [makeOpenReport({ id: 'non-admin-report' })],
+        });
+
+        await loadSillyTavern(page);
+
+        const admin = page.locator('#marketplace_wallet_admin');
+        const assets = page.locator('#marketplace_wallet_assets');
+
+        await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
+        await expect(assets).toContainText('Non Admin Listed World');
+        await expect(admin).toBeHidden();
+        await expect(page.locator('#marketplace_wallet_review_queue')).toBeHidden();
+        await expect(page.locator('#marketplace_wallet_report_queue')).toBeHidden();
+
+        await expect(assets.locator('[data-marketplace-wallet-action="details"]')).toHaveCount(2);
+        await expect(assets.locator('[data-marketplace-wallet-action="report"]')).toHaveCount(1);
+        await expect(assets.locator('[data-marketplace-wallet-action="delist"]')).toHaveCount(0);
+        await expect(page.locator('[data-marketplace-wallet-action="approve"]')).toHaveCount(0);
+        await expect(page.locator('[data-marketplace-wallet-action="reject"]')).toHaveCount(0);
+        await expect(page.locator('[data-marketplace-wallet-action="inspect"]')).toHaveCount(0);
+        await expect(page.locator('[data-marketplace-wallet-report-action="resolve"]')).toHaveCount(0);
     });
 
     test('keeps overlong rejection reasons local without truncating submissions', async ({ page }) => {

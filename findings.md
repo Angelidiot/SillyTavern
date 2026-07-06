@@ -246,6 +246,7 @@
 - README runnable scripts 覆盖应从 `package.json` 动态发现 marketplace/PWA/hosted 脚本；新增可运行脚本时测试应强制同步 README，而不是依赖维护者手写测试清单。
 - Report Queue resolve 失败后必须保持报告在队列中并恢复 Resolve 按钮；管理员弱网或后端短暂失败时应能二次提交处理备注，而不是误以为举报已关闭或按钮卡死。
 - Marketplace draft 创建也必须做 type-specific payload 校验；坏 `world_book` 或坏 `character_card` 不应先进私有 draft store，再等 submit/approve/install 才失败。
+- marketplace-wallet 非管理员 UI 回归必须启用账号系统；账号系统关闭时 `isAdmin()` 会默认 true，这符合本地免账号模式但不能证明真实非 admin 门禁。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

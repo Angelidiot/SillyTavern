@@ -1749,6 +1749,12 @@
 - 已提交 `24d9384ce Validate created marketplace payloads` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28767541664` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 147：非管理员市场 UI 门禁 E2E
+- 开始处理非管理员 UI 门禁缺口：已有 UI 字符串契约和管理员正向 E2E，但没有真实浏览器证明普通用户看不到 Admin Tools、审核队列和管理按钮。
+- `tests/marketplace-wallet.e2e.js` 的 mock API 新增 `currentUser` 覆盖，并在需要时拦截 `/api/settings/get` 将 `enable_accounts` 设为 true；首次只改 `/api/users/me` 失败，确认账号系统关闭时 `isAdmin()` 会默认 true。
+- 新增 `hides admin queues and moderation actions from non-admin users`，覆盖普通用户仍可看钱包/市场，但 Admin Tools、Review Queue、Report Queue、Delist、Approve、Reject、Inspect、Resolve 控制不可见。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "non-admin" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

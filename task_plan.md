@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 146
+阶段 147
 
 ## 各阶段
 
@@ -1389,6 +1389,15 @@
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
+
+### 阶段 147：非管理员市场 UI 门禁 E2E
+- [x] 确认 admin 可见性已有字符串契约和管理员正向 E2E，但缺少真实非管理员浏览器路径
+- [x] 扩展 E2E mock，支持当前用户覆盖和按需启用账号系统
+- [x] 新增非管理员 E2E，覆盖 Admin Tools、review/report queue、Delist、Approve、Reject、Inspect、Resolve 控制不可见
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [ ] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
