@@ -324,6 +324,23 @@ describe('marketplace runnable scripts', () => {
         expect(readRootPackage().scripts['test:marketplace:e2e:server']).toContain('--workers=1');
     });
 
+    test('keeps browser E2E shell asset versions synced with the marketplace manifest', () => {
+        const e2e = fs.readFileSync(path.join(rootDirectory, 'tests/marketplace-wallet.e2e.js'), 'utf8');
+        const manifest = JSON.parse(fs.readFileSync(path.join(rootDirectory, 'public/scripts/extensions/marketplace-wallet/manifest.json'), 'utf8'));
+
+        expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
+        expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
+        expect(e2e).toContain("public/scripts/extensions/marketplace-wallet/manifest.json");
+        expect(e2e).toContain(')).version');
+        expect(e2e).toContain('MARKETPLACE_WALLET_EXTENSION_VERSION');
+        expect(e2e).not.toMatch(/MARKETPLACE_WALLET_EXTENSION_VERSION\s*=\s*['"]0\.2\.\d+['"]/);
+        expect(e2e).not.toMatch(/\/scripts\/extensions\/marketplace-wallet\/(?:index|filters)\.js\?v=0\.2\.\d+/);
+        expect(e2e).not.toMatch(/\/scripts\/extensions\/marketplace-wallet\/style\.css\?v=0\.2\.\d+/);
+        expect(e2e).toContain('index.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}');
+        expect(e2e).toContain('filters.js?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}');
+        expect(e2e).toContain('style.css?v=${MARKETPLACE_WALLET_EXTENSION_VERSION}');
+    });
+
     test('documents physical mobile access and PWA secure context requirements', () => {
         const readme = readReadme();
 
