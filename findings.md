@@ -264,6 +264,7 @@
 - Marketplace access/sort 不能只靠纯函数测试；真实 DOM 下 select change 事件、列表重绘和卡片顺序也需要浏览器覆盖。
 - PWA standalone 模式必须压制安装提示；已安装手机壳或 standalone 浏览器窗口收到 `beforeinstallprompt` 时不应再显示应用内 Install 动作。
 - PWA shell cache 需要覆盖离线直接打开 `/login.html`；安装版手机用户可能从登录页恢复，而不是只从根路径恢复。
+- 付费购买 ledger 幂等恢复不能只看同 `purchase_id` 是否存在；必须确认买家扣款总额和创作者收益总额完整，否则 partial ledger 会被误当成已结算并创建无收益 entitlement。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

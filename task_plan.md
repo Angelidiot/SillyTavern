@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 163
+阶段 164
 
 ## 各阶段
 
@@ -1526,8 +1526,8 @@
 - [x] 在 available 结果里切换 `price_desc` 并断言卡片顺序
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 162：PWA standalone 模式隐藏安装提示
 - [x] 确认 PWA 安装入口有单元契约检查 standalone gate，但缺少浏览器行为覆盖
@@ -1543,6 +1543,16 @@
 - [x] 新增浏览器 E2E，service worker 激活后断网打开 `/login.html`
 - [x] 断言 cached login shell 可渲染 SillyTavern 标题和欢迎文案
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 164：拒绝 partial fixed-price purchase ledger
+- [x] 确认 `purchaseWithWallet()` 旧逻辑把任意同 `purchase_id` ledger 当作已结算
+- [x] 已结算判断改为校验买家扣款总额和创作者收益总额都等于价格
+- [x] partial ledger 返回 409 `Incomplete purchase ledger`
+- [x] 补充后端契约测试，确认不创建 entitlement、不增加 sales、不补错 creator earning
+- [x] 运行目标后端测试、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress

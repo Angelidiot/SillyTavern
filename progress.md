@@ -1867,6 +1867,8 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `applies marketplace access filters and sort controls in the DOM`，构造 available、library、mine 三类资产。
 - 用例依次断言 available 只显示未拥有/未授权 listed 资产、`price_desc` 下高价卡片在前、library 只显示已授权资产、mine 只显示当前用户资产。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "access filters and sort" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `1c99020fb Cover marketplace access and sort controls` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28774156215` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 162：PWA standalone 模式隐藏安装提示
 - 开始处理 PWA standalone 浏览器覆盖缺口：单元测试已检查 `matchMedia('(display-mode: standalone)')` 和 `navigator.standalone` 字符串，但没有真实页面证明 standalone 模式会压制 install prompt。
@@ -1879,6 +1881,13 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `serves the cached login shell while offline`，在 service worker 激活并控制页面后确认 `/login.html` 已缓存。
 - 用例断网导航到 `/login.html`，断言 `#logoBlock` 渲染 `Welcome to SillyTavern` 且页面标题为 SillyTavern。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "serves the cached login shell while offline" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+
+## 2026-07-06 阶段 164：拒绝 partial fixed-price purchase ledger
+- 开始处理 Carver 子 agent 指出的账务一致性缺口：`purchaseWithWallet()` 旧逻辑只要看到同 `purchase_id` 的任意 ledger entry 就返回 already settled，可能把只有买家扣款、没有创作者收益的 partial ledger 当成成功。
+- `src/endpoints/wallet.js` 现在对既有 purchase ledger 校验买家扣款总额等于价格，并在有 creator 时校验创作者收益总额也等于价格；不完整时返回 `409 Incomplete purchase ledger`。
+- `tests/market-wallet.test.js` 新增 `rejects partial fixed-price purchase ledger before creating entitlement`，人工写入同 purchase id 的 buyer debit 后重试购买。
+- 用例确认 market purchase 返回 409，不创建 entitlement、不增加 `sales_count`，也不会补写错误的 creator earning。
+- 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js --runInBand -t "rejects partial fixed-price purchase ledger before creating entitlement"`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

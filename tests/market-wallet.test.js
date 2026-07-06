@@ -1579,6 +1579,74 @@ describe('market and wallet MVP endpoints', () => {
         expect(store.entitlements.filter(entitlement => entitlement.asset_id === assetId && entitlement.user_id === 'bob')).toHaveLength(1);
     });
 
+    test('rejects partial fixed-price purchase ledger before creating entitlement', async () => {
+        const aliceApp = createApp(createUser('alice', true));
+        const bobApp = createApp(createUser('bob', false));
+        const charlieApp = createApp(createUser('charlie', false));
+        const assetId = await createSubmittedAsset(charlieApp, {
+            type: 'character_card',
+            title: 'Partial Ledger Charlie',
+            price_type: 'fixed_price',
+            price_coins: 30,
+            normalized_payload: createCharacterPayload(),
+        });
+
+        const approveResult = await request(aliceApp, `/api/market/assets/${assetId}/approve`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(approveResult.status).toBe(200);
+
+        const grantResult = await request(aliceApp, '/api/wallet/grants/admin', {
+            method: 'POST',
+            body: {
+                targetHandle: 'bob',
+                amount: 30,
+                bucket: 'paid',
+            },
+        });
+        expect(grantResult.status).toBe(201);
+
+        const purchaseId = `market:${assetId}:bob:v1`;
+        await storage.setItem('wallet:ledger:v1:partial_purchase_debit', {
+            id: 'partial_purchase_debit',
+            type: 'market_purchase_debit',
+            userHandle: 'bob',
+            actorHandle: 'bob',
+            bucket: 'paid',
+            amount: -30,
+            reason: 'Partial corrupted purchase debit',
+            createdAt: Date.now(),
+            metadata: {
+                purchase_id: purchaseId,
+                buyer_handle: 'bob',
+                creator_handle: 'charlie',
+                asset_id: assetId,
+                price_coins: 30,
+                debit_breakdown: {
+                    paid: 30,
+                },
+            },
+        });
+
+        const purchaseResult = await request(bobApp, `/api/market/assets/${assetId}/purchase`, {
+            method: 'POST',
+            body: {},
+        });
+        expect(purchaseResult.status).toBe(409);
+        expect(purchaseResult.body.error).toBe('Incomplete purchase ledger');
+
+        const store = JSON.parse(fs.readFileSync(path.join(dataRoot, 'market-assets.json'), 'utf8'));
+        const storedAsset = store.assets.find(asset => asset.id === assetId);
+        expect(storedAsset.sales_count).toBe(0);
+        expect(store.entitlements.filter(entitlement => entitlement.asset_id === assetId && entitlement.user_id === 'bob')).toHaveLength(0);
+
+        const charlieLedger = await request(charlieApp, '/api/wallet/ledger', { method: 'GET' });
+        expect(charlieLedger.status).toBe(200);
+        expect(charlieLedger.body.balance.buckets.earnings).toBe(0);
+        expect(charlieLedger.body.ledger.filter(entry => entry.type === 'market_creator_earning')).toHaveLength(0);
+    });
+
     test('settles concurrent fixed price purchases once per buyer and asset', async () => {
         const aliceApp = createApp(createUser('alice', true));
         const bobApp = createApp(createUser('bob', false));

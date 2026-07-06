@@ -224,6 +224,23 @@ export async function purchaseWithWallet({ buyerHandle, creatorHandle, actorHand
 
     const existingEntries = (await getLedgerEntries()).filter(entry => entry.metadata?.purchase_id === purchaseId);
     if (existingEntries.length > 0) {
+        const existingBuyerDebit = existingEntries
+            .filter(entry => entry.type === 'market_purchase_debit' && entry.userHandle === buyerHandle)
+            .reduce((total, entry) => total + Math.abs(entry.amount), 0);
+        const existingCreatorEarning = creatorHandle
+            ? existingEntries
+                .filter(entry => entry.type === 'market_creator_earning' && entry.userHandle === creatorHandle)
+                .reduce((total, entry) => total + entry.amount, 0)
+            : price;
+        if (existingBuyerDebit !== price || existingCreatorEarning !== price) {
+            return {
+                ok: false,
+                status: 409,
+                error: 'Incomplete purchase ledger',
+                ledger_entries: existingEntries,
+            };
+        }
+
         return {
             ok: true,
             purchase_id: purchaseId,
