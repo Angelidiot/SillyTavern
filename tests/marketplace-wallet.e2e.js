@@ -146,6 +146,7 @@ async function mockMarketplaceApis(page, {
     const apiCalls = {
         approve: [],
         creates: [],
+        delists: [],
         details: [],
         grants: [],
         installs: [],
@@ -434,6 +435,19 @@ async function mockMarketplaceApis(page, {
         apiCalls.rejects.push({ assetId, payload });
         assets = assets.map(asset => asset.id === assetId
             ? { ...asset, status: 'rejected', rejection_reason: payload.reason || '' }
+            : asset);
+        route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ asset: assets.find(asset => asset.id === assetId) }),
+        });
+    });
+
+    await page.route('**/api/market/assets/*/delist', route => {
+        const assetId = route.request().url().split('/').at(-2);
+        apiCalls.delists.push(assetId);
+        assets = assets.map(asset => asset.id === assetId
+            ? { ...asset, status: 'delisted', delisted_at: '2026-06-26T14:30:00.000Z' }
             : asset);
         route.fulfill({
             status: 200,
@@ -980,6 +994,38 @@ test.describe('marketplace wallet extension', () => {
         await expect(creatorList).toContainText('rejected: Needs clearer lore safety tags');
         await expect(page.locator('#marketplace_wallet_creator_submitted')).toHaveText('0');
         await expect(page.locator('#marketplace_wallet_creator_rejected')).toHaveText('1');
+    });
+
+    test('delists a listed asset from the marketplace', async ({ page }) => {
+        const listedAsset = makeListedAsset({
+            id: 'delist-browser-world',
+            title: 'Delist Browser World',
+            summary: 'Visible until an admin delists it.',
+            price_type: 'free',
+            price_coins: 0,
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            assets: [listedAsset],
+        });
+
+        await loadSillyTavern(page);
+
+        const assetCard = page.locator('#marketplace_wallet_assets .marketplace-wallet-asset', { hasText: 'Delist Browser World' });
+        await expect(assetCard).toBeVisible();
+        await expect(assetCard.locator('[data-marketplace-wallet-status="listed"]')).toHaveCount(1);
+        await expect(assetCard.locator('[data-marketplace-wallet-action="delist"]')).toHaveCount(1);
+
+        await assetCard.locator('[data-marketplace-wallet-action="delist"]').click();
+
+        const confirmPopup = page.getByRole('dialog').filter({ hasText: 'Delist this marketplace asset?' });
+        await expect(confirmPopup).toBeVisible();
+        await confirmPopup.locator('.popup-button-ok').click();
+
+        await expect.poll(() => apiCalls.delists).toEqual(['delist-browser-world']);
+        await expect(assetCard).toContainText('delisted');
+        await expect(assetCard.locator('[data-marketplace-wallet-status="delisted"]')).toHaveCount(1);
+        await expect(assetCard.locator('[data-marketplace-wallet-action="delist"]')).toHaveCount(0);
+        await expect(page.locator('#marketplace_wallet_review_queue')).toContainText('No assets awaiting review.');
     });
 
     test('resolves reports from the admin report queue', async ({ page }) => {

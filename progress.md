@@ -1690,6 +1690,12 @@
 - 已提交 `8e34fbce3 Cover marketplace startup entries` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28764972000` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-06 阶段 140：Admin Delist 成功闭环 E2E
+- 开始处理管理员下架前端闭环缺口：后端已有 delist 契约，前端已有按钮和字符串 contract，但没有真实浏览器覆盖确认弹窗、POST 和刷新后的按钮/状态变化。
+- `tests/marketplace-wallet.e2e.js` 的 mock API 已新增 `apiCalls.delists` 和 `/api/market/assets/:id/delist` route，成功后把资产状态更新为 `delisted` 并写入 `delisted_at`。
+- 新增 `delists a listed asset from the marketplace`，覆盖管理员从 Marketplace 卡片点击 Delist、确认弹窗、POST 调用、状态 badge 变为 `delisted`、Delist 按钮消失。
+- 已通过 `node --check tests/marketplace-wallet.e2e.js`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "delists a listed asset from the marketplace" --workers=1`、`npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
