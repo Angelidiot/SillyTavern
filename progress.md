@@ -1786,6 +1786,12 @@
 - `scripts/seed-marketplace-demo.mjs` 现在在 seed 入口检查已存在路径，普通文件会抛出 `Data root is not a directory:`；不存在的 dataRoot 仍保持自动创建，方便 README 开箱命令。
 - `tests/marketplace-demo-seed.test.js` 新增 `rejects a file data root with a clear error`，确认普通文件内容不被改写且不会创建 `market-assets.json`。
 - 已通过 `npm run test:marketplace:syntax`、`npm --prefix tests run test:unit -- marketplace-demo-seed.test.js`、`npm run test:marketplace` 和 `git diff --check`。
+- 已提交 `5f0791d7b Clarify demo seed data root errors` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28771479086` 正在执行 Marketplace Wallet Checks。
+
+## 2026-07-06 阶段 152：赠币 reason 前端浏览器拦截
+- 开始处理 admin grant reason 的浏览器覆盖缺口：已有 UI contract 锁定 `maxlength`/warning 字符串，但没有真实浏览器证明超长 reason 不会发 POST。
+- `tests/marketplace-wallet.e2e.js` 新增 `blocks overlong admin grant reasons before posting`，断言 reason input `maxlength=200`，脚本注入 201 字符 reason 后点击 Grant 不会调用 `/api/wallet/grants/admin`。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "overlong admin grant" --workers=1`、`npm run test:marketplace:syntax`、`npm run test:marketplace` 和 `git diff --check`。
 
 ## 五问重启检查
 | 问题 | 答案 |

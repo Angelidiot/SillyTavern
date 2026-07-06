@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 151
+阶段 152
 
 ## 各阶段
 
@@ -1433,6 +1433,15 @@
 - [x] 在 demo seed 入口新增“已存在但不是目录”的显式错误
 - [x] 新增 Jest 回归，确认普通文件 dataRoot 抛出清晰错误且不会写 store
 - [x] 运行目标 seed 测试、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 152：赠币 reason 前端浏览器拦截
+- [x] 确认 admin grant reason 边界已有 UI contract，但缺少真实浏览器点击覆盖
+- [x] 新增浏览器用例，断言 reason input `maxlength=200`
+- [x] 用脚本注入 201 字符 reason 后点击 Grant，断言不会发起 grant POST
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** in_progress

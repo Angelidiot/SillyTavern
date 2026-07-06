@@ -977,6 +977,27 @@ test.describe('marketplace wallet extension', () => {
         }]);
     });
 
+    test('blocks overlong admin grant reasons before posting', async ({ page }) => {
+        const apiCalls = await mockMarketplaceApis(page);
+
+        await loadSillyTavern(page);
+
+        const reasonInput = page.locator('#marketplace_wallet_grant_reason');
+        await expect(reasonInput).toHaveAttribute('maxlength', '200');
+
+        await page.locator('#marketplace_wallet_grant_handle').fill('target-user');
+        await page.locator('#marketplace_wallet_grant_amount').fill('42');
+        await page.locator('#marketplace_wallet_grant_bucket').selectOption('paid');
+        await reasonInput.evaluate((input, reason) => {
+            input.value = reason;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        }, 'x'.repeat(201));
+        await page.locator('#marketplace_wallet_grant_submit').click();
+
+        await page.waitForTimeout(250);
+        expect(apiCalls.grants).toEqual([]);
+    });
+
     test('hides admin queues and moderation actions from non-admin users', async ({ page }) => {
         await mockMarketplaceApis(page, {
             assets: [
