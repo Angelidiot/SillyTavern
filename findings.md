@@ -263,6 +263,7 @@
 - PWA install prompt 的 dismiss 是独立用户路径；点击关闭应只移除提示和清空 deferred event，不应触发原生 install prompt。
 - Marketplace access/sort 不能只靠纯函数测试；真实 DOM 下 select change 事件、列表重绘和卡片顺序也需要浏览器覆盖。
 - PWA standalone 模式必须压制安装提示；已安装手机壳或 standalone 浏览器窗口收到 `beforeinstallprompt` 时不应再显示应用内 Install 动作。
+- PWA shell cache 需要覆盖离线直接打开 `/login.html`；安装版手机用户可能从登录页恢复，而不是只从根路径恢复。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

@@ -1859,6 +1859,8 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `dismisses the browser install action`，在 `/login.html` 模拟 `beforeinstallprompt` 后点击 `aria-label="Dismiss install prompt"`。
 - 用例断言 `#pwa_install_prompt` 从 DOM 移除，且 mock 的 `prompt()` 没有被调用。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "dismisses the browser install action" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+- 已提交 `957819f4a Cover PWA install prompt dismissal` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28774032016` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 161：市场 access/sort DOM 接线 E2E
 - 开始处理前端只读 agent 建议的筛选排序 DOM 接线缺口：`filterAndSortAssets()` 已有纯函数测试，但浏览器中 access/sort select 的 change 事件和卡片顺序缺少覆盖。
@@ -1871,6 +1873,12 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `hides the browser install action in standalone display mode`，在 page init 阶段 mock standalone media query 为 true。
 - 用例在 `/login.html` 派发 `beforeinstallprompt` 后断言 `#pwa_install_prompt` 不出现，并确认 mock `prompt()` 未被调用。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "standalone display mode" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
+
+## 2026-07-06 阶段 163：PWA 离线登录页缓存导航
+- 开始处理 Aquinas 子 agent 建议的离线登录页缺口：已有 PWA E2E 证明 `/login.html` 在 shell cache 中，也验证离线 query 回根壳，但未覆盖离线直接打开已缓存登录页。
+- `tests/marketplace-wallet.e2e.js` 新增 `serves the cached login shell while offline`，在 service worker 激活并控制页面后确认 `/login.html` 已缓存。
+- 用例断网导航到 `/login.html`，断言 `#logoBlock` 渲染 `Welcome to SillyTavern` 且页面标题为 SillyTavern。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "serves the cached login shell while offline" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
 
 ## 五问重启检查
 | 问题 | 答案 |

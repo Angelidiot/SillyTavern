@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 162
+阶段 163
 
 ## 各阶段
 
@@ -1517,8 +1517,8 @@
 - [x] 断言 prompt 从 DOM 移除且没有调用原生 install prompt
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 161：市场 access/sort DOM 接线 E2E
 - [x] 确认筛选排序纯函数已有测试，但真实 DOM 下 access 和 sort 下拉接线缺少浏览器覆盖
@@ -1533,6 +1533,15 @@
 - [x] 确认 PWA 安装入口有单元契约检查 standalone gate，但缺少浏览器行为覆盖
 - [x] 新增浏览器 E2E，mock `(display-mode: standalone)` 为 true 后派发 `beforeinstallprompt`
 - [x] 断言安装提示不会出现，原生 prompt 不会被调用
+- [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
+- [x] 提交并推送到 GitHub fork
+- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** in_progress
+
+### 阶段 163：PWA 离线登录页缓存导航
+- [x] 确认 PWA E2E 已检查 `/login.html` 在 shell cache 中，但未覆盖离线直接导航到登录页
+- [x] 新增浏览器 E2E，service worker 激活后断网打开 `/login.html`
+- [x] 断言 cached login shell 可渲染 SillyTavern 标题和欢迎文案
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [ ] 提交并推送到 GitHub fork
 - [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过

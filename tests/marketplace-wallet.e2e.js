@@ -1016,6 +1016,37 @@ test.describe('hosted tavern PWA browser shell', () => {
         const apiCached = await page.evaluate(async () => Boolean(await caches.match('/api/health')));
         expect(apiCached).toBe(false);
     });
+
+    test('serves the cached login shell while offline', async ({ page }) => {
+        await page.goto('/login.html', { waitUntil: 'load' });
+        await resetPwaState(page);
+        await page.reload({ waitUntil: 'load' });
+
+        await expect.poll(() => page.evaluate(async () => {
+            if (!('serviceWorker' in navigator)) {
+                return '';
+            }
+
+            const readyRegistration = await navigator.serviceWorker.ready;
+            return readyRegistration.active?.state || '';
+        })).toBe('activated');
+        await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller?.scriptURL.includes('/service-worker.js')))).toBe(true);
+
+        const loginShellCached = await page.evaluate(async cacheName => {
+            const cache = await caches.open(cacheName);
+            return Boolean(await cache.match('/login.html'));
+        }, SHELL_CACHE_NAME);
+        expect(loginShellCached).toBe(true);
+
+        await page.context().setOffline(true);
+        try {
+            await page.goto('/login.html', { waitUntil: 'domcontentloaded' });
+            await expect(page.locator('#logoBlock')).toContainText('Welcome to SillyTavern');
+            await expect(page).toHaveTitle(/SillyTavern/);
+        } finally {
+            await page.context().setOffline(false);
+        }
+    });
 });
 
 test.describe('marketplace wallet extension', () => {
