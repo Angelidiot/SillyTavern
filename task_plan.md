@@ -1359,9 +1359,9 @@
 - [x] 要求每个生成的 market/wallet route 都有对应 note
 - [x] 修复测试解析器支持 `:id` 路径参数
 - [x] 运行 API reference 目标测试和 marketplace 基础验证
-- [ ] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
