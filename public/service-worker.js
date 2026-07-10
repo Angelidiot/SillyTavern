@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sillytavern-shell-v4';
+const CACHE_NAME = 'sillytavern-shell-v5';
 const SHELL_ASSETS = [
     '/',
     '/login.html',
@@ -13,9 +13,9 @@ const SHELL_ASSETS = [
     '/scripts/pwa.js',
     '/scripts/extensions/marketplace-wallet/manifest.json',
     '/scripts/extensions/marketplace-wallet/window.html',
-    '/scripts/extensions/marketplace-wallet/index.js?v=0.2.31',
-    '/scripts/extensions/marketplace-wallet/filters.js?v=0.2.31',
-    '/scripts/extensions/marketplace-wallet/style.css?v=0.2.31',
+    '/scripts/extensions/marketplace-wallet/index.js?v=0.2.32',
+    '/scripts/extensions/marketplace-wallet/filters.js?v=0.2.32',
+    '/scripts/extensions/marketplace-wallet/style.css?v=0.2.32',
 ];
 
 self.addEventListener('install', event => {

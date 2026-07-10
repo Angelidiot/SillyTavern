@@ -21,6 +21,19 @@
                     </button>
                 </section>
 
+                <section class="marketplace-wallet-access" aria-label="Account and permissions">
+                    <div class="marketplace-wallet-access-header">
+                        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+                        <b data-i18n="Account & Access">Account &amp; Access</b>
+                    </div>
+                    <div class="marketplace-wallet-access-grid">
+                        <span><b id="marketplace_wallet_access_handle">default-user</b><small data-i18n="Account">Account</small></span>
+                        <span><b id="marketplace_wallet_access_role">User</b><small data-i18n="Role">Role</small></span>
+                        <span><b id="marketplace_wallet_access_mode">Single-user mode</b><small data-i18n="Mode">Mode</small></span>
+                    </div>
+                    <small id="marketplace_wallet_access_note" class="marketplace-wallet-access-note"></small>
+                </section>
+
                 <section class="marketplace-wallet-creator" aria-label="Creator center">
                     <div class="marketplace-wallet-creator-header">
                         <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
@@ -95,6 +108,18 @@
                         <b data-i18n="Admin Tools">Admin Tools</b>
                     </div>
                     <div class="marketplace-wallet-admin-grid">
+                        <div class="marketplace-wallet-users">
+                            <div class="marketplace-wallet-users-header">
+                                <span>
+                                    <i class="fa-solid fa-users-gear" aria-hidden="true"></i>
+                                    <b data-i18n="Users & Permissions">Users &amp; Permissions</b>
+                                </span>
+                                <button id="marketplace_wallet_users_refresh" class="menu_button menu_button_icon" type="button" title="Refresh users" data-i18n="[title]Refresh users">
+                                    <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div id="marketplace_wallet_users" class="marketplace-wallet-users-list" aria-live="polite"></div>
+                        </div>
                         <div class="marketplace-wallet-grant">
                             <label for="marketplace_wallet_grant_handle" data-i18n="User handle">User handle</label>
                             <input id="marketplace_wallet_grant_handle" class="text_pole" placeholder="default-user" aria-label="User handle">

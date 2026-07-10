@@ -1,12 +1,13 @@
 import { doNavbarIconClick, getRequestHeaders } from '../../../script.js';
 import { renderExtensionTemplateAsync } from '../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../popup.js';
-import { getCurrentUserHandle, isAdmin } from '../../user.js';
+import { accountsEnabled, currentUser, getCurrentUserHandle, isAdmin } from '../../user.js';
 import { getFileText, toggleDrawer } from '../../utils.js';
-import { filterAndSortAssets } from './filters.js?v=0.2.31';
+import { filterAndSortAssets } from './filters.js?v=0.2.32';
 
 const MODULE_NAME = 'marketplace-wallet';
 const LAUNCHER_ID = 'marketplace_wallet_launcher';
+const USER_ACCESS_ACTIONS = new Set(['enable', 'disable', 'promote', 'demote']);
 const MARKET_TYPES = {
     character_card: 'Character card',
     world_book: 'World book',
@@ -33,6 +34,7 @@ const state = {
     ledger: [],
     library: [],
     reports: [],
+    users: [],
     wallet: null,
     loaded: false,
     loading: false,
@@ -41,13 +43,16 @@ const state = {
     ledgerError: '',
     libraryError: '',
     reportsError: '',
+    usersError: '',
     creatorLoading: false,
     ledgerLoading: false,
     libraryLoading: false,
     reportsLoading: false,
+    usersLoading: false,
     granting: false,
     busyAssetIds: new Set(),
     busyReportIds: new Set(),
+    busyUserHandles: new Set(),
 };
 
 function formatCoins(value) {
@@ -113,11 +118,12 @@ function createPanelError(message, retryKey) {
 }
 
 async function fetchJson(url, options = {}) {
+    const { omitContentType = false, ...fetchOptions } = options;
     const response = await fetch(url, {
-        ...options,
+        ...fetchOptions,
         headers: {
-            ...getRequestHeaders(),
-            ...(options.headers ?? {}),
+            ...getRequestHeaders({ omitContentType }),
+            ...(fetchOptions.headers ?? {}),
         },
     });
     const contentType = response.headers.get('content-type') || '';
@@ -145,6 +151,19 @@ function renderWallet() {
     $('[data-marketplace-wallet-bucket="bonus"]').text(formatCoins(balance.buckets?.bonus));
     $('[data-marketplace-wallet-bucket="paid"]').text(formatCoins(balance.buckets?.paid));
     $('[data-marketplace-wallet-bucket="earnings"]').text(formatCoins(balance.buckets?.earnings));
+}
+
+function renderAccountAccess() {
+    const role = !accountsEnabled ? 'Local admin' : currentUser?.admin ? 'Admin' : 'User';
+    const accountMode = accountsEnabled ? 'Accounts enabled' : 'Single-user mode';
+    const note = canUseAdminTools()
+        ? 'Can review market assets, grant coins, and manage account permissions.'
+        : 'Can browse, upload, buy, report, and manage library assets.';
+
+    $('#marketplace_wallet_access_handle').text(getCurrentUserHandle());
+    $('#marketplace_wallet_access_role').text(role);
+    $('#marketplace_wallet_access_mode').text(accountMode);
+    $('#marketplace_wallet_access_note').text(note);
 }
 
 function renderWalletLedger() {
@@ -336,6 +355,8 @@ function renderAdminVisibility() {
     } else {
         $admin.attr('hidden', '');
     }
+    renderAccountAccess();
+    renderUserManagement();
 }
 
 function getFilteredAssets() {
@@ -742,6 +763,83 @@ function renderReportQueue() {
     }
 }
 
+function createUserActionButton({ user, action, icon, label, disabled = false }) {
+    const $button = $('<button class="menu_button menu_button_icon" type="button"></button>');
+    $button.attr('data-marketplace-wallet-user-action', action);
+    $button.attr('data-user-handle', user.handle);
+    $button.prop('disabled', disabled);
+    $button.append(`<i class="fa-solid ${icon}" aria-hidden="true"></i>`);
+    $button.append($('<span></span>').text(label));
+    return $button;
+}
+
+function renderUserManagement() {
+    const $list = $('#marketplace_wallet_users');
+    if (!$list.length) {
+        return;
+    }
+
+    $list.empty();
+    $('#marketplace_wallet_users_refresh').prop('disabled', state.usersLoading || !accountsEnabled);
+
+    if (!canUseAdminTools()) {
+        return;
+    }
+
+    if (!accountsEnabled) {
+        $list.append($('<div class="marketplace-wallet-empty"></div>').text('User accounts are disabled. default-user has local admin access.'));
+        return;
+    }
+
+    if (state.usersLoading) {
+        $list.append($('<div class="marketplace-wallet-empty"></div>').text('Loading users...'));
+        return;
+    }
+
+    if (state.usersError) {
+        $list.append(createPanelError(`Users could not be loaded. ${state.usersError}`, 'users'));
+        return;
+    }
+
+    if (state.users.length === 0) {
+        $list.append($('<div class="marketplace-wallet-empty"></div>').text('No users found.'));
+        return;
+    }
+
+    for (const user of state.users) {
+        const isBusy = state.busyUserHandles.has(user.handle);
+        const isSelf = user.handle === getCurrentUserHandle();
+        const $item = $('<div class="marketplace-wallet-user-item"></div>');
+        const $meta = $('<div class="marketplace-wallet-user-main"></div>');
+        const $title = $('<span></span>').text(user.name || user.handle || 'Unnamed user');
+        const $details = $('<small></small>').text([
+            user.handle ? `@${user.handle}` : '',
+            user.admin ? 'Admin' : 'User',
+            user.enabled ? 'enabled' : 'disabled',
+            user.password ? 'password' : 'no password',
+        ].filter(Boolean).join(' · '));
+        const $actions = $('<div class="marketplace-wallet-user-actions"></div>');
+
+        $meta.append($title, $details);
+        $actions.append(createUserActionButton({
+            user,
+            action: user.enabled ? 'disable' : 'enable',
+            icon: user.enabled ? 'fa-ban' : 'fa-check',
+            label: isBusy ? 'Saving' : user.enabled ? 'Disable' : 'Enable',
+            disabled: isBusy || isSelf,
+        }));
+        $actions.append(createUserActionButton({
+            user,
+            action: user.admin ? 'demote' : 'promote',
+            icon: user.admin ? 'fa-arrow-down' : 'fa-arrow-up',
+            label: isBusy ? 'Saving' : user.admin ? 'Demote' : 'Promote',
+            disabled: isBusy || isSelf,
+        }));
+        $item.append($meta, $actions);
+        $list.append($item);
+    }
+}
+
 function renderAssets() {
     const $list = $('#marketplace_wallet_assets');
     $list.empty();
@@ -826,6 +924,33 @@ async function loadReportQueue() {
     }
 }
 
+async function loadUsers() {
+    if (!canUseAdminTools() || !accountsEnabled) {
+        state.users = [];
+        state.usersError = '';
+        renderUserManagement();
+        return;
+    }
+
+    state.usersLoading = true;
+    state.usersError = '';
+    renderUserManagement();
+    try {
+        const users = await fetchJson('/api/users/get', {
+            method: 'POST',
+            omitContentType: true,
+        });
+        state.users = Array.isArray(users) ? users : [];
+    } catch (error) {
+        state.users = [];
+        state.usersError = getErrorMessage(error, 'Check your permissions and try again.');
+        console.warn('Users could not be loaded', error);
+    } finally {
+        state.usersLoading = false;
+        renderUserManagement();
+    }
+}
+
 async function loadLibrary() {
     state.libraryLoading = true;
     state.libraryError = '';
@@ -900,6 +1025,7 @@ async function loadMarketplace({ silent = false } = {}) {
         void loadCreatorSummary();
         void loadLibrary();
         void loadReportQueue();
+        void loadUsers();
         if (!silent) {
             toastr.success('Marketplace refreshed');
         }
@@ -931,6 +1057,9 @@ function retryPanel(key) {
             break;
         case 'reports':
             void loadReportQueue();
+            break;
+        case 'users':
+            void loadUsers();
             break;
     }
 }
@@ -1438,6 +1567,40 @@ async function grantCoins() {
     }
 }
 
+async function updateUserAccess(handle, action) {
+    if (!handle || !USER_ACCESS_ACTIONS.has(action) || state.busyUserHandles.has(handle)) {
+        return;
+    }
+
+    state.busyUserHandles.add(handle);
+    renderUserManagement();
+    try {
+        await fetchJson(`/api/users/${action}`, {
+            method: 'POST',
+            body: JSON.stringify({ handle }),
+        });
+        toastr.success(`${handle} updated`);
+        await loadUsers();
+    } catch (error) {
+        console.error(`Failed to ${action} user`, error);
+        toastr.error(error.message || 'User permission could not be updated');
+    } finally {
+        state.busyUserHandles.delete(handle);
+        renderUserManagement();
+    }
+}
+
+function onUserAction(event) {
+    const button = event.target.closest('[data-marketplace-wallet-user-action]');
+    if (!button) {
+        return;
+    }
+
+    const handle = button.getAttribute('data-user-handle');
+    const action = button.getAttribute('data-marketplace-wallet-user-action');
+    void updateUserAccess(handle, action);
+}
+
 function onAssetAction(event) {
     const button = event.target.closest('[data-marketplace-wallet-action]');
     if (!button) {
@@ -1534,6 +1697,8 @@ function bindEvents($root) {
     $root.find('#marketplace_wallet_library_items').on('click', onAssetAction);
     $root.find('#marketplace_wallet_review_queue').on('click', onAssetAction);
     $root.find('#marketplace_wallet_report_queue').on('click', onReportAction);
+    $root.find('#marketplace_wallet_users').on('click', onUserAction);
+    $root.find('#marketplace_wallet_users_refresh').on('click', () => loadUsers());
     $root.find('#marketplace_wallet_grant_submit').on('click', grantCoins);
     $root.find('#marketplace_wallet_upload_price_type').on('change', function () {
         const isFixedPrice = String($(this).val()) === 'fixed_price';

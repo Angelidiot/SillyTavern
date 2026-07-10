@@ -15,6 +15,7 @@
 - 钱包账本：运营赠币、购买扣款、创作者收益入账。
 - 创作者中心：查看作品、领取/销量、安装数、收入和审核状态聚合。
 - 管理员工具：审核、拒绝、下架、赠币、举报队列和举报 resolve。
+- 用户权限：展示当前账号、角色和账号模式；管理员可复用 SillyTavern 现有用户 API 启停账号、升降 admin 权限。
 - 手机入口：响应式 Web/PWA 安装壳，浏览器支持时显示应用内 Install 入口；service worker 更新会跳过 waiting 并在旧缓存清理后 claim 当前 clients，导航 shell 走 network-first，离线恢复带 query 的导航时回退缓存根页面，静态资源缓存不缓存业务 API，并有浏览器级 PWA E2E 覆盖。
 
 正式 SaaS 第一版可以继续扩展：
@@ -41,7 +42,7 @@
 | 普通用户 | 领取/购买资产、安装到酒馆、举报；评分属于 Future SaaS |
 | 创作者 | 上传资产、修订草稿/拒绝资产、查看收益；版本化发布属于 Future SaaS |
 | 审核员 | 审核资产、处理举报、下架违规内容；当前本地 MVP 由管理员工具承担 |
-| 管理员 | 审核、拒绝、下架、赠币、处理举报；封禁、退款、推荐位属于 Future SaaS |
+| 管理员 | 审核、拒绝、下架、赠币、处理举报、启停账号、升降 admin 权限；封禁、退款、推荐位属于 Future SaaS |
 
 ## 市场资产
 
@@ -458,7 +459,18 @@ GET    /api/wallet/ledger
 POST   /api/wallet/grants/admin
 ```
 
+User admin API（复用 SillyTavern 现有账号系统）：
+
+```text
+POST   /api/users/get
+POST   /api/users/enable
+POST   /api/users/disable
+POST   /api/users/promote
+POST   /api/users/demote
+```
+
 marketplace-wallet 钱包面板展示当前用户的最近流水，包含运营赠币、购买扣款、创作者收益等正负金额记录；完整账本仍以 `GET /api/wallet/ledger` 为准。管理员查询其它用户 wallet/ledger 时，未知 handle 返回 404，避免把拼写错误误判为真实零余额用户。管理员赠币 reason 必须是字符串，空值默认 `Admin grant`，超过 200 字符或非字符串值会被拒绝而不是静默截断。
+marketplace-wallet 也会展示 Account & Access 摘要，显示当前 handle、角色和账号模式；管理员工具中的 Users & Permissions 面板调用上述现有用户 API 启停账号、升降 admin 权限，并在前端避免管理员对当前账号执行禁用或降权操作。账号系统关闭时，本地 `default-user` 以 local admin 模式运行，面板会显示说明而不是请求用户列表。
 付费购买响应只返回 entitlement 摘要、`already_owned`、purchase id 和买家余额摘要；完整 ledger entries、entitlement 内部 ledger 引用、创作者余额和收益明细需要通过 Wallet API 或 Creator Center 读取，避免市场购买接口扩大账务数据暴露面。
 前端只把 `bonus + paid` 视为可消费余额；固定价资产余额不足时，购买按钮保持禁用，并显示还差多少可消费 coins，不把 `earnings` 计入买家消费能力。
 `npm run test:marketplace:smoke` 会先运行 demo seed 脚本，再临时启动真实 server，覆盖 creator 上传、提交、审批、Creator Center 统计、举报创建/队列/resolve、免费领取/安装和固定价购买的 admin grant、买家扣款、创作者收益、响应隐私 shape、Library 和文件落盘；随后在默认 CSRF 配置下验证无 token 的市场写入会被 403 拒绝，并用 `/csrf-token` token+cookie 成功创建 draft。
@@ -487,7 +499,7 @@ Creator Center、My Library、Wallet Activity 和 Report Queue 都是主 Marketp
 本地 MVP 的市场浏览先用客户端筛选和排序，支持类型、价格、访问状态、标题/摘要/创作者/标签/语言/内容分级搜索、最新、热门和价格排序；正式 SaaS 需要服务端搜索与排序索引。
 当前 marketplace-wallet 在筛选结果为空且存在激活筛选时显示 Clear filters，移动端也可以一键回到默认浏览状态。
 托管探活使用公开 `GET /api/health`，返回 `ok/status/service/version/uptime/timestamp`，不需要登录、不返回用户或账务数据。
-`npm run test:pwa:e2e` 会用临时 server 和真实浏览器验证应用内 Install prompt、`/login.html` 注册并受 `/service-worker.js` 控制、`sillytavern-shell-v4` 缓存包含静态 shell 与 marketplace-wallet 扩展资源、导航请求优先使用网络版本、离线带 query 导航能回退缓存根页面，并确认 `/api/health` 不会进入 CacheStorage。
+`npm run test:pwa:e2e` 会用临时 server 和真实浏览器验证应用内 Install prompt、`/login.html` 注册并受 `/service-worker.js` 控制、`sillytavern-shell-v5` 缓存包含静态 shell 与 marketplace-wallet 扩展资源、导航请求优先使用网络版本、离线带 query 导航能回退缓存根页面，并确认 `/api/health` 不会进入 CacheStorage。
 `npm run test:hosted:docker` 会构建 Docker 镜像、使用临时 config/data volume 启动容器，并验证 `/api/health`、`/api/wallet`、`/api/market/assets`、`/manifest.json`、`/service-worker.js` 和首页可访问，证明托管部署产物能暴露钱包/市场业务路由和 PWA shell。
 发布前慢速验证可运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`，它会顺序执行 marketplace contract/Jest、runtime smoke 和串行浏览器 E2E。Docker 镜像 smoke 保持为独立的 `npm run test:hosted:docker` 检查，并在 CI 中作为单独步骤运行；具备 Docker 的机器可运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:ci` 执行与 GitHub Marketplace Wallet Checks 覆盖等价的 release gate。
 

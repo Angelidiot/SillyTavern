@@ -9,6 +9,7 @@ This branch adds a hosted AI tavern marketplace and wallet MVP on top of SillyTa
 ### Marketplace And Wallet
 
 - Visible `市场 / 钱包` launcher that opens the built-in `marketplace-wallet` extension.
+- Account & Access summary showing the current handle, role, and account mode.
 - Wallet balances split into `bonus`, `paid`, and `earnings` buckets.
 - Immutable wallet ledger for grants, purchases, debits, and creator earnings.
 - Recent wallet activity in the wallet panel, including grants, purchases, debits, and creator earnings.
@@ -21,6 +22,7 @@ This branch adds a hosted AI tavern marketplace and wallet MVP on top of SillyTa
 - My Library view for claimed or purchased assets with entitlement dates, recent install summaries, details, and reinstall actions.
 - Installable PWA shell for mobile browsers using the existing web app and static shell cache.
 - Admin review queue with creator, price, tag, summary, inspect/approve/reject actions.
+- Admin Users & Permissions panel for enabling/disabling accounts and promoting/demoting admin access through the existing SillyTavern user APIs.
 - Admin approval revalidates the full publishable asset, including title, type, price, metadata, and payload, before public listing.
 - Admin delist action to remove listed assets from public purchase while preserving existing entitlements.
 - User report action with required bounded reason/details body, admin report queue with reported dates, bounded resolution notes, and resolve workflow for marketplace moderation; report and rejection forms warn locally instead of truncating overlong text.

@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 171
+阶段 172
 
 ## 各阶段
 
@@ -1625,6 +1625,18 @@
 - [x] 运行目标浏览器 E2E、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
+
+### 阶段 172：用户权限入口与移动后台布局
+- [x] 使用 UI/UX skill 生成托管 AI 酒馆的移动优先设计系统方向
+- [x] 复用现有 SillyTavern 用户管理 API，不新增独立账号/权限后端
+- [x] 增加 Account & Access 权限摘要
+- [x] 在 marketplace-wallet 管理员工具中增加 Users & Permissions 面板
+- [x] 支持管理员启停账号、升降 admin 权限，并避免自我禁用/降权
+- [x] 优化 marketplace-wallet 分区、用户管理和移动端触控布局
+- [x] 运行 marketplace 基础验证和可视化 smoke
+- [x] 更新 README、设计文档和规划记录
+- [x] 提交并推送到 GitHub fork
 - **状态：** complete
 
 ## 关键问题

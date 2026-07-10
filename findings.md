@@ -272,6 +272,11 @@
 - Review Queue approve 失败不能把 submitted 资产从队列中移除或卡住按钮；审核员应能在同一队列项上直接重试。
 - Review Queue reject 失败同样不能提前改变 Creator Center 计数或驳回理由；只有成功 POST 后才应从 submitted 转为 rejected。
 - Delist 失败不能提前把 listed 资产标成 delisted；下架按钮必须恢复，避免管理员误以为资产已从公开市场移除。
+- 用户权限入口应复用现有 `/api/users/*` 管理接口，避免 marketplace 维护第二套账号状态。
+- Account & Access 摘要需要常驻展示当前 handle、角色和账号模式，让托管版和原版本地酒馆的差异一打开就可见。
+- 管理员 Users & Permissions 面板应禁止对当前账号执行禁用或降权，降低误操作把自己锁出后台的风险。
+- 账号系统关闭时 `default-user` 会以 local admin 模式运行，此时用户列表请求没有意义，前端应显示说明而不是制造错误态。
+- 移动端后台控件要使用单列/双列网格和 44px 触控目标，用户权限按钮不能依赖桌面宽度。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

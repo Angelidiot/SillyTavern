@@ -1958,6 +1958,20 @@
 - GitHub run `28776603843` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 - 完整本地非 Docker 慢速闭环已通过：`npm run test:marketplace`、`npm run test:marketplace:smoke`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs --workers=1`（46 browser E2E 全部通过，用时约 4.9 分钟）。
 
+## 2026-07-10 阶段 172：用户权限入口与移动后台布局
+- 开始处理用户明确指出的差异可见性和用户/权限缺口：市场钱包不能只像原版酒馆多一个扩展，需要一打开就看到托管账号、市场、钱包和后台控制面。
+- 使用 `ui-ux-pro-max`、`fullstack-developer` 和 `planning-with-files-zh` skill 复核方向：采用移动优先、后台工具化、复用现有 API 的最小路线。
+- marketplace-wallet 新增 Account & Access 摘要，显示当前 handle、Admin/User/local admin 角色和账号启用模式。
+- marketplace-wallet 管理员工具新增 Users & Permissions 面板，复用 `/api/users/get|enable|disable|promote|demote`，支持启停用户和升降 admin 权限。
+- 前端避免管理员对当前账号执行 disable/demote；账号系统关闭时显示 `default-user` local admin 说明，不请求用户列表。
+- marketplace-wallet 分区重新做了卡片化边界、后台 grid、自适应用户列表和手机触控布局；移动端用户权限按钮、刷新按钮等控件使用 44px 触控目标。
+- marketplace-wallet manifest 与 PWA shell cache bump 到 `0.2.32` / `sillytavern-shell-v5`，避免已安装手机壳继续使用旧后台模板。
+- README 和设计文档补充 Account & Access、Users & Permissions、复用 SillyTavern 用户 API 的说明。
+- 已通过 `npm run test:marketplace:syntax`。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js --runInBand`。
+- 已通过 `npm run test:marketplace`，覆盖 22 个 market/wallet 后端契约和 53 个脚本/UI/PWA/health 契约。
+- 已通过桌面 1280px 与手机 390px Playwright smoke：launcher、Account & Access、Users & Permissions 均可见，PWA 版本资源为 `0.2.32`，无横向滚动。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

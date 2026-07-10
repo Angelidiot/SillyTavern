@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.31');
+        expect(manifest.version).toBe('0.2.32');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -38,6 +38,11 @@ describe('marketplace wallet extension UI contract', () => {
         expect(html).toContain('id="marketplace_wallet_creator_assets_list"');
         expect(html).toContain('id="marketplace_wallet_ledger_items"');
         expect(html).toContain('id="marketplace_wallet_library_items"');
+        expect(html).toContain('Account &amp; Access');
+        expect(html).toContain('id="marketplace_wallet_access_handle"');
+        expect(html).toContain('id="marketplace_wallet_access_role"');
+        expect(html).toContain('id="marketplace_wallet_access_mode"');
+        expect(html).toContain('id="marketplace_wallet_access_note"');
         expect(html).toContain('id="marketplace_wallet_price_filter"');
         expect(html).toContain('id="marketplace_wallet_access_filter"');
         expect(html).toContain('id="marketplace_wallet_sort"');
@@ -54,6 +59,9 @@ describe('marketplace wallet extension UI contract', () => {
         expect(html).toContain('earned</span>');
         expect(html).toContain('id="marketplace_wallet_admin"');
         expect(html).toContain('hidden>');
+        expect(html).toContain('Users &amp; Permissions');
+        expect(html).toContain('id="marketplace_wallet_users_refresh"');
+        expect(html).toContain('id="marketplace_wallet_users"');
         expect(html).toContain('id="marketplace_wallet_grant_handle"');
         expect(html).toContain('id="marketplace_wallet_grant_amount"');
         expect(html).toContain('id="marketplace_wallet_grant_bucket"');
@@ -103,6 +111,11 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain("fetchJson('/api/market/creator/summary')");
         expect(script).toContain("fetchJson('/api/market/library')");
         expect(script).toMatch(/fetchJson\(\s*['"]\/api\/wallet\/ledger['"]/);
+        expect(script).toContain("fetchJson('/api/users/get'");
+        expect(script).toContain("omitContentType: true");
+        expect(script).toContain("USER_ACCESS_ACTIONS = new Set(['enable', 'disable', 'promote', 'demote'])");
+        expect(script).toContain('accountsEnabled');
+        expect(script).toContain('currentUser');
         expect(script).toContain(`import { filterAndSortAssets } from './filters.js?v=${manifest.version}';`);
         expect(script).toContain('const LAUNCHER_ID = \'marketplace_wallet_launcher\'');
         expect(script).toContain('async function openMarketplacePanel()');
@@ -144,6 +157,15 @@ describe('marketplace wallet extension UI contract', () => {
         expect(script).toContain('function renderCreatorSummary()');
         expect(script).toContain('function renderLibrary()');
         expect(script).toContain('function renderWalletLedger()');
+        expect(script).toContain('function renderAccountAccess()');
+        expect(script).toContain('function renderUserManagement()');
+        expect(script).toContain('async function loadUsers()');
+        expect(script).toContain('async function updateUserAccess(handle, action)');
+        expect(script).toContain("fetchJson(`/api/users/${action}`");
+        expect(script).toContain("$root.find('#marketplace_wallet_users').on('click', onUserAction)");
+        expect(script).toContain("$root.find('#marketplace_wallet_users_refresh').on('click', () => loadUsers())");
+        expect(script).toContain("case 'users':");
+        expect(script).toContain('busyUserHandles: new Set()');
         expect(script).toContain('async function loadWalletLedger()');
         expect(script).toContain('ledgerLoading: false');
         expect(script).toContain('state.ledger = Array.isArray(result.ledger) ? result.ledger : []');
@@ -366,6 +388,10 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('var(--topBarBlockSize, 0px)');
         expect(css).toContain('env(safe-area-inset-right)');
         expect(css).toContain('.marketplace-wallet-creator-stats');
+        expect(css).toContain('.marketplace-wallet-access-grid');
+        expect(css).toContain('.marketplace-wallet-users-list');
+        expect(css).toContain('.marketplace-wallet-user-actions');
+        expect(css).toContain('repeat(auto-fit, minmax(260px, 1fr))');
         expect(css).toContain('.marketplace-wallet-controls {');
         expect(css).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
         expect(css).toContain('.marketplace-wallet-controls .text_pole');
@@ -389,6 +415,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('.marketplace-wallet-creator-asset');
         expect(css).toContain('.marketplace-wallet-creator-audit');
         expect(css).toContain('.marketplace-wallet-grant');
+        expect(css).toContain('.marketplace-wallet-user-item');
         expect(css).toContain('.marketplace-wallet-review-item');
         expect(css).toContain('.marketplace-wallet-review-summary');
         expect(css).toContain('.marketplace-wallet-report-title');
