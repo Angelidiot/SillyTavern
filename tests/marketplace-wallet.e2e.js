@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const rootDirectory = path.resolve(testDirectory, '..');
-const SHELL_CACHE_NAME = 'sillytavern-shell-v7';
+const SHELL_CACHE_NAME = 'sillytavern-shell-v8';
 const MARKETPLACE_WALLET_EXTENSION_VERSION = JSON.parse(fs.readFileSync(
     path.join(rootDirectory, 'public/scripts/extensions/marketplace-wallet/manifest.json'),
     'utf8',
@@ -1148,6 +1148,50 @@ test.describe('hosted tavern PWA browser shell', () => {
 });
 
 test.describe('marketplace wallet extension', () => {
+    test('opens from the fixed launcher and surfaces marketplace browsing first on mobile', async ({ page }) => {
+        await page.setViewportSize({ width: 390, height: 844 });
+        await mockMarketplaceApis(page);
+        await page.goto('/');
+        await page.waitForFunction('document.getElementById("preloader") === null', { timeout: 0 });
+
+        const onboardingDialog = page.getByRole('dialog').filter({ hasText: 'Welcome to SillyTavern!' });
+        const hasOnboarding = await onboardingDialog.waitFor({ state: 'visible', timeout: 5_000 })
+            .then(() => true)
+            .catch(() => false);
+        if (hasOnboarding) {
+            await onboardingDialog.locator('.popup-button-ok').click();
+            await expect(onboardingDialog).toBeHidden();
+        }
+
+        const launcher = page.locator('#marketplace_wallet_launcher');
+        await expect(launcher).toBeVisible({ timeout: 30_000 });
+        await launcher.click();
+
+        const walletUi = page.locator('#marketplace_wallet_ui');
+        await expect(walletUi.locator('.inline-drawer-content')).toBeVisible();
+        await expect(walletUi.locator('#marketplace_wallet_total')).toHaveText('175');
+        await expect(walletUi.locator('#marketplace_wallet_assets')).toContainText('Listed World');
+
+        const layout = await walletUi.evaluate(element => {
+            const rect = selector => element.querySelector(selector).getBoundingClientRect();
+            const controls = rect('.marketplace-wallet-controls');
+            const assets = rect('#marketplace_wallet_assets');
+            const creator = rect('.marketplace-wallet-creator');
+            const viewportHeight = document.documentElement.clientHeight;
+            return {
+                controlsBeforeCreator: controls.top < creator.top,
+                assetsBeforeCreator: assets.top < creator.top,
+                controlsVisibleWithoutScroll: controls.top >= 0 && controls.bottom <= viewportHeight,
+            };
+        });
+
+        expect(layout).toMatchObject({
+            controlsBeforeCreator: true,
+            assetsBeforeCreator: true,
+            controlsVisibleWithoutScroll: true,
+        });
+    });
+
     test('renders admin review queue and posts approve/grant actions', async ({ page }) => {
         const apiCalls = await mockMarketplaceApis(page);
 

@@ -3,7 +3,7 @@ import { renderExtensionTemplateAsync } from '../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../popup.js';
 import { accountsEnabled, currentUser, getCurrentUserHandle, isAdmin } from '../../user.js';
 import { getFileText, toggleDrawer } from '../../utils.js';
-import { filterAndSortAssets } from './filters.js?v=0.2.34';
+import { filterAndSortAssets } from './filters.js?v=0.2.35';
 
 const MODULE_NAME = 'marketplace-wallet';
 const LAUNCHER_ID = 'marketplace_wallet_launcher';
@@ -775,11 +775,15 @@ function createUserActionButton({ user, action, icon, label, disabled = false })
 
 function renderUserManagement() {
     const $list = $('#marketplace_wallet_users');
+    const $summary = $('#marketplace_wallet_users_summary');
+    const $handleOptions = $('#marketplace_wallet_user_handle_options');
     if (!$list.length) {
         return;
     }
 
     $list.empty();
+    $summary.empty();
+    $handleOptions.empty();
     $('#marketplace_wallet_users_refresh').prop('disabled', state.usersLoading || !accountsEnabled);
 
     if (!canUseAdminTools()) {
@@ -787,23 +791,50 @@ function renderUserManagement() {
     }
 
     if (!accountsEnabled) {
+        $summary.append($('<span></span>').text('Local admin mode'));
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('User accounts are disabled. default-user has local admin access.'));
         return;
     }
 
     if (state.usersLoading) {
+        $summary.append($('<span></span>').text('Loading account directory...'));
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('Loading users...'));
         return;
     }
 
     if (state.usersError) {
+        $summary.append($('<span></span>').text('Account directory unavailable'));
         $list.append(createPanelError(`Users could not be loaded. ${state.usersError}`, 'users'));
         return;
     }
 
     if (state.users.length === 0) {
+        $summary.append($('<span></span>').text('0 users'));
         $list.append($('<div class="marketplace-wallet-empty"></div>').text('No users found.'));
         return;
+    }
+
+    const userStats = state.users.reduce((stats, user) => {
+        stats.total += 1;
+        if (user.admin) {
+            stats.admins += 1;
+        }
+        if (!user.enabled) {
+            stats.disabled += 1;
+        }
+        if (!user.password) {
+            stats.unprotected += 1;
+        }
+        return stats;
+    }, { total: 0, admins: 0, disabled: 0, unprotected: 0 });
+    const summaryItems = [
+        `${formatCoins(userStats.total)} users`,
+        `${formatCoins(userStats.admins)} admins`,
+        `${formatCoins(userStats.disabled)} disabled`,
+        `${formatCoins(userStats.unprotected)} without password`,
+    ];
+    for (const item of summaryItems) {
+        $summary.append($('<span></span>').text(item));
     }
 
     for (const user of state.users) {
@@ -820,6 +851,9 @@ function renderUserManagement() {
         ].filter(Boolean).join(' · '));
         const $actions = $('<div class="marketplace-wallet-user-actions"></div>');
 
+        if (user.handle) {
+            $handleOptions.append($('<option></option>').attr('value', user.handle));
+        }
         $meta.append($title, $details);
         $actions.append(createUserActionButton({
             user,

@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 175
+阶段 176
 
 ## 各阶段
 
@@ -1666,6 +1666,18 @@
 - [x] 将 marketplace-wallet manifest bump 到 `0.2.34`，PWA shell cache bump 到 `sillytavern-shell-v7`
 - [x] 将 marketplace-wallet 扩展 manifest 改为 service worker network-first，避免无版本 manifest 被旧 cache 固定在旧 CSS
 - [x] 运行 UI/PWA 契约、目标移动布局 E2E、浏览器手动验证和空白检查
+- **状态：** complete
+
+### 阶段 176：首屏市场可见度与授币权限边界
+- [x] 使用 UI/UX skill 复核移动端市场首屏，确认资产浏览入口不应埋在 Creator/Library/Ledger 之后
+- [x] 将 Marketplace filters 和资产列表移动到 Account & Access 之后，让用户点入口后更快看到可浏览内容
+- [x] 将资产行强化为轻量卡片，移动端资产列表取消内部滚动，交给页面自然滚动
+- [x] Users & Permissions 新增用户数、管理员数、停用数、无密码数摘要，并为授币 handle 提供 datalist 候选
+- [x] 将授币金额输入补 `inputmode="numeric"`，方便手机键盘输入
+- [x] 将 marketplace-wallet `window.html` 和 manifest 一起改为 service worker network-first，避免 HTML-only 改动被旧 shell cache 固定
+- [x] 收紧 `/api/wallet/grants/admin`：管理员授币必须显式提供 `handle`、`userHandle` 或 `targetHandle`
+- [x] 补充首屏 launcher E2E、PWA cache 契约和 wallet grant 缺收款人后端契约
+- [x] 运行完整 marketplace 契约、runtime smoke 和完整 Chrome browser E2E
 - **状态：** complete
 
 ## 关键问题

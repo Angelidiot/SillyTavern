@@ -281,6 +281,10 @@
 - 手机筛选区不要让 Search 和 Clear filters 各自跨整行；两列同排能保持触控目标同时把高度压回 E2E 的 170px 预算内。
 - marketplace-wallet 资产卡片不适合桌面两列主文案/action 布局；SillyTavern 右侧抽屉宽度会把主列压到几像素，卡片应单列显示，按钮在下方换行。
 - PWA service worker 不应 cache-first 返回无版本 marketplace-wallet manifest；否则 manifest 会继续指向旧 query 版本的 JS/CSS，用户刷新后仍看旧布局。
+- Marketplace 首屏应优先露出浏览内容；移动端打开市场后若先看到余额、账户、创作者、库和流水，用户会觉得“没变化”，filters 和资产列表应紧跟账号摘要。
+- marketplace-wallet window.html 也需要 network-first；HTML 模板没有 query version，只有 JS/CSS bump 不足以保证已安装 PWA 看到新布局。
+- 用户权限面板需要聚合摘要；仅列出用户行不利于管理员快速判断账号风险，users/admins/disabled/no-password 计数应常驻显示。
+- Admin grant 必须显式指定收款人；授币属于高敏感写操作，缺少 handle/userHandle/targetHandle 时不应 fallback 给当前管理员并写入不可变 ledger。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

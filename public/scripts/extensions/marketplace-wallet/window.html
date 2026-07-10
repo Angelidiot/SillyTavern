@@ -34,6 +34,38 @@
                     <small id="marketplace_wallet_access_note" class="marketplace-wallet-access-note"></small>
                 </section>
 
+                <section class="marketplace-wallet-controls" aria-label="Marketplace filters">
+                    <select id="marketplace_wallet_type_filter" class="text_pole" aria-label="Asset type">
+                        <option value="" data-i18n="All types">All types</option>
+                        <option value="character_card" data-i18n="Character cards">Character cards</option>
+                        <option value="world_book" data-i18n="World books">World books</option>
+                    </select>
+                    <select id="marketplace_wallet_price_filter" class="text_pole" aria-label="Price">
+                        <option value="" data-i18n="Any price">Any price</option>
+                        <option value="free" data-i18n="Free">Free</option>
+                        <option value="fixed_price" data-i18n="Paid">Paid</option>
+                    </select>
+                    <select id="marketplace_wallet_access_filter" class="text_pole" aria-label="Access">
+                        <option value="" data-i18n="All access">All access</option>
+                        <option value="available" data-i18n="Available">Available</option>
+                        <option value="library" data-i18n="In library">In library</option>
+                        <option value="mine" data-i18n="My uploads">My uploads</option>
+                    </select>
+                    <select id="marketplace_wallet_sort" class="text_pole" aria-label="Sort">
+                        <option value="recent" data-i18n="Recent">Recent</option>
+                        <option value="popular" data-i18n="Popular">Popular</option>
+                        <option value="price_asc" data-i18n="Price: Low">Price: Low</option>
+                        <option value="price_desc" data-i18n="Price: High">Price: High</option>
+                    </select>
+                    <input id="marketplace_wallet_search" class="text_pole" type="search" placeholder="Search" data-i18n="[placeholder]Search" aria-label="Search marketplace">
+                    <button id="marketplace_wallet_clear_filters" class="menu_button menu_button_icon" type="button" hidden>
+                        <i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i>
+                        <span data-i18n="Clear filters">Clear filters</span>
+                    </button>
+                </section>
+
+                <div id="marketplace_wallet_assets" class="marketplace-wallet-assets" aria-live="polite"></div>
+
                 <section class="marketplace-wallet-creator" aria-label="Creator center">
                     <div class="marketplace-wallet-creator-header">
                         <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
@@ -70,38 +102,6 @@
                     <div id="marketplace_wallet_ledger_items" class="marketplace-wallet-ledger-items" aria-live="polite"></div>
                 </section>
 
-                <section class="marketplace-wallet-controls" aria-label="Marketplace filters">
-                    <select id="marketplace_wallet_type_filter" class="text_pole" aria-label="Asset type">
-                        <option value="" data-i18n="All types">All types</option>
-                        <option value="character_card" data-i18n="Character cards">Character cards</option>
-                        <option value="world_book" data-i18n="World books">World books</option>
-                    </select>
-                    <select id="marketplace_wallet_price_filter" class="text_pole" aria-label="Price">
-                        <option value="" data-i18n="Any price">Any price</option>
-                        <option value="free" data-i18n="Free">Free</option>
-                        <option value="fixed_price" data-i18n="Paid">Paid</option>
-                    </select>
-                    <select id="marketplace_wallet_access_filter" class="text_pole" aria-label="Access">
-                        <option value="" data-i18n="All access">All access</option>
-                        <option value="available" data-i18n="Available">Available</option>
-                        <option value="library" data-i18n="In library">In library</option>
-                        <option value="mine" data-i18n="My uploads">My uploads</option>
-                    </select>
-                    <select id="marketplace_wallet_sort" class="text_pole" aria-label="Sort">
-                        <option value="recent" data-i18n="Recent">Recent</option>
-                        <option value="popular" data-i18n="Popular">Popular</option>
-                        <option value="price_asc" data-i18n="Price: Low">Price: Low</option>
-                        <option value="price_desc" data-i18n="Price: High">Price: High</option>
-                    </select>
-                    <input id="marketplace_wallet_search" class="text_pole" type="search" placeholder="Search" data-i18n="[placeholder]Search" aria-label="Search marketplace">
-                    <button id="marketplace_wallet_clear_filters" class="menu_button menu_button_icon" type="button" hidden>
-                        <i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i>
-                        <span data-i18n="Clear filters">Clear filters</span>
-                    </button>
-                </section>
-
-                <div id="marketplace_wallet_assets" class="marketplace-wallet-assets" aria-live="polite"></div>
-
                 <section id="marketplace_wallet_admin" class="marketplace-wallet-admin" aria-label="Marketplace admin tools" hidden>
                     <div class="marketplace-wallet-admin-header">
                         <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
@@ -118,13 +118,15 @@
                                     <i class="fa-solid fa-rotate" aria-hidden="true"></i>
                                 </button>
                             </div>
+                            <div id="marketplace_wallet_users_summary" class="marketplace-wallet-users-summary" aria-live="polite"></div>
                             <div id="marketplace_wallet_users" class="marketplace-wallet-users-list" aria-live="polite"></div>
                         </div>
                         <div class="marketplace-wallet-grant">
                             <label for="marketplace_wallet_grant_handle" data-i18n="User handle">User handle</label>
-                            <input id="marketplace_wallet_grant_handle" class="text_pole" placeholder="default-user" aria-label="User handle">
+                            <input id="marketplace_wallet_grant_handle" class="text_pole" placeholder="default-user" list="marketplace_wallet_user_handle_options" autocomplete="username" aria-label="User handle">
+                            <datalist id="marketplace_wallet_user_handle_options"></datalist>
                             <label for="marketplace_wallet_grant_amount" data-i18n="Amount">Amount</label>
-                            <input id="marketplace_wallet_grant_amount" class="text_pole" type="number" min="1" step="1" value="100" aria-label="Grant amount">
+                            <input id="marketplace_wallet_grant_amount" class="text_pole" type="number" min="1" step="1" value="100" inputmode="numeric" aria-label="Grant amount">
                             <label for="marketplace_wallet_grant_bucket" data-i18n="Bucket">Bucket</label>
                             <select id="marketplace_wallet_grant_bucket" class="text_pole" aria-label="Grant bucket">
                                 <option value="bonus">bonus</option>

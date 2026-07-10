@@ -406,7 +406,8 @@ router.post('/grants/admin', async (request, response) => {
         }
 
         const body = request.body ?? {};
-        const targetHandle = String(body.handle || body.userHandle || body.targetHandle || currentHandle).trim();
+        const rawTargetHandle = body.handle || body.userHandle || body.targetHandle;
+        const targetHandle = String(rawTargetHandle || '').trim();
         if (!targetHandle) {
             return response.status(400).json({ error: 'Missing required fields' });
         }

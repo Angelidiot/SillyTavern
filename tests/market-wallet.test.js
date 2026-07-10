@@ -1344,6 +1344,20 @@ describe('market and wallet MVP endpoints', () => {
         expect(missingLedger.status).toBe(404);
         expect(missingLedger.body.error).toBe('User not found');
 
+        const missingRecipient = await request(aliceApp, '/api/wallet/grants/admin', {
+            method: 'POST',
+            body: {
+                amount: 10,
+                bucket: 'bonus',
+            },
+        });
+        expect(missingRecipient.status).toBe(400);
+        expect(missingRecipient.body.error).toBe('Missing required fields');
+
+        const ledgerAfterMissingRecipient = await request(aliceApp, '/api/wallet/ledger?handle=bob', { method: 'GET' });
+        expect(ledgerAfterMissingRecipient.status).toBe(200);
+        expect(ledgerAfterMissingRecipient.body.ledger).toHaveLength(1);
+
         const invalidBucket = await request(aliceApp, '/api/wallet/grants/admin', {
             method: 'POST',
             body: {

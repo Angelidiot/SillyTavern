@@ -2004,6 +2004,22 @@
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps marketplace filters compact without mobile overflow" --workers=1`。
 - 已在内置浏览器清理旧 service worker/cache 并验证当前页面加载 `style.css?v=0.2.34`，卡片标题宽度约 173px、不再竖排、无横向滚动。
 
+## 2026-07-10 阶段 176：首屏市场可见度、用户权限摘要与授币边界
+- 用户继续反馈“看不见改动/点进去像黑屏”；并行前端 explorer 指出主 Marketplace 内容在移动端埋在 Creator/Library/Ledger 后面，容易让首屏不像市场。
+- 使用 `ui-ux-pro-max` 生成 AI Tavern marketplace 设计系统建议，并选择保守落地：内容密度、可读暗色面板、交易状态清晰，不照搬高饱和霓虹。
+- `window.html` 将 Marketplace filters 与 `#marketplace_wallet_assets` 移到 Account & Access 之后，Creator Center、Library、Wallet Activity 之后展示。
+- `style.css` 将资产行从简单分隔线强化为轻量卡片；移动端 `.marketplace-wallet-assets` 取消内部 `max-height` 滚动，避免第一屏被嵌套滚动限制。
+- Users & Permissions 新增用户目录摘要：users、admins、disabled、without password，并给 admin grant handle 输入框提供 datalist 候选。
+- 授币金额输入添加 `inputmode="numeric"`，手机端更容易调出数字键盘。
+- marketplace-wallet manifest bump 到 `0.2.35`，PWA shell cache bump 到 `sillytavern-shell-v8`，同步 service worker、PWA tests、E2E 常量和设计文档。
+- service worker 对 `/scripts/extensions/marketplace-wallet/window.html` 与扩展 manifest 同样使用 network-first，避免 HTML-only 布局改动被旧 cache 锁住。
+- 后端 explorer 指出 admin grant 未显式 recipient 时会 fallback 当前 admin；`/api/wallet/grants/admin` 已改为必须提供 `handle/userHandle/targetHandle`，缺失时 400 且不写 ledger。
+- 新增/更新测试：launcher 移动端真实入口 E2E、PWA window.html network-first 契约、UI contract 的用户摘要/datalist/inputmode/移动资产布局断言、wallet grant 缺 recipient 后端契约。
+- 已通过 `node --check public/scripts/extensions/marketplace-wallet/index.js && node --check public/service-worker.js && node --check src/endpoints/wallet.js && node --check tests/marketplace-wallet.e2e.js`。
+- 已通过 `npm run test:marketplace`，覆盖 marketplace syntax、22 个 market/wallet 后端契约和 53 个脚本/UI/PWA/health 契约。
+- 已通过 `npm run test:marketplace:smoke`，覆盖 demo seed、health、PWA shell、market/wallet API、上传/审核/举报/授币/固定价购买/安装/Library/CSRF。
+- 已通过完整浏览器 E2E：`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs --workers=1`，48 passed。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
