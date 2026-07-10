@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 172
+阶段 173
 
 ## 各阶段
 
@@ -1636,6 +1636,15 @@
 - [x] 优化 marketplace-wallet 分区、用户管理和移动端触控布局
 - [x] 运行 marketplace 基础验证和可视化 smoke
 - [x] 更新 README、设计文档和规划记录
+- [x] 提交并推送到 GitHub fork
+- **状态：** complete
+
+### 阶段 173：账号权限浏览器回归
+- [x] 使用只读 agent 并行复核 accounts-enabled 用户权限覆盖缺口
+- [x] 复用现有 marketplace-wallet Playwright mock，不新增测试基础设施
+- [x] 覆盖管理员在 Users & Permissions 中执行 promote、disable、enable、demote 四个动作
+- [x] 补强普通用户在账号启用模式下看不到 Admin Tools 和 Users & Permissions
+- [x] 运行 marketplace 基础验证和目标浏览器 E2E
 - [x] 提交并推送到 GitHub fork
 - **状态：** complete
 

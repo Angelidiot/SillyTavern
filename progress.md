@@ -1972,6 +1972,14 @@
 - 已通过 `npm run test:marketplace`，覆盖 22 个 market/wallet 后端契约和 53 个脚本/UI/PWA/health 契约。
 - 已通过桌面 1280px 与手机 390px Playwright smoke：launcher、Account & Access、Users & Permissions 均可见，PWA 版本资源为 `0.2.32`，无横向滚动。
 
+## 2026-07-10 阶段 173：账号权限浏览器回归
+- 继续补齐用户管理/权限验收：使用两个只读子 agent 复核 accounts-enabled 模式下的 Users & Permissions 覆盖缺口。
+- `tests/marketplace-wallet.e2e.js` 的 mock 新增 `/api/users/get` 与 `/api/users/enable|disable|promote|demote` 路由，复用现有 `makeCurrentUser()`、`loadSillyTavern()` 和 marketplace-wallet helper。
+- 新增 `manages account permissions from admin tools when accounts are enabled`，断言 Account & Access 显示 admin 账号模式、当前管理员无法 disable/demote 自己，并真实点击 target user 的 promote、disable、enable、demote 四个动作。
+- 既有 non-admin E2E 补充断言普通用户在账号启用模式下看到 User 权限摘要，且 `Admin Tools`、`Users & Permissions`、审核/举报管理队列和管理动作都不可见。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "account permissions|non-admin users" --workers=1`。
+- 已通过 `npm run test:marketplace` 和 `git diff --check`。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

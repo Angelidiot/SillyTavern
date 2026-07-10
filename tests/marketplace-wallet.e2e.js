@@ -132,6 +132,7 @@ async function mockMarketplaceApis(page, {
     assets = [makeListedAsset(), makeSubmittedAsset()],
     currentUser = makeCurrentUser(),
     enableAccounts = false,
+    users = [currentUser],
     reports = [],
     library = [],
     failAssetListOnce = false,
@@ -169,6 +170,7 @@ async function mockMarketplaceApis(page, {
     let didHoldResolve = false;
     let heldInstall = null;
     let heldResolve = null;
+    let userRecords = users.map(user => ({ ...user }));
     const apiCalls = {
         approve: [],
         creates: [],
@@ -196,6 +198,7 @@ async function mockMarketplaceApis(page, {
             }
         },
         submits: [],
+        userActions: [],
     };
 
     await page.route('**/api/users/me', route => {
@@ -219,6 +222,46 @@ async function mockMarketplaceApis(page, {
             });
         });
     }
+
+    await page.route('**/api/users/get', route => {
+        route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify(userRecords),
+        });
+    });
+
+    await page.route('**/api/users/*', route => {
+        const action = route.request().url().split('/').at(-1);
+        if (!['enable', 'disable', 'promote', 'demote'].includes(action)) {
+            route.fallback();
+            return;
+        }
+
+        const payload = JSON.parse(route.request().postData() || '{}');
+        apiCalls.userActions.push({ action, handle: payload.handle });
+        userRecords = userRecords.map(user => {
+            if (user.handle !== payload.handle) {
+                return user;
+            }
+
+            if (action === 'enable') {
+                return { ...user, enabled: true };
+            }
+            if (action === 'disable') {
+                return { ...user, enabled: false };
+            }
+            if (action === 'promote') {
+                return { ...user, admin: true };
+            }
+            return { ...user, admin: false };
+        });
+        route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ ok: true }),
+        });
+    });
 
     await page.route('**/api/wallet', route => {
         route.fulfill({
@@ -1144,6 +1187,71 @@ test.describe('marketplace wallet extension', () => {
         }]);
     });
 
+    test('manages account permissions from admin tools when accounts are enabled', async ({ page }) => {
+        const adminUser = makeCurrentUser({
+            handle: 'admin-user',
+            name: 'Admin User',
+            admin: true,
+        });
+        const apiCalls = await mockMarketplaceApis(page, {
+            currentUser: adminUser,
+            enableAccounts: true,
+            users: [
+                adminUser,
+                makeCurrentUser({
+                    handle: 'target-user',
+                    name: 'Target User',
+                    admin: false,
+                    enabled: true,
+                }),
+            ],
+        });
+
+        await loadSillyTavern(page);
+
+        await expect(page.locator('#marketplace_wallet_access_handle')).toHaveText('admin-user');
+        await expect(page.locator('#marketplace_wallet_access_role')).toHaveText('Admin');
+        await expect(page.locator('#marketplace_wallet_access_mode')).toHaveText('Accounts enabled');
+
+        const usersPanel = page.locator('#marketplace_wallet_users');
+        const selfItem = usersPanel.locator('.marketplace-wallet-user-item', { hasText: 'Admin User' });
+        const targetItem = usersPanel.locator('.marketplace-wallet-user-item', { hasText: 'Target User' });
+
+        await expect(usersPanel).toContainText('Target User');
+        await expect(selfItem.locator('[data-marketplace-wallet-user-action="disable"]')).toBeDisabled();
+        await expect(selfItem.locator('[data-marketplace-wallet-user-action="demote"]')).toBeDisabled();
+
+        await targetItem.locator('[data-marketplace-wallet-user-action="promote"]').click();
+        await expect.poll(() => apiCalls.userActions).toEqual([
+            { action: 'promote', handle: 'target-user' },
+        ]);
+        await expect(targetItem).toContainText('@target-user · Admin · enabled');
+
+        await targetItem.locator('[data-marketplace-wallet-user-action="disable"]').click();
+        await expect.poll(() => apiCalls.userActions).toEqual([
+            { action: 'promote', handle: 'target-user' },
+            { action: 'disable', handle: 'target-user' },
+        ]);
+        await expect(targetItem).toContainText('@target-user · Admin · disabled');
+
+        await targetItem.locator('[data-marketplace-wallet-user-action="enable"]').click();
+        await expect.poll(() => apiCalls.userActions).toEqual([
+            { action: 'promote', handle: 'target-user' },
+            { action: 'disable', handle: 'target-user' },
+            { action: 'enable', handle: 'target-user' },
+        ]);
+        await expect(targetItem).toContainText('@target-user · Admin · enabled');
+
+        await targetItem.locator('[data-marketplace-wallet-user-action="demote"]').click();
+        await expect.poll(() => apiCalls.userActions).toEqual([
+            { action: 'promote', handle: 'target-user' },
+            { action: 'disable', handle: 'target-user' },
+            { action: 'enable', handle: 'target-user' },
+            { action: 'demote', handle: 'target-user' },
+        ]);
+        await expect(targetItem).toContainText('@target-user · User · enabled');
+    });
+
     test('keeps an admin approval retryable when the approval request fails', async ({ page }) => {
         const submittedAsset = makeSubmittedAsset({
             id: 'approve-retry-character',
@@ -1278,8 +1386,13 @@ test.describe('marketplace wallet extension', () => {
         const assets = page.locator('#marketplace_wallet_assets');
 
         await expect(page.locator('#marketplace_wallet_total')).toHaveText('175');
+        await expect(page.locator('#marketplace_wallet_access_role')).toHaveText('User');
+        await expect(page.locator('#marketplace_wallet_access_mode')).toHaveText('Accounts enabled');
+        await expect(page.locator('#marketplace_wallet_access_note')).toContainText('Can browse, upload, buy, report, and manage library assets.');
         await expect(assets).toContainText('Non Admin Listed World');
         await expect(admin).toBeHidden();
+        await expect(page.getByText('Users & Permissions')).toBeHidden();
+        await expect(page.locator('#marketplace_wallet_users')).toBeHidden();
         await expect(page.locator('#marketplace_wallet_review_queue')).toBeHidden();
         await expect(page.locator('#marketplace_wallet_report_queue')).toBeHidden();
 
