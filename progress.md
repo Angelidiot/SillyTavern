@@ -1843,7 +1843,7 @@
 - `src/endpoints/market.js` 的 `installWorldBookAsset()` 现在在计算 fallback 安装名后写回 `world.name`，保持文件名和 JSON 显示名称一致。
 - `tests/market-wallet.test.js` 的 world book 安装用例改为上传无 `name` 的 payload，并读取落盘 JSON 断言 `name` 为资产标题 `Market World`。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js -t "installs approved world books" --runInBand`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
-- 已提交 `c64e3dec1 Write fallback world book names on install` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28773776733` 已触发并处于执行中。
+- 已提交 `c64e3dec1 Write fallback world book names on install` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28773776733` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 159：工具栏刷新失败恢复 E2E
@@ -1851,7 +1851,7 @@
 - `tests/marketplace-wallet.e2e.js` 新增 `refreshes marketplace from the toolbar after a failed load`，使用 `failAssetListOnce` 让首个资产列表请求返回 500。
 - 用例断言初始错误文案和后端错误摘要可见，点击 toolbar refresh 后 `Toolbar Recoverable World` 出现、错误文案消失、钱包总额仍为 `175`。
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "refreshes marketplace from the toolbar" --workers=1`、`node --check tests/marketplace-wallet.e2e.js` 和 `npm run test:marketplace`。
-- 已提交 `1dea45060 Cover marketplace toolbar refresh recovery` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28773905694` 已触发并处于执行中。
+- 已提交 `1dea45060 Cover marketplace toolbar refresh recovery` 并推送到 `fork/codex/marketplace-wallet-mvp`。
 - GitHub run `28773905694` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 160：PWA 安装提示关闭浏览器覆盖
@@ -1892,7 +1892,8 @@
 - `tests/market-wallet.test.js` 新增 `rejects partial fixed-price purchase ledger before creating entitlement`，人工写入同 purchase id 的 buyer debit 后重试购买。
 - 用例确认 market purchase 返回 409，不创建 entitlement、不增加 `sales_count`，也不会补写错误的 creator earning。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js --runInBand -t "rejects partial fixed-price purchase ledger before creating entitlement"`、`npm run test:marketplace:syntax` 和 `npm run test:marketplace`。
-- 已提交 `4b9475440 Reject incomplete purchase ledgers` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28774686203` 已触发并处于执行中。
+- 已提交 `4b9475440 Reject incomplete purchase ledgers` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28774686203` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 165：固定价 checkout 失败恢复 E2E
 - 开始处理 Aquinas 子 agent 建议的 fixed-price purchase 失败恢复缺口：已有自动 install 失败覆盖，但 purchase POST 本身失败时是否保持可重试缺少浏览器回归。
@@ -1910,7 +1911,8 @@
 - `tests/market-wallet.test.js` 新增 `rolls back fixed-price wallet ledger when market store write fails`，通过 mock `fs.mkdirSync` 触发 purchase 阶段 store 写入失败。
 - 用例确认失败后 bob 的 paid 余额仍为 `30`、无 purchase debit，charlie earnings 仍为 `0`、无 creator earning，market store 中 `sales_count` 仍为 `0` 且无 bob entitlement；恢复写入后重试购买成功。
 - 已通过 `npm --prefix tests run test:unit -- market-wallet.test.js --runInBand -t "rolls back fixed-price wallet ledger when market store write fails"`、`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps a library reinstall retryable when install fails" --workers=1`、相关 `node --check` 和 `npm run test:marketplace`。
-- 已提交 `55a479236 Rollback purchase ledger on market write failure` 并推送到 `fork/codex/marketplace-wallet-mvp`；GitHub run `28775367180` 已触发并处于执行中。
+- 已提交 `55a479236 Rollback purchase ledger on market write failure` 并推送到 `fork/codex/marketplace-wallet-mvp`。
+- GitHub run `28775367180` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 2026-07-06 阶段 167：Library 重装失败恢复 E2E
 - 开始处理 Erdos 子 agent 建议的 Library 手动 reinstall 失败缺口：已有 busy 态测试和 purchase 后自动 install 失败测试，但已安装资产重装失败后是否保持旧安装摘要缺少浏览器回归。
@@ -1989,6 +1991,7 @@
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps marketplace filters compact without mobile overflow" --workers=1`。
 - 已通过完整本地非 Docker 闭环：`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`，其中浏览器 E2E 为 47 passed。
 - 本机没有 `docker` 命令，`test:hosted:docker` 仍需在 CI 或有 Docker 的机器验证。
+- GitHub run `29067077084` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
 ## 五问重启检查
 | 问题 | 答案 |

@@ -1554,8 +1554,8 @@
 - [x] 补充后端契约测试，确认不创建 entitlement、不增加 sales、不补错 creator earning
 - [x] 运行目标后端测试、marketplace 基础验证和空白检查
 - [x] 提交并推送到 GitHub fork
-- [ ] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
-- **状态：** in_progress
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
 
 ### 阶段 165：固定价 checkout 失败恢复 E2E
 - [x] 确认浏览器 E2E mock 只能覆盖自动 install 失败，缺少 purchase POST 本身失败路径
@@ -1656,6 +1656,7 @@
 - [x] 重新运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`
 - [x] 记录 Docker 未安装导致本机无法跑容器 smoke
 - [x] 提交并推送到 GitHub fork
+- [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
 - **状态：** complete
 
 ## 关键问题
