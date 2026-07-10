@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const rootDirectory = path.resolve(testDirectory, '..');
-const SHELL_CACHE_NAME = 'sillytavern-shell-v5';
+const SHELL_CACHE_NAME = 'sillytavern-shell-v6';
 const MARKETPLACE_WALLET_EXTENSION_VERSION = JSON.parse(fs.readFileSync(
     path.join(rootDirectory, 'public/scripts/extensions/marketplace-wallet/manifest.json'),
     'utf8',
@@ -3158,10 +3158,9 @@ test.describe('marketplace wallet extension', () => {
 
             return {
                 columns: columns.length,
-                searchSpansFullWidth: rect(search).width > rect(type).width * 1.5,
+                searchAndClearSameRow: Math.abs(rect(search).top - rect(clearFilters).top) < 2,
                 typeAndPriceSameRow: Math.abs(rect(type).top - rect(price).top) < 2,
                 accessAndSortSameRow: Math.abs(rect(access).top - rect(sort).top) < 2,
-                clearSpansFullWidth: rect(clearFilters).width > rect(type).width * 1.5,
                 controlsHeight: rect(controls).height,
                 assetsBelowControls: rect(assets).top >= rect(controls).bottom,
                 overflowing,
@@ -3170,10 +3169,9 @@ test.describe('marketplace wallet extension', () => {
 
         expect(layout).toMatchObject({
             columns: 2,
-            searchSpansFullWidth: true,
+            searchAndClearSameRow: true,
             typeAndPriceSameRow: true,
             accessAndSortSameRow: true,
-            clearSpansFullWidth: true,
             assetsBelowControls: true,
             overflowing: [],
         });

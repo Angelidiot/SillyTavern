@@ -66,7 +66,7 @@ describe('hosted tavern PWA shell', () => {
 
         expect(serviceWorker).toContain("request.method !== 'GET'");
         expect(serviceWorker).toContain("url.pathname.startsWith('/api/')");
-        expect(serviceWorker).toContain('sillytavern-shell-v5');
+        expect(serviceWorker).toContain('sillytavern-shell-v6');
     });
 
     test('activates updated service workers without waiting for every tab to close', () => {
@@ -134,7 +134,7 @@ describe('hosted tavern PWA shell', () => {
         const cacheName = readServiceWorkerCacheName();
         const designDoc = fs.readFileSync(path.join(rootDir, 'docs/marketplace-currency-design.md'), 'utf8');
 
-        expect(cacheName).toBe('sillytavern-shell-v5');
+        expect(cacheName).toBe('sillytavern-shell-v6');
         expect(designDoc).toContain(cacheName);
         expect(designDoc).toContain('应用内 Install prompt');
         expect(designDoc).toContain('导航请求优先使用网络版本');

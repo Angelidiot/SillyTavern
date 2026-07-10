@@ -643,11 +643,6 @@
         min-width: 0;
     }
 
-    #marketplace_wallet_search,
-    #marketplace_wallet_clear_filters {
-        grid-column: 1 / -1;
-    }
-
     .marketplace-wallet-admin-grid,
     .marketplace-wallet-creator-asset,
     .marketplace-wallet-ledger-item,

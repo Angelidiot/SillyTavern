@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 173
+阶段 174
 
 ## 各阶段
 
@@ -1645,6 +1645,16 @@
 - [x] 覆盖管理员在 Users & Permissions 中执行 promote、disable、enable、demote 四个动作
 - [x] 补强普通用户在账号启用模式下看不到 Admin Tools 和 Users & Permissions
 - [x] 运行 marketplace 基础验证和目标浏览器 E2E
+- [x] 提交并推送到 GitHub fork
+- **状态：** complete
+
+### 阶段 174：移动筛选区全闭环修复
+- [x] 运行本地非 Docker 发布闭环并定位手机筛选区高度回归
+- [x] 让手机端搜索框和 Clear filters 共用一行，减少筛选区高度
+- [x] bump marketplace-wallet manifest 和 PWA shell cache，避免已安装壳保留旧 CSS
+- [x] 更新 UI/PWA/浏览器 E2E 契约
+- [x] 重新运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`
+- [x] 记录 Docker 未安装导致本机无法跑容器 smoke
 - [x] 提交并推送到 GitHub fork
 - **状态：** complete
 

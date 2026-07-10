@@ -1980,6 +1980,16 @@
 - 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "account permissions|non-admin users" --workers=1`。
 - 已通过 `npm run test:marketplace` 和 `git diff --check`。
 
+## 2026-07-10 阶段 174：移动筛选区全闭环修复
+- 执行完成度审计时运行 `PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`；`test:marketplace` 和 runtime smoke 通过，但全量浏览器 E2E 最后一个手机筛选区用例失败。
+- 失败原因：`keeps marketplace filters compact without mobile overflow` 期望筛选区高度不超过 170px，实际为 184px；Stage 172 增加布局后，手机端搜索框和 Clear filters 仍各自跨整行，筛选区形成四行。
+- 修复：移动端保留两列 grid，但移除 `#marketplace_wallet_search` 和 `#marketplace_wallet_clear_filters` 的整行跨列，让搜索和清空按钮共用一行。
+- marketplace-wallet manifest 从 `0.2.32` bump 到 `0.2.33`，PWA shell cache 从 `sillytavern-shell-v5` bump 到 `sillytavern-shell-v6`，并同步 service worker、PWA tests、E2E 常量和设计文档。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js --runInBand`。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps marketplace filters compact without mobile overflow" --workers=1`。
+- 已通过完整本地非 Docker 闭环：`PLAYWRIGHT_BROWSER_CHANNEL=chrome npm run test:marketplace:all`，其中浏览器 E2E 为 47 passed。
+- 本机没有 `docker` 命令，`test:hosted:docker` 仍需在 CI 或有 Docker 的机器验证。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|
