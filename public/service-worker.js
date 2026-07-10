@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sillytavern-shell-v6';
+const CACHE_NAME = 'sillytavern-shell-v7';
 const SHELL_ASSETS = [
     '/',
     '/login.html',
@@ -13,9 +13,9 @@ const SHELL_ASSETS = [
     '/scripts/pwa.js',
     '/scripts/extensions/marketplace-wallet/manifest.json',
     '/scripts/extensions/marketplace-wallet/window.html',
-    '/scripts/extensions/marketplace-wallet/index.js?v=0.2.33',
-    '/scripts/extensions/marketplace-wallet/filters.js?v=0.2.33',
-    '/scripts/extensions/marketplace-wallet/style.css?v=0.2.33',
+    '/scripts/extensions/marketplace-wallet/index.js?v=0.2.34',
+    '/scripts/extensions/marketplace-wallet/filters.js?v=0.2.34',
+    '/scripts/extensions/marketplace-wallet/style.css?v=0.2.34',
 ];
 
 self.addEventListener('install', event => {
@@ -41,6 +41,11 @@ self.addEventListener('fetch', event => {
 
     const url = new URL(request.url);
     if (url.origin !== location.origin || url.pathname.startsWith('/api/')) {
+        return;
+    }
+
+    if (url.pathname === '/scripts/extensions/marketplace-wallet/manifest.json') {
+        event.respondWith(fetch(request).catch(() => caches.match(request)));
         return;
     }
 

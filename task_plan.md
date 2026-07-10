@@ -4,7 +4,7 @@
 为托管版 AI 酒馆设计可落地的市场、货币、UGC 上传、创作者收益与审核安全系统，并形成后续开发可引用的设计文档。
 
 ## 当前阶段
-阶段 174
+阶段 175
 
 ## 各阶段
 
@@ -1657,6 +1657,15 @@
 - [x] 记录 Docker 未安装导致本机无法跑容器 smoke
 - [x] 提交并推送到 GitHub fork
 - [x] GitHub Actions 确认 Marketplace Wallet Checks 全链路通过
+- **状态：** complete
+
+### 阶段 175：市场入口黑屏与卡片布局修复
+- [x] 定位当前浏览器黑屏主因：本地 `8000` 服务未运行，重启后页面可加载
+- [x] 对当前 `./data` 运行 demo seed，填充免费角色卡和付费世界书，避免市场空态看起来像黑屏
+- [x] 修复市场资产卡片在窄抽屉中被 action 列挤压成竖排标题
+- [x] 将 marketplace-wallet manifest bump 到 `0.2.34`，PWA shell cache bump 到 `sillytavern-shell-v7`
+- [x] 将 marketplace-wallet 扩展 manifest 改为 service worker network-first，避免无版本 manifest 被旧 cache 固定在旧 CSS
+- [x] 运行 UI/PWA 契约、目标移动布局 E2E、浏览器手动验证和空白检查
 - **状态：** complete
 
 ## 关键问题

@@ -1993,6 +1993,17 @@
 - 本机没有 `docker` 命令，`test:hosted:docker` 仍需在 CI 或有 Docker 的机器验证。
 - GitHub run `29067077084` 已确认 Marketplace Wallet Checks 全链路通过：syntax、Jest contract、runtime smoke、hosted Docker smoke、runner Chrome 和 browser E2E 全部 success。
 
+## 2026-07-10 阶段 175：市场入口黑屏与卡片布局修复
+- 用户反馈点击进入后一片黑；检查发现本地 `8000` 端口没有监听进程，重新运行 `npm start` 后页面加载到分支 `codex/marketplace-wallet-mvp` / `b889137e4`。
+- 当前 `./data` 没有市场资产，面板深色主题加空态看起来像黑屏；已运行 `npm run marketplace:seed:demo -- --dataRoot ./data`，写入 `Mira the Harbor Oracle` 免费角色卡和 `Clockwork City Lore` 25 coins 世界书。
+- 浏览器验证发现资产卡片标题被两列 grid 挤到 14px 宽并竖排；`style.css` 将 `.marketplace-wallet-asset` 改为单列，并让 action 按钮在卡片下方换行。
+- marketplace-wallet manifest 从 `0.2.33` bump 到 `0.2.34`，PWA shell cache 从 `sillytavern-shell-v6` bump 到 `sillytavern-shell-v7`。
+- 进一步定位旧样式持续生效的根因：旧 service worker cache-first 返回无版本 `/scripts/extensions/marketplace-wallet/manifest.json`，导致页面继续请求 `style.css?v=0.2.33`；service worker 现在对该扩展 manifest 使用 network-first，离线时再回缓存。
+- 已通过 `node --check public/scripts/extensions/marketplace-wallet/index.js && node --check public/service-worker.js && node --check tests/marketplace-wallet.e2e.js`。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js --runInBand`。
+- 已通过 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "keeps marketplace filters compact without mobile overflow" --workers=1`。
+- 已在内置浏览器清理旧 service worker/cache 并验证当前页面加载 `style.css?v=0.2.34`，卡片标题宽度约 173px、不再竖排、无横向滚动。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

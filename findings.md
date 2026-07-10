@@ -279,6 +279,8 @@
 - 移动端后台控件要使用单列/双列网格和 44px 触控目标，用户权限按钮不能依赖桌面宽度。
 - 用户权限浏览器回归必须启用账号系统并真实点击 promote/disable/enable/demote；只在本地单用户模式下看 admin 面板不能证明托管账号权限闭环。
 - 手机筛选区不要让 Search 和 Clear filters 各自跨整行；两列同排能保持触控目标同时把高度压回 E2E 的 170px 预算内。
+- marketplace-wallet 资产卡片不适合桌面两列主文案/action 布局；SillyTavern 右侧抽屉宽度会把主列压到几像素，卡片应单列显示，按钮在下方换行。
+- PWA service worker 不应 cache-first 返回无版本 marketplace-wallet manifest；否则 manifest 会继续指向旧 query 版本的 JS/CSS，用户刷新后仍看旧布局。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

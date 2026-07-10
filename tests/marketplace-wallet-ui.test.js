@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.33');
+        expect(manifest.version).toBe('0.2.34');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -394,6 +394,7 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('repeat(auto-fit, minmax(260px, 1fr))');
         expect(css).toContain('.marketplace-wallet-controls {');
         expect(css).toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
+        expect(css).toContain('.marketplace-wallet-asset {\n    display: grid;\n    grid-template-columns: 1fr;');
         expect(css).toContain('.marketplace-wallet-controls .text_pole');
         expect(css).toContain('.marketplace-wallet-controls .menu_button');
         expect(css).toContain('.marketplace-wallet-library-items');

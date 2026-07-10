@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const rootDirectory = path.resolve(testDirectory, '..');
-const SHELL_CACHE_NAME = 'sillytavern-shell-v6';
+const SHELL_CACHE_NAME = 'sillytavern-shell-v7';
 const MARKETPLACE_WALLET_EXTENSION_VERSION = JSON.parse(fs.readFileSync(
     path.join(rootDirectory, 'public/scripts/extensions/marketplace-wallet/manifest.json'),
     'utf8',

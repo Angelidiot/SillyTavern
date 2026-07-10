@@ -150,8 +150,8 @@
 
 .marketplace-wallet-asset {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    grid-template-columns: 1fr;
+    align-items: stretch;
     gap: 10px;
     border-bottom: 1px solid var(--SmartThemeBorderColor);
     padding: 8px 2px;
@@ -234,7 +234,7 @@
 }
 
 .marketplace-wallet-asset-actions {
-    justify-content: flex-end;
+    justify-content: flex-start;
     flex-wrap: wrap;
 }
 
