@@ -6,6 +6,29 @@
         </div>
         <div class="inline-drawer-content">
             <div class="marketplace-wallet-layout">
+                <section class="marketplace-wallet-hero" aria-label="AI Tavern market">
+                    <div class="marketplace-wallet-hero-copy">
+                        <span class="marketplace-wallet-eyebrow" data-i18n="Hosted AI Tavern">Hosted AI Tavern</span>
+                        <h3 data-i18n="AI Tavern Market">AI Tavern Market</h3>
+                        <p data-i18n="Character cards, world books, creator earnings, and admin review in one tavern workspace.">Character cards, world books, creator earnings, and admin review in one tavern workspace.</p>
+                    </div>
+                    <nav class="marketplace-wallet-hero-actions" aria-label="Marketplace shortcuts">
+                        <a class="menu_button menu_button_icon marketplace-wallet-hero-link" href="#marketplace_wallet_assets">
+                            <i class="fa-solid fa-compass" aria-hidden="true"></i>
+                            <span data-i18n="Browse">Browse</span>
+                        </a>
+                        <a class="menu_button menu_button_icon marketplace-wallet-hero-link" href="#marketplace_wallet_upload_title">
+                            <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+                            <span data-i18n="Create">Create</span>
+                        </a>
+                        <a class="menu_button menu_button_icon marketplace-wallet-hero-link" href="#marketplace_wallet_library_items">
+                            <i class="fa-solid fa-bookmark" aria-hidden="true"></i>
+                            <span data-i18n="Library">Library</span>
+                        </a>
+                    </nav>
+                </section>
+
+                <div class="marketplace-wallet-top-grid">
                 <section class="marketplace-wallet-balance" aria-label="Wallet balance">
                     <div class="marketplace-wallet-balance-main">
                         <i class="fa-solid fa-coins" aria-hidden="true"></i>
@@ -33,6 +56,7 @@
                     </div>
                     <small id="marketplace_wallet_access_note" class="marketplace-wallet-access-note"></small>
                 </section>
+                </div>
 
                 <section class="marketplace-wallet-controls" aria-label="Marketplace filters">
                     <select id="marketplace_wallet_type_filter" class="text_pole" aria-label="Asset type">
@@ -66,6 +90,7 @@
 
                 <div id="marketplace_wallet_assets" class="marketplace-wallet-assets" aria-live="polite"></div>
 
+                <div class="marketplace-wallet-secondary-grid">
                 <section class="marketplace-wallet-creator" aria-label="Creator center">
                     <div class="marketplace-wallet-creator-header">
                         <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
@@ -101,6 +126,7 @@
                     </div>
                     <div id="marketplace_wallet_ledger_items" class="marketplace-wallet-ledger-items" aria-live="polite"></div>
                 </section>
+                </div>
 
                 <section id="marketplace_wallet_admin" class="marketplace-wallet-admin" aria-label="Marketplace admin tools" hidden>
                     <div class="marketplace-wallet-admin-header">

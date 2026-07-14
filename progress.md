@@ -2020,6 +2020,22 @@
 - 已通过 `npm run test:marketplace:smoke`，覆盖 demo seed、health、PWA shell、market/wallet API、上传/审核/举报/授币/固定价购买/安装/Library/CSRF。
 - 已通过完整浏览器 E2E：`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs --workers=1`，48 passed。
 
+## 2026-07-14 阶段 177：前端与手机 PWA 工作台重设计
+- 用户将新目标设为重新设计前端和软件页面，并要求使用已安装 skills。
+- 已读取并应用 `ui-ux-pro-max` 与 `frontend-design`：选择 marketplace/directory + 暗色工作台方向，保留 SillyTavern 原主题兼容，不新增依赖和字体。
+- `window.html` 新增紧凑 AI Tavern Market 头部，提供 Browse、Create、Library 快捷入口。
+- 钱包余额和 Account & Access 现在通过 `.marketplace-wallet-top-grid` 组成顶部摘要区。
+- Creator Center、My Library 和 Wallet Activity 现在通过 `.marketplace-wallet-secondary-grid` 组成二级任务区。
+- `style.css` 新增 marketplace-wallet 设计 token、暗色层级、琥珀/青色状态色、卡片化资产表面、44px 快捷入口、focus-visible 和 reduced-motion 兜底。
+- marketplace-wallet manifest 从 `0.2.35` bump 到 `0.2.36`，PWA shell cache 从 `sillytavern-shell-v8` bump 到 `sillytavern-shell-v9`。
+- README、设计文档和 UI/PWA 契约已同步。
+- 已通过 `node --check public/scripts/extensions/marketplace-wallet/index.js && node --check public/service-worker.js && node --check tests/marketplace-wallet.e2e.js`。
+- 已通过 `npm --prefix tests run test:unit -- marketplace-wallet-ui.test.js pwa.test.js --runInBand`。
+- 已通过目标手机布局 E2E：`PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs -g "opens from the fixed launcher|keeps the Details popup usable on mobile width|keeps the upload form usable on mobile width|keeps review controls compact on mobile width|keeps marketplace filters compact without mobile overflow" --workers=1`，5 passed。
+- 已通过 `npm run test:marketplace`，覆盖 marketplace syntax、22 个 market/wallet 后端契约和 53 个脚本/UI/PWA/health 契约。
+- 已通过 `npm run test:marketplace:smoke`。
+- 完整浏览器 E2E 初次运行被环境切换中断；恢复后在受管沙盒中需要提权监听 `127.0.0.1`，随后 `PLAYWRIGHT_BROWSER_CHANNEL=chrome node scripts/run-marketplace-e2e.mjs --workers=1` 完整通过，48 passed。
+
 ## 五问重启检查
 | 问题 | 答案 |
 |------|------|

@@ -9,6 +9,7 @@ This branch adds a hosted AI tavern marketplace and wallet MVP on top of SillyTa
 ### Marketplace And Wallet
 
 - Visible `市场 / 钱包` launcher that opens the built-in `marketplace-wallet` extension.
+- Redesigned AI Tavern Market workbench with mobile-first shortcuts, wallet/access summary cards, marketplace browsing first, and Creator/Library/Ledger panels grouped below the market.
 - Account & Access summary showing the current handle, role, and account mode.
 - Wallet balances split into `bonus`, `paid`, and `earnings` buckets.
 - Immutable wallet ledger for grants, purchases, debits, and creator earnings.

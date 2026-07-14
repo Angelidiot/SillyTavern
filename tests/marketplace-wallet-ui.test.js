@@ -16,7 +16,7 @@ describe('marketplace wallet extension UI contract', () => {
     test('uses versioned manifest assets to avoid stale extension modules', () => {
         const manifest = JSON.parse(readExtensionFile('manifest.json'));
 
-        expect(manifest.version).toBe('0.2.35');
+        expect(manifest.version).toBe('0.2.36');
         expect(manifest.js).toBe(`index.js?v=${manifest.version}`);
         expect(manifest.css).toBe(`style.css?v=${manifest.version}`);
         expect(manifest.hooks.activate).toBe('init');
@@ -25,6 +25,14 @@ describe('marketplace wallet extension UI contract', () => {
     test('defines the admin grant form and review queue surface', () => {
         const html = readExtensionFile('window.html');
 
+        expect(html).toContain('marketplace-wallet-hero');
+        expect(html).toContain('AI Tavern Market');
+        expect(html).toContain('marketplace-wallet-hero-actions');
+        expect(html).toContain('href="#marketplace_wallet_assets"');
+        expect(html).toContain('href="#marketplace_wallet_upload_title"');
+        expect(html).toContain('href="#marketplace_wallet_library_items"');
+        expect(html).toContain('marketplace-wallet-top-grid');
+        expect(html).toContain('marketplace-wallet-secondary-grid');
         expect(html).toContain('id="marketplace_wallet_creator_assets"');
         expect(html).toContain('id="marketplace_wallet_creator_drafts"');
         expect(html).toContain('id="marketplace_wallet_creator_submitted"');
@@ -396,6 +404,14 @@ describe('marketplace wallet extension UI contract', () => {
         expect(css).toContain('position: fixed;');
         expect(css).toContain('var(--topBarBlockSize, 0px)');
         expect(css).toContain('env(safe-area-inset-right)');
+        expect(css).toContain('--marketplace-wallet-accent: #f0b35a;');
+        expect(css).toContain('--marketplace-wallet-signal: #67e8f9;');
+        expect(css).toContain('.marketplace-wallet-hero');
+        expect(css).toContain('.marketplace-wallet-hero-actions');
+        expect(css).toContain('.marketplace-wallet-top-grid');
+        expect(css).toContain('.marketplace-wallet-secondary-grid');
+        expect(css).toContain('touch-action: manipulation;');
+        expect(css).toContain('@media (prefers-reduced-motion: reduce)');
         expect(css).toContain('.marketplace-wallet-creator-stats');
         expect(css).toContain('.marketplace-wallet-access-grid');
         expect(css).toContain('.marketplace-wallet-users-summary');

@@ -1680,6 +1680,19 @@
 - [x] 运行完整 marketplace 契约、runtime smoke 和完整 Chrome browser E2E
 - **状态：** complete
 
+### 阶段 177：前端与手机 PWA 工作台重设计
+- [x] 使用已安装 `ui-ux-pro-max` 和 `frontend-design` skill 生成并复核 AI Tavern marketplace 设计方向
+- [x] 新增紧凑 AI Tavern Market 工作台头部，提供 Browse、Create、Library 快捷入口
+- [x] 将钱包余额和 Account & Access 组合为顶部摘要网格
+- [x] 将 Creator Center、My Library 和 Wallet Activity 组合为二级任务网格
+- [x] 重做 marketplace-wallet 表面、资产卡片、标签、状态和触控反馈样式，保留 8px 半径和 44px 手机触控目标
+- [x] 增加 reduced-motion 兜底，避免触控反馈对敏感用户造成干扰
+- [x] bump marketplace-wallet manifest 到 `0.2.36`，PWA shell cache 到 `sillytavern-shell-v9`
+- [x] 更新契约测试、README 和设计文档
+- [x] 运行 UI/PWA 契约、marketplace 聚合、runtime smoke、目标手机 E2E 和完整 Chrome browser E2E
+- [x] 提交并推送到 GitHub fork
+- **状态：** complete
+
 ## 关键问题
 1. 是否优先做网页/PWA，再做 iOS/Android 上架包？
 2. 创作者收益是否一开始允许提现，还是先做站内积分与免费市场？

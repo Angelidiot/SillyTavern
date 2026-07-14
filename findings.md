@@ -285,6 +285,7 @@
 - marketplace-wallet window.html 也需要 network-first；HTML 模板没有 query version，只有 JS/CSS bump 不足以保证已安装 PWA 看到新布局。
 - 用户权限面板需要聚合摘要；仅列出用户行不利于管理员快速判断账号风险，users/admins/disabled/no-password 计数应常驻显示。
 - Admin grant 必须显式指定收款人；授币属于高敏感写操作，缺少 handle/userHandle/targetHandle 时不应 fallback 给当前管理员并写入不可变 ledger。
+- marketplace-wallet 前端重设计应优先工作台信息层级：AI Tavern Market 头部负责身份识别和快捷入口，市场筛选与资产列表仍必须优先于 Creator/Library/Ledger，手机端触控目标保持 44px 且使用 PWA cache bump 防止旧壳残留。
 
 ---
 *每执行2次查看/浏览器/搜索操作后更新此文件*

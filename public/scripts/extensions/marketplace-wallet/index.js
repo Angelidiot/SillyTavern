@@ -3,7 +3,7 @@ import { renderExtensionTemplateAsync } from '../../extensions.js';
 import { POPUP_TYPE, callGenericPopup } from '../../popup.js';
 import { accountsEnabled, currentUser, getCurrentUserHandle, isAdmin } from '../../user.js';
 import { getFileText, toggleDrawer } from '../../utils.js';
-import { filterAndSortAssets } from './filters.js?v=0.2.35';
+import { filterAndSortAssets } from './filters.js?v=0.2.36';
 
 const MODULE_NAME = 'marketplace-wallet';
 const LAUNCHER_ID = 'marketplace_wallet_launcher';
